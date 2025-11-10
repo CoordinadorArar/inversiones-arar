@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    // Permitir comportamiento moderno compatible con Vite
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": false,
+
+    // JSX
+    "jsx": "react-jsx",
+
+    // Chequeos de tipo
+    "strict": true,
+    "noImplicitAny": false,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+
+    // Soporte para imports absolutos si lo usas con @/
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["resources/js/*"]
+    }
+  },
+  "include": [
+    "resources/js/**/*.ts",
+    "resources/js/**/*.tsx"
+  ],
+  "exclude": ["node_modules"]
+}
