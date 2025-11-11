@@ -4,111 +4,63 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nuevo mensaje de contacto</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 10px 10px 0 0;
-            text-align: center;
-        }
-        .content {
-            background: #f8f9fa;
-            padding: 30px;
-            border-radius: 0 0 10px 10px;
-        }
-        .field {
-            margin-bottom: 20px;
-            background: white;
-            padding: 15px;
-            border-radius: 5px;
-            border-left: 4px solid #667eea;
-        }
-        .field-label {
-            font-weight: bold;
-            color: #667eea;
-            font-size: 12px;
-            text-transform: uppercase;
-            margin-bottom: 5px;
-        }
-        .field-value {
-            color: #333;
-            font-size: 15px;
-        }
-        .message-box {
-            background: white;
-            padding: 20px;
-            border-radius: 5px;
-            border-left: 4px solid #667eea;
-            white-space: pre-wrap;
-        }
-        .footer {
-            text-align: center;
-            padding: 20px;
-            color: #666;
-            font-size: 12px;
-        }
-    </style>
 </head>
-<body>
-    <div class="header">
-        <h1 style="margin: 0;">Nuevo Mensaje de Contacto</h1>
-        <p style="margin: 10px 0 0 0; opacity: 0.9;">Inversiones Arar</p>
-    </div>
-    
-    <div class="content">
-        <div class="field">
-            <div class="field-label">Asunto</div>
-            <div class="field-value">{{ $contactData['subject'] }}</div>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #2d2520; margin: 0; padding: 0; background-color: #fef6f0;">
+    <div style="max-width: 600px; margin: 0 auto;">
+        <!-- Header con logo -->
+        <div style="background-color: #fef6f0; padding: 30px 30px 20px 30px; text-align: center;">
+            <img src="{{ asset('images/logo-arar.png') }}" alt="Inversiones Arar" style="max-width: 120px; height: auto; margin-bottom: 15px;">
+            <h1 style="margin: 0; font-size: 26px; font-weight: 600; color: #ff6b18;">Nuevo Mensaje de Contacto</h1>
         </div>
+        
+        <!-- Contenido principal -->
+        <div style="background: #ffffff; padding: 40px 30px; border-radius: 8px; margin: 0 15px;">
+            <div style="margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid #e8e5e1;">
+                <div style="font-weight: 600; color: #847970; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Asunto</div>
+                <div style="color: #2d2520; font-size: 16px;">{{ $contactData['subject'] }}</div>
+            </div>
 
-        <div class="field">
-            <div class="field-label">Nombre</div>
-            <div class="field-value">{{ $contactData['name'] }}</div>
-        </div>
+            <div style="margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid #e8e5e1;">
+                <div style="font-weight: 600; color: #847970; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Nombre</div>
+                <div style="color: #2d2520; font-size: 16px;">{{ $contactData['name'] }}</div>
+            </div>
 
-        <div class="field">
-            <div class="field-label">Correo Electrónico</div>
-            <div class="field-value">
-                <a href="mailto:{{ $contactData['email'] }}" style="color: #667eea; text-decoration: none;">
-                    {{ $contactData['email'] }}
-                </a>
+            <div style="margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid #e8e5e1;">
+                <div style="font-weight: 600; color: #847970; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Correo Electrónico</div>
+                <div style="color: #2d2520; font-size: 16px;">
+                    <a href="mailto:{{ $contactData['email'] }}" style="color: #ff6b18; text-decoration: none;">
+                        {{ $contactData['email'] }}
+                    </a>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid #e8e5e1;">
+                <div style="font-weight: 600; color: #847970; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Teléfono</div>
+                <div style="color: #2d2520; font-size: 16px;">
+                    <a href="tel:{{ $contactData['phone'] }}" style="color: #ff6b18; text-decoration: none;">
+                        {{ $contactData['phone'] }}
+                    </a>
+                </div>
+            </div>
+
+            @if(!empty($contactData['company']))
+            <div style="margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid #e8e5e1;">
+                <div style="font-weight: 600; color: #847970; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Empresa</div>
+                <div style="color: #2d2520; font-size: 16px;">{{ $contactData['company'] }}</div>
+            </div>
+            @endif
+
+            <div style="margin-top: 32px; padding-top: 32px; border-top: 2px solid #ff6b18;">
+                <div style="font-weight: 600; color: #847970; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px;">Mensaje</div>
+                <div style="background: #fef6f0; padding: 20px; border-radius: 6px; border-left: 3px solid #ff6b18; white-space: pre-wrap; font-size: 15px; line-height: 1.7; color: #2d2520;">{{ $contactData['message'] }}</div>
             </div>
         </div>
 
-        <div class="field">
-            <div class="field-label">Teléfono</div>
-            <div class="field-value">
-                <a href="tel:{{ $contactData['phone'] }}" style="color: #667eea; text-decoration: none;">
-                    {{ $contactData['phone'] }}
-                </a>
-            </div>
+        <!-- Footer -->
+        <div style="text-align: center; padding: 30px; color: #847970; font-size: 13px; background: #fef6f0;">
+            <p style="margin: 5px 0;">Enviado desde el formulario de contacto de <a href="https://inversionesarar.com" style="color: #ff6b18; text-decoration: none;">inversionesarar.com</a></p>
+            <p style="margin: 5px 0;">{{ now()->format('d/m/Y H:i:s') }}</p>
         </div>
-
-        @if(!empty($contactData['company']))
-        <div class="field">
-            <div class="field-label">Empresa</div>
-            <div class="field-value">{{ $contactData['company'] }}</div>
-        </div>
-        @endif
-
-        <div style="margin-top: 30px;">
-            <div class="field-label" style="margin-bottom: 10px;">Mensaje</div>
-            <div class="message-box">{{ $contactData['message'] }}</div>
-        </div>
-    </div>
-
-    <div class="footer">
-        <p>Este correo fue enviado desde el formulario de contacto de inversionesarar.com</p>
-        <p>{{ now()->format('d/m/Y H:i:s') }}</p>
     </div>
 </body>
 </html>

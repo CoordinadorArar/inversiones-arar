@@ -39,13 +39,14 @@ export default function Contact() {
         e.preventDefault();
         setProcessing(true);
         setErrors({});  // Limpia errores previos
-
+        console.log('12')
         try {
             const response = await fetch(route('contact.store'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',                    
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
                 },
                 body: JSON.stringify(data),
             });
@@ -55,7 +56,7 @@ export default function Contact() {
                 toast({
                     title: "¡Mensaje enviado!",
                     description: "Nos pondremos en contacto contigo pronto.",
-                    variant: "default",
+                    variant: "success",
                 });
                 setData({  // Reset manual
                     subject: "",
