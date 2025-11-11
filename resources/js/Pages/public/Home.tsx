@@ -9,11 +9,11 @@ export default function Home() {
         <PublicLayout>
             <Head title="Inicio" />
             <main>
-                <section className="pb-20 pt-40 bg-gradient-to-br from-primary/15 via-background to-white">
+                <section className="pb-20 pt-40 bg-gradient-to-br from-primary/20 via-background to-white">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="grid md:grid-cols-2 gap-12 items-center">
                             <div>
-                                <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight text-primary">
+                                <h1 className="text-4xl md:text-6xl font-black mb-6 leading-tight text-primary">
                                     Inversiones Arar
                                 </h1>
                                 <p className="text-lg md:text-xl text-muted-foreground mb-8">
@@ -94,7 +94,7 @@ export default function Home() {
                             </p>
                         </div>
 
-                        <Link href={route('login')}>
+                        <Link href={route('contact')}>
                             <Button size="lg"                        
                                 className="shadow-lg hover:shadow-xl transform transition-all duration-300 hover:scale-105 hover:shadow-2xl1"
                             >
