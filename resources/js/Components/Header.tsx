@@ -1,3 +1,11 @@
+/**
+ * Componente React para el header fijo. Incluye logo, navegación con botones y dropdown para Gestión Humana, y botón a Intranet.
+ * 
+ * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
+ * @version 1.0
+ * @date 2025-11-11
+ */
+
 import { Link } from '@inertiajs/react';
 import { Button } from "@/components/ui/button";
 import { CircleUserRound, House, Mail, Building2, Users } from 'lucide-react';
@@ -17,11 +25,12 @@ export default function Header() {
         },
         {
             name: 'Empresas',
-            ref: 'login',
+            ref: 'companies',
             icon: Building2
         },
     ]
 
+    // Array de enlaces para Gestión Humana: Nombres y IDs para URLs externas.
     const linksGH = [
         {
             name: "Italo Colombiano de Baterías S.A.S",
@@ -34,12 +43,15 @@ export default function Header() {
     ];
 
     return (
+        // Header fijo.
         <header className=' fixed top-0 left-1/2 -translate-x-1/2 z-50 container mx-auto mt-4'>
             <div className='bg-white/80 backdrop-blur-md rounded-xl border shadow-sm mx-6 px-6 py-1 flex items-center justify-between'>
+                {/* Logo: Enlace a home. */}
                 <Link href={route('home')} className='h-full hover:opacity-80 transition-opacity'>
                     <img src="images/icono-arar.png" alt="icono" className='h-9' />
                 </Link>
 
+                {/* Navegación: Botones para páginas y dropdown para GH. */}
                 <nav className='flex items-center gap-1'>
                     {pages.map((page, index) => (
                         <Link
@@ -53,6 +65,7 @@ export default function Header() {
                         </Link>
                     ))}
 
+                    {/* Dropdown Gestión Humana: Enlaces externos a sistema GH. */}
                     <DropdownMenu modal={false}>
                         <DropdownMenuTrigger asChild>
                             <Button variant='ghost' className='gap-2'>
@@ -76,6 +89,7 @@ export default function Header() {
                     </DropdownMenu>
                 </nav>
 
+                {/* Botón Intranet: Enlace a login. */}
                 <Link href={route('login')}>
                     <Button className='gap-2 h-auto py-1 px-3'>
                         <CircleUserRound />

@@ -1,3 +1,13 @@
+/**
+ * Componente React para la página de contacto. Muestra info de contacto y formulario para enviar mensajes
+ * Envía datos vía fetch a ContactController@store, maneja validaciones, errores y toasts.
+ * Usa PublicLayout para estructura, validaciones de teclado desde keydownValidations.
+ * 
+ * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
+ * @version 1.0
+ * @date 2025-11-11
+ */
+
 import PublicLayout from '@/Layouts/PublicLayout';
 import { Head } from '@inertiajs/react';
 import { Card, CardContent } from "@/components/ui/card";
@@ -7,9 +17,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { handleEmailKeyDown, handleMessagesKeyDown, handleNumberTextKeyDown, handleTextKeyDown } from '@/lib/keydownValidations';
+import { handleEmailKeyDown, handleMessagesKeyDown, handleNumberKeyDown, handleNumberTextKeyDown, handleTextKeyDown } from '@/lib/keydownValidations';
 import { useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
+
+// Interfaz para datos del formulario: Define estructura de state.
 interface FormData {
     subject: string;
     name: string;
@@ -21,6 +33,8 @@ interface FormData {
 }
 
 export default function Contact() {
+
+    // Estado: Datos del formulario, errores de validación, y flag de procesamiento.
     const [data, setData] = useState<FormData>({
         subject: "",
         name: "",
@@ -30,16 +44,19 @@ export default function Contact() {
         message: "",
         acceptsPolicy: false,
     });
-    const [errors, setErrors] = useState<Record<string, string>>({});  // Para errores de validación
-    const [processing, setProcessing] = useState(false);  // Para loading
+    const [errors, setErrors] = useState<Record<string, string>>({});  // Errores desde backend.
+    const [processing, setProcessing] = useState(false);  // Loading durante envío.
 
-    const { toast } = useToast();
+    const { toast } = useToast(); // Hook para notificaciones.
 
+    // handleSubmit: Envía formulario vía fetch POST a 'contact.store'.
+    // Maneja éxito (toast + reset), errores 422 (muestra en inputs), otros errores (toast).
+    // Usa CSRF token de meta tag. Limpia errores previos.
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
         setProcessing(true);
-        setErrors({});  // Limpia errores previos
-        console.log('12')
+        setErrors({});  // Limpia errores previos        
         try {
             const response = await fetch(route('contact.store'), {
                 method: 'POST',
@@ -51,8 +68,9 @@ export default function Contact() {
                 body: JSON.stringify(data),
             });
             const result = await response.json();
+
             if (response.ok) {
-                // Éxito: toast y reset
+                // Éxito: Toast de éxito y reset del formulario.
                 toast({
                     title: "¡Mensaje enviado!",
                     description: "Nos pondremos en contacto contigo pronto.",
@@ -68,10 +86,10 @@ export default function Contact() {
                     acceptsPolicy: false,
                 });
             } else if (response.status === 422) {
-                // Errores de validación: mapea a errors para mostrar en inputs
+                // Errores de validación: Mapea a state errors para mostrar en inputs.
                 setErrors(result.errors || {});
             } else {
-                // Errores generales: toast
+                // Errores generales: Toast destructivo.
                 toast({
                     title: "Error al enviar",
                     description: result.error || "Intenta de nuevo más tarde.",
@@ -79,7 +97,7 @@ export default function Contact() {
                 });
             }
         } catch (error) {
-            // Error de red o inesperado: toast
+            // Error de red: Toast destructivo.
             toast({
                 title: "Error de conexión",
                 description: "Revisa tu conexión e intenta de nuevo.",
@@ -92,13 +110,14 @@ export default function Contact() {
 
     return (
         <PublicLayout>
+            {/* Head: Establece título de la página en el navegador. */}
             <Head title="Contacto" />
             <main className="flex-1">
-                {/* Hero Section */}
+                {/* Sección hero: Título y descripción. */}
                 <section className="pb-20 pt-40 bg-gradient-to-br from-primary/20 via-background to-white">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="max-w-3xl">
-                            <h1 className="text-4xl md:text-5xl font-black text-primary mb-6">
+                            <h1 className="text-4xl md:text-5xl font-bold text-primary mb-6">
                                 Contacto
                             </h1>
                             <p className="text-lg text-muted-foreground">
@@ -108,11 +127,11 @@ export default function Contact() {
                     </div>
                 </section>
 
-                {/* Contact Info & Form */}
+                {/* Sección de info y formulario: Grid con dos columnas. */}
                 <section className="py-20 border-t bg-accent/40">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="grid md:grid-cols-2 gap-12">
-                            {/* Contact Information */}
+                            {/* Info de contacto: Tarjetas con email, teléfono y ubicación. */}
                             <div className="space-y-8">
                                 <div>
                                     <h2 className="text-3xl font-bold mb-2">Información de Contacto</h2>
@@ -181,7 +200,7 @@ export default function Contact() {
                                 </div>
                             </div>
 
-                            {/* Contact Form */}
+                            {/* Formulario de contacto: Campos con validaciones, errores y envío. */}
                             <Card className='py-0'>
                                 <CardContent className="p-6">
                                     <h3 className="text-2xl text-primary font-bold mb-6">Envíanos un mensaje</h3>
@@ -249,7 +268,7 @@ export default function Contact() {
                                             <Input
                                                 id="phone"
                                                 type="tel"
-                                                onKeyDown={handleTextKeyDown}
+                                                onKeyDown={handleNumberKeyDown}
                                                 placeholder="+573001234567"
                                                 value={data.phone}
                                                 onChange={e => setData({ ...data, phone: e.target.value })}
@@ -323,7 +342,7 @@ export default function Contact() {
                                             </div>
                                         </div>
 
-                                        {/* Botón de envío */}
+                                        {/* Botón envío: Deshabilitado si está procesando o no acepta política. */}
                                         <Button
                                             type="submit"
                                             className="w-full"

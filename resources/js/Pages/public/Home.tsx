@@ -1,3 +1,13 @@
+/**
+ * Componente React para la página de compañias (companies).
+ * Se monta vía Inertia desde HomeController@index. Usa PublicLayout para estructura común.
+ * Muestra las empresas y sus enlaces a sus páginas principales
+ * 
+ * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
+ * @version 1.0
+ * @date 2025-11-11
+ */
+
 import PublicLayout from '@/Layouts/PublicLayout';
 import { Head, Link } from '@inertiajs/react';
 import { Card, CardContent } from "@/components/ui/card";
@@ -5,22 +15,26 @@ import { Target, Users, Building2, ArrowRight } from "lucide-react";
 import { Button } from '@/components/ui/button';
 
 export default function Home() {
+
     return (
+        // PublicLayout: Envuelve la página con header/footer.
         <PublicLayout>
-            <Head title="Inicio" />
+            {/* Head: Establece título de la página en el navegador. */}
+            <Head title="Compañias" />
             <main>
+                {/* Sección hero */}
                 <section className="pb-20 pt-40 bg-gradient-to-br from-primary/20 via-background to-white">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="grid md:grid-cols-2 gap-12 items-center">
                             <div>
-                                <h1 className="text-4xl md:text-6xl font-black mb-6 leading-tight text-primary">
+                                <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight text-primary">
                                     Inversiones Arar
                                 </h1>
                                 <p className="text-lg md:text-xl text-muted-foreground mb-8">
                                     Holding empresarial con más de 20 años de experiencia, comprometido con el crecimiento
                                     sostenible y el desarrollo económico de la región Santander.
                                 </p>
-                                <Link href={route('login')}>
+                                <Link href={route('companies')}>
                                     <Button>
                                         Conoce nuestras empresas
                                         <ArrowRight className="ml-2 h-4 w-4" />
@@ -38,6 +52,7 @@ export default function Home() {
                     </div>
                 </section>
 
+                {/* Sección de características: Tres tarjetas con íconos y texto. */}
                 <section className="py-10 border-y bg-secondary">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="grid md:grid-cols-3 gap-8">
@@ -81,8 +96,9 @@ export default function Home() {
                             </Card>
                         </div>
                     </div>
-                </section>
+                </section>                
 
+                {/* Sección CTA: Llamada a acción con gradiente, título y botón a contacto. */}
                 <section className="relative py-10 overflow-hidden bg-gradient-to-r from-primary via-primary/90 to-background text-primary-foreground">
                     <div className="container relative mx-auto px-6 lg:px-12 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
                         <div>
@@ -95,7 +111,7 @@ export default function Home() {
                         </div>
 
                         <Link href={route('contact')}>
-                            <Button size="lg"                        
+                            <Button size="lg"
                                 className="shadow-lg hover:shadow-xl transform transition-all duration-300 hover:scale-105 hover:shadow-2xl1"
                             >
                                 Contáctanos

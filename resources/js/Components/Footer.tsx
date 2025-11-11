@@ -1,3 +1,11 @@
+/**
+ * Componente React para el footer del sitio. Muestra logo, contacto, enlaces legales, redes sociales y copyright.
+ * 
+ * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
+ * @version 1.0
+ * @date 2025-11-11
+ */
+
 import { Mail, Phone, FileText, Shield, Linkedin } from 'lucide-react';
 
 export default function Footer() {
@@ -5,7 +13,7 @@ export default function Footer() {
         <footer className="border-t bg-secondary/10 mt-auto">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-5">
                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8 md:gap-12">
-                    {/* Logo y descripción */}
+                    {/* Sección logo y descripción. */}
                     <div className="space-y-4 md:col-span-2 lg:col-span-1">
                         <div className="flex items-center gap-2">
                             <img src="images/logo-arar.png" alt="Logo arar" className="h-20" />
@@ -15,7 +23,7 @@ export default function Footer() {
                         </p>
                     </div>
 
-                    {/* Contacto */}
+                    {/* Sección contacto: Enlaces a email y teléfono con íconos. */}
                     <div>
                         <h3 className="font-semibold mb-4">Contacto</h3>
                         <ul className="space-y-3 text-sm text-muted-foreground">
@@ -34,7 +42,7 @@ export default function Footer() {
                         </ul>
                     </div>
 
-                    {/* Legal */}
+                    {/* Sección legal: Enlaces a PDFs de política y manual. */}
                     <div>
                         <h3 className="font-semibold mb-4">Legal</h3>
                         <ul className="space-y-3 text-sm text-muted-foreground">
@@ -53,7 +61,7 @@ export default function Footer() {
                         </ul>
                     </div>
 
-                    {/* Espacio para redes sociales o info adicional */}
+                    {/* Sección redes. */}
                     <div>
                         <h3 className="font-semibold mb-4">Síguenos</h3>
                         <div className='flex gap-2'>
@@ -64,7 +72,7 @@ export default function Footer() {
                     </div>
                 </div>
 
-                {/* Copyright */}
+                {/* Copyright. */}
                 <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
                     <p>© {new Date().getFullYear()} Inversiones Arar. Todos los derechos reservados.</p>
                 </div>
