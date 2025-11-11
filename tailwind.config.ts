@@ -4,6 +4,9 @@ import forms from '@tailwindcss/forms';
 /** @type {import('tailwindcss').Config} */
 export default {
     darkMode: ['class'],
+
+	// Contenido: Archivos donde Tailwind busca clases para purgar CSS no usado.
+    // Incluye vistas Blade de Laravel, vistas compiladas, y componentes React (.tsx).
     content: [
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
         './storage/framework/views/*.php',

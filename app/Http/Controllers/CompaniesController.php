@@ -8,16 +8,16 @@ namespace App\Http\Controllers;
  * @date 2025-11-11
  */
 
-class HomeController extends Controller
+class CompaniesController extends Controller
 {
     /**
-     * Método index - Muestra la página de inicio.
+     * Método index - Muestra la página de empresas.
      * 
      * @return \Inertia\Response
      */
     public function index()
     {
-        return inertia('Public/Home');
+        return inertia('Public/Companies');
     }
 
 }

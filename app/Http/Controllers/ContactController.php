@@ -2,15 +2,22 @@
 
 namespace App\Http\Controllers;
 
+/**
+ * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
+ * @version 1.0
+ * @date 2025-11-11
+ */
+
 use App\Http\Requests\StoreContactRequest;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ContactFormMail;
-use Inertia\Inertia;
 
 class ContactController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Método index - Muestra el formulario de contacto.
+     * 
+     * @return \Inertia\Response
      */
     public function index()
     {
@@ -18,7 +25,25 @@ class ContactController extends Controller
     }
 
     /**
-     * Procesa el formulario de contacto
+     * Método store - Procesa y envía el formulario de contacto.
+     * 
+     * Este método valida los datos enviados desde el formulario, intenta enviar un email
+     * con la información, y retorna una respuesta JSON indicando éxito o error.     
+     * 
+     * - Parámetros:
+     *   - $request: Instancia de StoreContactRequest, que valida automáticamente los datos
+     *     (ej. email obligatorio, mensaje no vacío). Si falla la validación, Laravel lanza errores automáticamente.
+     * - Lógica interna:
+     *   - Valida los datos con $request->validated() (obtiene solo los campos validados).
+     *   - Envía un email a 'asistente@inversionesarar.com' usando la clase ContactFormMail,
+     *     que formatea el email con los datos del usuario.
+     *   - Si el envío falla (ej. problemas con el servidor de email), captura la excepción y retorna error.
+     * - Retorno:
+     *   - Éxito: JSON con mensaje de confirmación y código 200.
+     *   - Error: JSON con mensaje de error y código 500.     
+     * 
+     * @param StoreContactRequest $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(StoreContactRequest $request)
     {

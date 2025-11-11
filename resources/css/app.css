@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Capa base: Define variables CSS personalizadas para temas (de Shadcn/UI). */
+/* Estas variables controlan colores para modo claro (:root) y oscuro (.dark). */
+/* Se usan en Tailwind para colores dinámicos (ej. bg-background). */
+/* Valores en HSL para consistencia con Tailwind. */
 
 @layer base {
   :root {
