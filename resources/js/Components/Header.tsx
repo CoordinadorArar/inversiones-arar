@@ -6,9 +6,9 @@
  * @date 2025-11-11
  */
 
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { Button } from "@/components/ui/button";
-import { CircleUserRound, House, Mail, Building2, Users } from 'lucide-react';
+import { CircleUserRound, House, Mail, Building2, Users, FileUser, NotebookText } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 export default function Header() {
@@ -30,17 +30,16 @@ export default function Header() {
         },
     ]
 
-    // Array de enlaces para Gestión Humana: Nombres y IDs para URLs externas.
-    const linksGH = [
-        {
-            name: "Italo Colombiano de Baterías S.A.S",
-            IdCia: 1,
-        },
-        {
-            name: "Representaciones Ankal S.A.S",
-            IdCia: 2,
-        },
-    ];
+    /**
+     * 🔹 usePage().props:
+     * Permite acceder a las props globales compartidas por Inertia desde Laravel.
+     * 
+     * - 'empresas' fue definida en AppServiceProvider con Inertia::share().
+     * - Tipamos el valor para mayor claridad y autocompletado.
+     */
+    const { empresas } = usePage().props as unknown as {
+        empresas: { id: number, name: string, }[]
+    };
 
     return (
         // Header fijo.
@@ -69,19 +68,19 @@ export default function Header() {
                     <DropdownMenu modal={false}>
                         <DropdownMenuTrigger asChild>
                             <Button variant='ghost' className='gap-2'>
-                                <Users />
+                                <NotebookText />
                                 Gestión Humana
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align='end' className='w-64' sideOffset={5}>
-                            {linksGH.map((link, index) => (
+                        <DropdownMenuContent align='end' sideOffset={5}>
+                            {empresas.map((empresa, index) => (
                                 <DropdownMenuItem key={index} asChild>
-                                    <a 
-                                        href={`http://gh.inversionesarar.com:8900/AuthAG/LoginFormAG?IdCia=${link.IdCia}&NroConexion=1`}
-                                        className='cursor-pointer w-full'
+                                    <a
+                                        href={`http://gh.inversionesarar.com:8900/AuthAG/LoginFormAG?IdCia=${empresa.id}&NroConexion=1`}
+                                        className='cursor-pointer w-full capitalize'
                                         target='_blank'
                                     >
-                                        {link.name}
+                                        {empresa.name.toLowerCase()}
                                     </a>
                                 </DropdownMenuItem>
                             ))}
@@ -89,13 +88,27 @@ export default function Header() {
                     </DropdownMenu>
                 </nav>
 
-                {/* Botón Intranet: Enlace a login. */}
-                <Link href={route('login')}>
-                    <Button className='gap-2 h-auto py-1 px-3'>
-                        <CircleUserRound />
-                        Intranet
-                    </Button>
-                </Link>
+                <div className='flex gap-2'>
+                    {/* Botón Intranet: Enlace a login. */}
+                    <Link href={route('login')}>
+                        <Button className='gap-2 h-auto py-1 px-3 hover:shadow-md transition-shadow'>
+                            <CircleUserRound />
+                            Intranet
+                        </Button>
+                    </Link>
+
+                    {/* Botón GLPI: Enlace a login. */}
+                    <a href='https://glpi.inversionesarar.com' target='_blank' rel='noopener'>
+                        <Button 
+                            className='gap-2 h-auto py-1 px-3 transition-shadow'
+                            variant={'outline'}
+                        >
+                            <Users />
+                            GLPI
+                        </Button>
+                    </a>
+
+                </div>
             </div>
         </header>
     )
