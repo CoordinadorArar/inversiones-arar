@@ -44,7 +44,7 @@ export default function Header() {
     return (
         // Header fijo.
         <header className=' fixed top-0 left-1/2 -translate-x-1/2 z-50 container mx-auto mt-4'>
-            <div className='bg-white/80 backdrop-blur-md rounded-xl border shadow-sm mx-6 px-6 py-1 flex items-center justify-between'>
+            <div className='bg-background/80 backdrop-blur-md rounded-xl border shadow-sm mx-6 px-6 py-1 flex items-center justify-between'>
                 {/* Logo: Enlace a home. */}
                 <Link href={route('home')} className='h-full hover:opacity-80 transition-opacity'>
                     <img src="images/icono-arar.png" alt="icono" className='h-9' />

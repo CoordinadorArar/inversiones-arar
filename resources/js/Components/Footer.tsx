@@ -7,6 +7,7 @@
  */
 
 import { Mail, Phone, FileText, Shield, Linkedin } from 'lucide-react';
+import Copyright from './Copyright';
 
 export default function Footer() {
     return (
@@ -73,9 +74,7 @@ export default function Footer() {
                 </div>
 
                 {/* Copyright. */}
-                <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
-                    <p>© {new Date().getFullYear()} Inversiones Arar. Todos los derechos reservados.</p>
-                </div>
+                <Copyright className="border-t"/>
             </div>
         </footer>
     );

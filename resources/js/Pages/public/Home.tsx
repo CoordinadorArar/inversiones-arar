@@ -1,7 +1,7 @@
 /**
- * Componente React para la página de compañias (companies).
+ * Componente React para la página de inicio (home).
  * Se monta vía Inertia desde HomeController@index. Usa PublicLayout para estructura común.
- * Muestra las empresas y sus enlaces a sus páginas principales
+ * Muestra información sobre la empresa
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
  * @version 1.0
@@ -24,7 +24,7 @@ export default function Home() {
             <Head title="Inicio" />
             <main>
                 {/* Sección hero */}
-                <section className="pb-20 pt-40 bg-gradient-to-br from-primary/20 via-background to-white">
+                <section className="pb-20 pt-40 bg-gradient-to-br from-primary/30 via-accent/20 to-background">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="grid md:grid-cols-2 gap-12 items-center">
                             <div>
@@ -138,7 +138,7 @@ export default function Home() {
                 </section>
 
                 {/* Sección Sobre Nosotros */}
-                <section id="nosotros" className="py-20 bg-gradient-to-b from-primary/10 via-secondary/30 to-secondary/30 scroll-mt-16">
+                <section id="nosotros" className="py-20 bg-gradient-to-b from-primary/20 via-secondary/30 to-secondary/30 scroll-mt-16">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="max-w-6xl mx-auto">
                             <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center">Sobre Nosotros</h2>

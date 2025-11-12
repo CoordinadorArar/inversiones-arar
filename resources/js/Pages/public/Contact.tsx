@@ -114,7 +114,7 @@ export default function Contact() {
             <Head title="Contacto" />
             <main className="flex-1">
                 {/* Sección hero: Título y descripción. */}
-                <section className="pb-20 pt-40 bg-gradient-to-br from-primary/20 via-background to-white">
+                <section className="pb-20 pt-40 bg-gradient-to-br from-primary/30 via-accent/20 to-background">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="max-w-3xl">
                             <h1 className="text-4xl md:text-5xl font-bold text-primary mb-6">
@@ -128,7 +128,7 @@ export default function Contact() {
                 </section>
 
                 {/* Sección de info y formulario: Grid con dos columnas. */}
-                <section className="py-20 border-t bg-accent/40">
+                <section className="py-20 border-t bg-accent/50">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="grid md:grid-cols-2 gap-12">
                             {/* Info de contacto: Tarjetas con email, teléfono y ubicación. */}

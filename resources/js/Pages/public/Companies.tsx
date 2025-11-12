@@ -1,6 +1,6 @@
 /**
  * Componente React para la página de compañias (companies).
- * Se monta vía Inertia desde HomeController@index. Usa PublicLayout para estructura común.
+ * Se monta vía Inertia desde CompaniesController@index. Usa PublicLayout para estructura común.
  * Muestra las empresas y sus enlaces a sus páginas principales
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
@@ -24,6 +24,7 @@ import faerLogo from "@/assets/logos/faer-logo.png";
 
 export default function Companies() {
 
+    // Arreglo de empresas con sus páginas principales
     const empresas = [
         {
             nombre: "Inversiones Arar", sector: "Holding Empresarial", logo: ararInversionesLogo,
@@ -72,7 +73,7 @@ export default function Companies() {
             <Head title="Compañias" />
             <main>
                 {/* Sección hero */}
-                <section className="pb-20 pt-40 bg-gradient-to-br from-primary/20 via-background to-white">
+                <section className="pb-20 pt-40 bg-gradient-to-br from-primary/30 via-accent/20 to-background">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                         <div>
                             <h1 className="text-4xl md:text-5xl text-primary font-bold mb-6">
@@ -87,7 +88,7 @@ export default function Companies() {
                 </section>
 
                 {/* Empresas Grid */}
-                <section className="py-20 border-t bg-secondary">
+                <section className="py-20 border-t bg-secondary/70">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="grid lg:grid-cols-3 gap-6">
                             {empresas.map((empresa, index) => (
@@ -140,7 +141,7 @@ export default function Companies() {
                 </section>
 
                 {/* Banner informativo */}
-                <section className="py-12 bg-gradient-to-r from-primary/10 via-primary/5 to-accent/10">
+                <section className="py-12 bg-gradient-to-r from-primary/10 via-primary/5 to-background">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="max-w-4xl mx-auto text-center">
                             <p className="text-lg md:text-xl font-medium text-foreground">
