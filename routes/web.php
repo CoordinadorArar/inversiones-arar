@@ -11,6 +11,7 @@
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CompaniesController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PQRSDController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -41,6 +42,11 @@ Route::post('/contacto', [ContactController::class, 'store'])->name('contact.sto
 // Ruta para la página de empresas.
 // - Nombre: 'companies'
 Route::get('/empresas', [CompaniesController::class, 'index'])->name('companies');
+
+
+// Rutas para la página de pqrsd.
+// - Nombre: 'pqrsd'
+Route::get('/pqrsd', [PQRSDController::class, 'index'])->name('pqrsd');
 
 
 

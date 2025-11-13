@@ -55,7 +55,7 @@ class AppServiceProvider extends ServiceProvider
             'empresas' => function () {
                 // Retorna una colección con las empresas específicas
                 return Empresa::select('f010_id as id', 'f010_razon_social as name')
-                    ->whereIn('f010_id', [1, 2, 5, 6, 7, 8, 17, 18, 19, 20])
+                    ->whereIn('f010_id', [1, 5, 6, 7, 8, 17, 18, 19, 20])
                     ->get();
             },
         ]);

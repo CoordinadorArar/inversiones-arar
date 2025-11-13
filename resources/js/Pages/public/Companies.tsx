@@ -141,7 +141,7 @@ export default function Companies() {
                 </section>
 
                 {/* Banner informativo */}
-                <section className="py-12 bg-gradient-to-r from-primary/10 via-primary/5 to-background">
+                <section className="py-12 bg-gradient-to-r from-background via-primary/5 to-primary/20">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="max-w-4xl mx-auto text-center">
                             <p className="text-lg md:text-xl font-medium text-foreground">

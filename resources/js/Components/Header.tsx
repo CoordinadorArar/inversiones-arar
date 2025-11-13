@@ -3,12 +3,12 @@
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
  * @version 1.0
- * @date 2025-11-11
+ * @date 2025-11-13
  */
 
 import { Link, usePage } from '@inertiajs/react';
 import { Button } from "@/components/ui/button";
-import { CircleUserRound, House, Mail, Building2, Users, FileUser, NotebookText } from 'lucide-react';
+import { CircleUserRound, House, Mail, Building2, Users, NotebookText, CircleAlert } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 export default function Header() {
@@ -27,6 +27,11 @@ export default function Header() {
             name: 'Empresas',
             ref: 'companies',
             icon: Building2
+        },
+        {
+            name: 'PQRSD',
+            ref: 'pqrsd',
+            icon: CircleAlert
         },
     ]
 
@@ -69,7 +74,7 @@ export default function Header() {
                         <DropdownMenuTrigger asChild>
                             <Button variant='ghost' className='gap-2'>
                                 <NotebookText />
-                                Gestión Humana
+                                Autogestión
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align='end' sideOffset={5}>

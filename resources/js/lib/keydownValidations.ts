@@ -7,14 +7,38 @@
  */
 
 // allowedKeys: Teclas de control permitidas (navegación, borrado) en todas las funciones.
-const allowedKeys = ['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Delete'];
+const allowedKeys = ['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Delete', 'Home', 'End', 'Control', 'Alt', 'Shift'];
+
+// handleLimit: Previene escribir más caracteres cuando se alcanza el límite.
+// Uso: <input onKeyDown={(e) => handleLimit(e, e.currentTarget.value, 50)} />
+export const handleLimit = (
+    e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>,
+    currentValue: string,
+    maxLength: number
+) => {
+    // Permitir teclas de control y combinaciones con Ctrl (como Ctrl+A, Ctrl+C, etc.)
+    if (allowedKeys.includes(e.key) || e.ctrlKey || e.metaKey) {
+        return;
+    }
+    
+    // Si hay texto seleccionado, permitir escritura (se va a reemplazar)
+    const target = e.currentTarget;
+    if (target.selectionStart !== target.selectionEnd) {
+        return;
+    }
+    
+    // Prevenir si ya se alcanzó el límite
+    if (currentValue.length >= maxLength) {
+        e.preventDefault();
+    }
+};
 
 // handleTextKeyDown: Permite solo letras (incluyendo acentos y ñ) y espacios.
 // Uso: En inputs de nombre/apellido (ej. <input onKeyDown={handleTextKeyDown} />).
 // Bloquea números/símbolos para campos de texto puro.
 export const handleTextKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    const allowed = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]$/;
-    if (!allowed.test(e.key) && !allowedKeys.includes(e.key)) {
+    const allowed = /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]$/;
+    if (!allowed.test(e.key) && !allowedKeys.includes(e.key) && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
     }
 };
@@ -24,7 +48,7 @@ export const handleTextKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
 // Bloquea letras para campos numéricos.
 export const handleNumberKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const allowed = /^[0-9+]$/;
-    if (!allowed.test(e.key) && !allowedKeys.includes(e.key)) {
+    if (!allowed.test(e.key) && !allowedKeys.includes(e.key) && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
     }
 };
@@ -33,8 +57,8 @@ export const handleNumberKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) =>
 // Uso: En inputs mixtos como códigos o direcciones (ej. <input onKeyDown={handleNumberTextKeyDown} />).
 // Más flexible que handleTextKeyDown.
 export const handleNumberTextKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    const allowed = /^[0-9a-zA-ZáéíóúÁÉÍÓÚñÑ\s]$/;
-    if (!allowed.test(e.key) && !allowedKeys.includes(e.key)) {
+    const allowed = /^[0-9a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]$/;
+    if (!allowed.test(e.key) && !allowedKeys.includes(e.key) && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
     }
 };
@@ -44,7 +68,7 @@ export const handleNumberTextKeyDown = (e: React.KeyboardEvent<HTMLInputElement>
 // Alineado con formatos de email válidos.
 export const handleEmailKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const allowed = /^[a-zA-Z0-9@._+-]$/;
-    if (!allowed.test(e.key) && !allowedKeys.includes(e.key)) {
+    if (!allowed.test(e.key) && !allowedKeys.includes(e.key) && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
     }
 };
@@ -53,8 +77,8 @@ export const handleEmailKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => 
 // Uso: En textareas de mensajes (ej. <textarea onKeyDown={handleMessagesKeyDown} />).
 // Más permisivo para texto largo con formato.
 export const handleMessagesKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    const allowed = /^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s-.,;:$#]$/;
-    if (!allowed.test(e.key) && !allowedKeys.includes(e.key)) {
+    const allowed = /^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑüÜ\s\-.,;:$#¿?¡!()"\n]$/;
+    if (!allowed.test(e.key) && !allowedKeys.includes(e.key) && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
     }
 };

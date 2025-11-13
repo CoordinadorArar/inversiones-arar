@@ -60,7 +60,7 @@ export default function Home() {
                 </section>
 
                 {/* Sección de estadísticas */}
-                <section className="py-20 border-y">
+                <section className="py-10 border-y">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                             <div className="text-center">
@@ -95,7 +95,7 @@ export default function Home() {
                 <section className="py-10 border-y bg-secondary">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="grid md:grid-cols-3 gap-8">
-                            <Card className="border-0 shadow-sm py-2">
+                            <Card className="border-0 shadow-sm py-2 hover:scale-[1.02] hover:shadow-md transition-all duration-300">
                                 <CardContent className="p-6">
                                     <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                                         <Building2 className="h-6 w-6 text-primary" />
@@ -108,7 +108,7 @@ export default function Home() {
                                 </CardContent>
                             </Card>
 
-                            <Card className="border-0 shadow-sm py-2">
+                            <Card className="border-0 shadow-sm py-2 hover:scale-[1.02] hover:shadow-md transition-all duration-300">
                                 <CardContent className="p-6">
                                     <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                                         <Target className="h-6 w-6 text-primary" />
@@ -121,7 +121,7 @@ export default function Home() {
                                 </CardContent>
                             </Card>
 
-                            <Card className="border-0 shadow-sm py-2">
+                            <Card className="border-0 shadow-sm py-2 hover:scale-[1.02] hover:shadow-md transition-all duration-300">
                                 <CardContent className="p-6">
                                     <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                                         <Users className="h-6 w-6 text-primary" />
