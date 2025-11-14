@@ -48,7 +48,7 @@ const LIMITS = {
     company: 100,
     email: 50,
     phone: 15,
-    message: 300,
+    message: 500,
 } as const;
 
 const contactSchema = z.object({
@@ -194,7 +194,7 @@ export default function Contact() {
                                     <h1 className="text-4xl md:text-5xl font-bold text-primary mb-6">
                                         Contacto
                                     </h1>
-                                    <p className="text-muted-foreground text-lg mb-8">
+                                    <p className="text-accent-foreground/80 text-lg mb-8">
                                         Nuestro equipo está disponible para atender tus necesidades y responder
                                         todas tus preguntas.
                                     </p>

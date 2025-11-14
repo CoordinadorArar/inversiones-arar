@@ -19,6 +19,9 @@ class Empresa extends Model
     // Conexión a base de datos: Usa 'sqlsrv_second' (definida en config/database.php), no la primaria.    
     protected $connection = 'sqlsrv_second';
     
-    // Tabla: Especifica 't010_mm_companias' como tabla del modelo (no usa convención snake_case).    
+    // Tabla: Especifica 't010_mm_companias' como tabla del modelo.    
     protected $table = 't010_mm_companias'; 
+
+    protected $primaryKey = 'f010_id';
+
 }

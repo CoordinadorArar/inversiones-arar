@@ -5,7 +5,6 @@ namespace App\Providers;
 use App\Models\Empresa;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\DB;
 
 use App\Providers\CustomSqlServerConnector; // Importamos la clase del conector personalizado
 use Inertia\Inertia;

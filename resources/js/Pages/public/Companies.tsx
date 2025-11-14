@@ -56,12 +56,6 @@ export default function Companies() {
             url: "https://promotores.com.co/",
             id: 17
         },
-        {
-            nombre: "Faer", sector: "Servicios Financieros (Fondo de Empleados)", logo: faerLogo,
-            descripcion: "Fondo de Ahorro y Empleados (FAER) que ofrece servicios financieros como créditos y beneficios a sus afiliados.",
-            url: "https://faer.com.co/",
-            id: 18
-        },
     ];
 
 
@@ -73,13 +67,13 @@ export default function Companies() {
             <Head title="Compañias" />
             <main>
                 {/* Sección hero */}
-                <section className="pb-20 pt-40 bg-gradient-to-br from-primary/30 via-accent/20 to-background">
+                <section className="pb-10 pt-28 bg-gradient-to-br from-primary/30 via-accent/20 to-background">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                         <div>
                             <h1 className="text-4xl md:text-5xl text-primary font-bold mb-6">
                                 Nuestras Empresas
                             </h1>
-                            <p className="text-lg text-muted-foreground">
+                            <p className="text-lg text-accent-foreground/80">
                                 Un portafolio diversificado de empresas líderes en sus respectivos sectores,
                                 trabajando juntas por un futuro sostenible.
                             </p>

@@ -66,7 +66,7 @@ class StoreContactRequest extends FormRequest
             'email' => ['required', 'email', 'max:50'],
             'phone' => ['required', 'string', 'max:15', 'regex:/^\+?[0-9\s]+$/'],
             'company' => ['nullable', 'string', 'max:100'],
-            'message' => ['required', 'string', 'max:300'],
+            'message' => ['required', 'string', 'max:500'],
             'acceptsPolicy' => ['required', 'accepted'],
         ];
     }

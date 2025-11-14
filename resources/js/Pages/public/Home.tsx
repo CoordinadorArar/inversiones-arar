@@ -24,14 +24,14 @@ export default function Home() {
             <Head title="Inicio" />
             <main>
                 {/* Sección hero */}
-                <section className="pb-20 pt-40 bg-gradient-to-br from-primary/30 via-accent/20 to-background">
+                <section className="pb-10 pt-28 bg-gradient-to-br from-primary/30 via-accent/20 to-background">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="grid md:grid-cols-2 gap-12 items-center">
                             <div>
                                 <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight text-primary">
                                     Inversiones Arar
                                 </h1>
-                                <p className="text-lg md:text-xl text-muted-foreground mb-8">
+                                <p className="text-lg md:text-xl text-accent-foreground/80 mb-8">
                                     Holding empresarial con más de 20 años de experiencia, comprometido con el crecimiento
                                     sostenible y el desarrollo económico de la región Santander.
                                 </p>
@@ -60,7 +60,7 @@ export default function Home() {
                 </section>
 
                 {/* Sección de estadísticas */}
-                <section className="py-10 border-y">
+                {/* <section className="py-10 border-y">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                             <div className="text-center">
@@ -89,7 +89,7 @@ export default function Home() {
                             </div>
                         </div>
                     </div>
-                </section>
+                </section> */}
 
                 {/* Sección de características: Tres tarjetas con íconos y texto. */}
                 <section className="py-10 border-y bg-secondary">
@@ -143,7 +143,7 @@ export default function Home() {
                         <div className="max-w-6xl mx-auto">
                             <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center">Sobre Nosotros</h2>
 
-                            <div className="space-y-6 text-muted-foreground mb-12">
+                            <div className="space-y-6 text-accent-foreground/80 mb-12">
                                 <p className="text-lg">
                                     Inversiones Arar S.A.S. es un holding empresarial con sede en Floridablanca, Santander,
                                     con más de 20 años de trayectoria en la gestión y desarrollo de empresas líderes

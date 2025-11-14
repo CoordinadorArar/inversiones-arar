@@ -1,10 +1,10 @@
 /**
- * Componente para el formulario de PQRSD (Peticiones, Quejas, Reclamos, Sugerencias y Denuncias)
- * Permite enviar denuncias anónimas o con datos personales, con adjuntos opcionales
+ * Componente PQRSD con formulario multi-paso
+ * Diseño moderno y dinámico para mejorar la experiencia del usuario
  * 
- * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
- * @date 2025-11-12
+ * @author Yariangel Aray
+ * @version 2.0
+ * @date 2025-11-13
  */
 
 import PublicLayout from '@/Layouts/PublicLayout';
@@ -17,7 +17,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/Components/ui/select';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { Checkbox } from '@/Components/ui/checkbox';
 import InputError from '@/Components/InputError';
 import {
     handleTextKeyDown,
@@ -27,120 +26,223 @@ import {
     handleLimit
 } from '@/lib/keydownValidations';
 import { z } from 'zod';
-import { HatGlasses, LoaderCircle, Send, UserLock, X } from 'lucide-react';
+import {
+    Building2, User, MapPin, MessageSquare,
+    ChevronLeft, ChevronRight, Send,
+    LoaderCircle, X, FileText, CheckCircle,
+    AlertCircle
+} from 'lucide-react';
+import { Progress } from '@/Components/ui/progress';
 
-// Interfaz para las empresas
-interface Empresa {
-    id: number;
-    name: string;
-}
-
-// Interfaz para los datos del formulario
+// Interfaces
 interface FormData {
-    anonimo: boolean;
     empresa: string;
+    tipoPqrs: string;
     nombre: string;
+    apellido: string;
+    tipoId: string;
+    numId: string;
     correo: string;
     telefono: string;
+    dpto: string;
+    ciudad: string;
+    direccion: string;
     relacion: string;
     mensaje: string;
 }
 
-// Props del componente
-interface CompaniesProps {
-    empresas: Empresa[];
+interface PQRSDProps {
+    empresas: Array<{ id: number; name: string }>;
+    departamentos: Array<{ id: number; name: string }>;
+    ciudades: Array<{ id: number; name: string; id_dpto: number }>;
+    tiposPqrs: Array<{ id: number; nombre: string; abreviatura: string }>;
+    tiposId: Array<{ id: number; nombre: string; abreviatura: string }>;
 }
 
-// Constantes de límites
+// Constantes
 const LIMITS = {
-    nombre: 100,
+    nombre: 50,
+    apellido: 50,
     correo: 50,
+    numId: 15,
     telefono: 15,
-    mensaje: 1000,
+    direccion: 100,
+    mensaje: 2000,
 } as const;
 
-// Schema de validación con Zod
-const pqrsdSchema = z.object({
-    anonimo: z.boolean(),
-    empresa: z.string()
-        .min(1, "Debe seleccionar una empresa"),
-    nombre: z.string()
-        .trim()
-        .max(LIMITS.nombre, `El nombre debe tener máximo ${LIMITS.nombre} caracteres`)
-        .regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]*$/, "Solo se permiten letras")
-        .optional()
-        .or(z.literal('')),
-    correo: z.string()
-        .trim()
-        .email("Ingrese un correo electrónico válido")
-        .max(LIMITS.correo, `El correo debe tener máximo ${LIMITS.correo} caracteres`)
-        .optional()
-        .or(z.literal('')),
-    telefono: z.string()
-        .trim()
-        .regex(/^(\+?[0-9]*)?$/, "Ingrese un número de teléfono válido")
-        .max(LIMITS.telefono, `El teléfono debe tener máximo ${LIMITS.telefono} caracteres`)
-        .optional()
-        .or(z.literal('')),
-    relacion: z.string()
-        .optional()
-        .or(z.literal('')),
-    mensaje: z.string()
-        .trim()
-        .min(1, "El mensaje es obligatorio")
-        .min(20, "El mensaje debe tener al menos 20 caracteres")
-        .max(LIMITS.mensaje, `El mensaje debe tener máximo ${LIMITS.mensaje} caracteres`),
-}).superRefine((data, ctx) => {
-    // Si no es anónimo, validar campos obligatorios
-    if (!data.anonimo) {
-        if (!data.nombre || data.nombre.trim().length === 0) {
-            ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                message: "El nombre es obligatorio para denuncias no anónimas",
-                path: ['nombre'],
-            });
-        }
-        if (!data.correo || data.correo.trim().length === 0) {
-            ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                message: "El correo es obligatorio para denuncias no anónimas",
-                path: ['correo'],
-            });
-        }
-        if (!data.telefono || data.telefono.trim().length === 0) {
-            ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                message: "El teléfono es obligatorio para denuncias no anónimas",
-                path: ['telefono'],
-            });
-        }
-        if (!data.relacion || data.relacion.trim().length === 0) {
-            ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                message: "La relación con la empresa es obligatoria para denuncias no anónimas",
-                path: ['relacion'],
-            });
-        }
-    }
+// Schemas de validación por paso
+const step1Schema = z.object({
+    empresa: z.string().min(1, "Debe seleccionar una empresa"),
+    tipoPqrs: z.string().min(1, "Debe seleccionar el tipo de PQRSD"),
 });
 
-export default function Companies({ empresas }: CompaniesProps) {
-    // Estados del formulario
+const step2Schema = z.object({
+    nombre: z.string().trim()
+        .min(1, "El nombre es obligatorio")
+        .max(LIMITS.nombre, `Máximo ${LIMITS.nombre} caracteres`)
+        .regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/, "Solo se permiten letras"),
+    apellido: z.string().trim()
+        .min(1, "El apellido es obligatorio")
+        .max(LIMITS.apellido, `Máximo ${LIMITS.apellido} caracteres`)
+        .regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/, "Solo se permiten letras"),
+    tipoId: z.string().min(1, "Debe seleccionar el tipo de identificación"),
+    numId: z.string().trim()
+        .min(1, "El número de documento es obligatorio")
+        .max(LIMITS.numId, `Máximo ${LIMITS.numId} caracteres`)
+        .regex(/^[0-9]+$/, "Solo se permiten números"),
+});
+
+const step3Schema = z.object({
+    correo: z.string().trim()
+        .email("Ingrese un correo válido")
+        .max(LIMITS.correo, `Máximo ${LIMITS.correo} caracteres`),
+    telefono: z.string().trim()
+        .min(1, "El teléfono es obligatorio")
+        .max(LIMITS.telefono, `Máximo ${LIMITS.telefono} caracteres`)
+        .regex(/^\+?[0-9]+$/, "Ingrese un teléfono válido"),
+    dpto: z.string().min(1, "Debe seleccionar un departamento"),
+    ciudad: z.string().min(1, "Debe seleccionar una ciudad"),
+    direccion: z.string().max(LIMITS.direccion, `Máximo ${LIMITS.direccion} caracteres`).optional(),
+    relacion: z.string().min(1, "Debe especificar su relación con la empresa"),
+});
+
+const step4Schema = z.object({
+    mensaje: z.string().trim()
+        .min(20, "El mensaje debe tener al menos 20 caracteres")
+        .max(LIMITS.mensaje, `Máximo ${LIMITS.mensaje} caracteres`),
+});
+
+export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, tiposId }: PQRSDProps) {
+    const [currentStep, setCurrentStep] = useState(1);
     const [data, setData] = useState<FormData>({
-        anonimo: false,
         empresa: "",
+        tipoPqrs: "",
         nombre: "",
+        apellido: "",
+        tipoId: "",
+        numId: "",
         correo: "",
         telefono: "",
+        dpto: "",
+        ciudad: "",
+        direccion: "",
         relacion: "",
         mensaje: "",
     });
 
     const [files, setFiles] = useState<File[]>([]);
+    const [isDragging, setIsDragging] = useState(false); // Estado para drag
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [processing, setProcessing] = useState(false);
-
     const { toast } = useToast();
+
+    // Configuración de pasos
+    const steps = [
+        {
+            number: 1,
+            title: "Información PQRSD",
+            icon: Building2,
+            description: "Seleccione la empresa y tipo"
+        },
+        {
+            number: 2,
+            title: "Datos Personales",
+            icon: User,
+            description: "Complete su información personal"
+        },
+        {
+            number: 3,
+            title: "Contacto y Ubicación",
+            icon: MapPin,
+            description: "Datos de contacto y dirección"
+        },
+        {
+            number: 4,
+            title: "Descripción",
+            icon: MessageSquare,
+            description: "Describa su petición o denuncia"
+        },
+    ];
+
+    const progress = (currentStep / steps.length) * 100;
+
+    // Validación por paso
+    const validateStep = (step: number): boolean => {
+        setErrors({});
+        let schema;
+        let dataToValidate;
+
+        switch (step) {
+            case 1:
+                schema = step1Schema;
+                dataToValidate = { empresa: data.empresa, tipoPqrs: data.tipoPqrs };
+                break;
+            case 2:
+                schema = step2Schema;
+                dataToValidate = {
+                    nombre: data.nombre,
+                    apellido: data.apellido,
+                    tipoId: data.tipoId,
+                    numId: data.numId
+                };
+                break;
+            case 3:
+                schema = step3Schema;
+                dataToValidate = {
+                    correo: data.correo,
+                    telefono: data.telefono,
+                    dpto: data.dpto,
+                    ciudad: data.ciudad,
+                    direccion: data.direccion,
+                    relacion: data.relacion
+                };
+                break;
+            case 4:
+                schema = step4Schema;
+                dataToValidate = { mensaje: data.mensaje };
+                break;
+            default:
+                return true;
+        }
+
+        const result = schema.safeParse(dataToValidate);
+
+        if (!result.success) {
+            const newErrors: Record<string, string> = {};
+            result.error.issues.forEach((err) => {
+                if (err.path.length > 0) {
+                    newErrors[err.path[0].toString()] = err.message;
+                }
+            });
+            setErrors(newErrors);
+
+            // Scroll al primer error
+            setTimeout(() => {
+                const firstErrorField = Object.keys(newErrors)[0];
+                document.getElementById(firstErrorField)?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+            }, 100);
+
+            return false;
+        }
+
+        return true;
+    };
+
+    // Navegación entre pasos
+    const nextStep = () => {
+        if (validateStep(currentStep)) {
+            setCurrentStep(prev => Math.min(prev + 1, steps.length));
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    };
+
+    const prevStep = () => {
+        setCurrentStep(prev => Math.max(prev - 1, 1));
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
 
     // Manejo de archivos
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -149,7 +251,7 @@ export default function Companies({ empresas }: CompaniesProps) {
                 const isValidType = file.type === "application/pdf" ||
                     file.type === "image/jpeg" ||
                     file.type === "image/jpg";
-                const isValidSize = file.size <= 500000; // 500KB
+                const isValidSize = file.size <= 500000;
 
                 if (!isValidType) {
                     toast({
@@ -180,86 +282,120 @@ export default function Companies({ empresas }: CompaniesProps) {
         setFiles(files.filter((_, i) => i !== index));
     };
 
-    // Envío del formulario
-    const handleSubmit = async (e: React.FormEvent) => {
+    // Función para validar y agregar archivos (reutiliza lógica de handleFileChange)
+    const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
-        setErrors({});
+        setIsDragging(false);
+        if (e.dataTransfer.files) {
+            const droppedFiles = Array.from(e.dataTransfer.files);
 
-        // Validación con Zod
-        const result = pqrsdSchema.safeParse(data);
-
-        if (!result.success) {
-            const newErrors: Record<string, string> = {};
-
-            if (result.error instanceof z.ZodError) {
-                result.error.issues.forEach((err) => {
-                    if (err.path.length > 0) {
-                        newErrors[err.path[0].toString()] = err.message;
-                    }
+            // Chequea límite total antes de procesar
+            if (files.length + droppedFiles.length > 5) {
+                toast({
+                    title: "Límite excedido",
+                    description: "Máximo 5 archivos permitidos",
+                    variant: "destructive",
                 });
+                return;
             }
-            
-            setErrors(newErrors);
-
-            // Scroll al primer error
-            const firstErrorField = Object.keys(newErrors)[0];
-            document.getElementById(firstErrorField)?.scrollIntoView({
-                behavior: 'smooth',
-                block: 'center'
+            // Filtra y valida archivos, mostrando toasts para inválidos
+            const validFiles = droppedFiles.filter((file) => {
+                const isValidType = file.type === "application/pdf" ||
+                    file.type === "image/jpeg" ||
+                    file.type === "image/jpg";
+                const isValidSize = file.size <= 500000;
+                if (!isValidType) {
+                    toast({
+                        title: "Formato no válido",
+                        description: `${file.name} debe ser PDF o JPG`,
+                        variant: "destructive",
+                    });
+                    return false;
+                }
+                if (!isValidSize) {
+                    toast({
+                        title: "Archivo muy grande",
+                        description: `${file.name} debe ser menor a 500KB`,
+                        variant: "destructive",
+                    });
+                    return false;
+                }
+                return true;
             });
-
-            return;
+            // Agrega solo válidos
+            setFiles([...files, ...validFiles]);
         }
+    }
+
+    // Handlers para drag
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        setIsDragging(true);
+    };
+    const handleDragLeave = (e) => {
+        e.preventDefault();
+        setIsDragging(false);
+    };
+
+    // Envío del formulario
+    const handleSubmit = async () => {
+        if (!validateStep(currentStep)) return;
 
         setProcessing(true);
 
         try {
-            // Crear FormData para enviar archivos
-            const formData = new FormData();
 
-            // Agregar datos del formulario
+            const formData = new FormData();
             Object.entries(data).forEach(([key, value]) => {
                 formData.append(key, value.toString());
             });
 
-            // Agregar archivos
             files.forEach((file, index) => {
                 formData.append(`files[${index}]`, file);
             });
 
-            // TODO: Descomentar cuando tengas la ruta
-            /*
             const response = await fetch(route('pqrsd.store'), {
                 method: 'POST',
-                headers: {
+                headers: {                    
                     'Accept': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
                 },
                 body: formData,
             });
-
             const result = await response.json();
 
             if (response.ok) {
                 toast({
-                    title: "¡Denuncia enviada!",
-                    description: "Su denuncia ha sido recibida y será procesada en los próximos 15 días hábiles.",
+                    title: "¡PQRSD enviada!",
                     variant: "success",
+                    description: "Su solicitud ha sido recibida y será procesada en los próximos 15 días hábiles.",
                 });
-                
-                // Reset formulario
+
+                // Reset
                 setData({
-                    anonimo: false,
                     empresa: "",
+                    tipoPqrs: "",
                     nombre: "",
+                    apellido: "",
+                    tipoId: "",
+                    numId: "",
                     correo: "",
                     telefono: "",
+                    dpto: "",
+                    ciudad: "",
+                    direccion: "",
                     relacion: "",
                     mensaje: "",
                 });
                 setFiles([]);
+                setCurrentStep(1);
             } else if (response.status === 422) {
                 setErrors(result.errors || {});
+                toast({
+                    title: "Error al enviar",
+                    description: "Por favor revise los campos marcados.",
+                    variant: "destructive",
+                });
             } else {
                 toast({
                     title: "Error al enviar",
@@ -267,27 +403,6 @@ export default function Companies({ empresas }: CompaniesProps) {
                     variant: "destructive",
                 });
             }
-            */
-
-            // SIMULACIÓN temporal (eliminar cuando tengas la ruta)
-            await new Promise(resolve => setTimeout(resolve, 1500));
-
-            toast({
-                title: "¡Denuncia enviada!",
-                description: "Su denuncia ha sido recibida y será procesada en los próximos 15 días hábiles.",
-                variant: "success",
-            });
-
-            setData({
-                anonimo: false,
-                empresa: "",
-                nombre: "",
-                correo: "",
-                telefono: "",
-                relacion: "",
-                mensaje: "",
-            });
-            setFiles([]);
 
         } catch (error) {
             toast({
@@ -304,309 +419,604 @@ export default function Companies({ empresas }: CompaniesProps) {
         <PublicLayout>
             <Head title="PQRSD" />
             <main>
-                <section className="pb-20 pt-28 bg-gradient-to-br from-primary/30 via-accent/20 to-secondary">
+                {/* Header con información */}
+                <section className="pb-5 pt-28 bg-gradient-to-br from-primary/20 via-accent/10 to-background">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className='grid md:grid-cols-2 gap-12'>
-                            {/* Información */}
-                            <div>
-                                <h1 className="text-4xl md:text-5xl text-primary font-bold mb-6">
-                                    PQRSD
-                                </h1>
-                                <Card className="py-0">
-                                    <CardContent className="p-8">
-                                        <p className="text-lg text-muted-foreground mb-4">
-                                            Bienvenido al módulo de <strong>PQRSD de Inversiones Arar S.A.</strong>
-                                        </p>
-                                        <p className="text-muted-foreground mb-4">
-                                            Apreciado usuario, si usted desea realizar una Solicitud, Petición, Queja,
-                                            Reclamo o Denuncia relacionada con Inversiones Arar o alguna de sus empresas
-                                            filiales, éste es el espacio para hacerlo.
-                                        </p>
-                                        <p className="text-muted-foreground text-sm mb-4">
-                                            Tenga en cuenta que de conformidad con el artículo 14 de la ley 1755 de 2015,
-                                            los términos de respuesta son de 15 días hábiles, contados a partir del día
-                                            siguiente del mensaje de confirmación de recibo enviado al correo electrónico
-                                            informado por usted en la petición.
-                                        </p>
-                                        <p className="text-primary font-semibold text-sm">
-                                            Agradecemos el uso responsable del formulario.
-                                        </p>
-                                    </CardContent>
-                                </Card>
+                        <div className="max-w-4xl mx-auto text-center">
+                            <h1 className="text-4xl md:text-5xl text-primary font-bold mb-6">
+                                PQRSD
+                            </h1>
+                            <p className="text-lg text-accent-foreground/80 mb-4">
+                                Bienvenido al módulo de <strong>PQRSD de Inversiones Arar S.A.</strong>
+                            </p>
+                            <p className="text-muted-foreground text-sm max-w-2xl mx-auto">
+                                Si desea realizar una Solicitud, Petición, Queja, Reclamo o Denuncia  relacionada con Inversiones Arar o alguna de sus empresas filiales,
+                                complete el siguiente formulario. Recibirá respuesta en un máximo de
+                                <strong> 15 días hábiles</strong> según el articulo 14 de la Ley 1755 de 2015.
+                            </p>
+                            <p className="text-primary font-semibold text-sm mt-5">
+                                Agradecemos el uso responsable del formulario.
+                            </p>
+                        </div>
+                    </div>
+                </section>
 
-                            </div>
-
-                            {/* Formulario */}
-                            <Card className='py-0'>
+                {/* Formulario Multi-Paso */}
+                <section className="py-12 bg-accent/30 border-t">
+                    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="max-w-4xl mx-auto">
+                            {/* Indicador de progreso */}
+                            <Card className="mb-8">
                                 <CardContent className="p-6">
-                                    <form onSubmit={handleSubmit} className="space-y-6" noValidate>
-                                        {/* Checkbox anónimo */}
-
-                                        <Label htmlFor="anonimo" className="flex !py-3 text-primary items-center gap-4 rounded-lg border border-primary/40 p-4 bg-primary/10 hover:bg-primary/20 transition-colors cursor-pointer">
-                                            <div className="mt-1">
-                                                <HatGlasses className='!w-10 !h-10' />
-                                            </div>
-                                            <div className='flex-1'>
-                                                <div className='flex gap-2 items-center'>
-                                                    <Checkbox
-                                                        id="anonimo"
-                                                        checked={data.anonimo}
-                                                        className='border-primary'
-                                                        onCheckedChange={(checked) => {
-                                                            setData({
-                                                                ...data,
-                                                                anonimo: checked as boolean,
-                                                                // Limpiar campos si se marca como anónimo
-                                                                ...(checked ? {
-                                                                    nombre: "",
-                                                                    correo: "",
-                                                                    telefono: "",
-                                                                    relacion: "",
-                                                                } : {})
-                                                            });
-                                                            // Limpiar errores de campos ocultos
-                                                            if (checked) {
-                                                                const newErrors = { ...errors };
-                                                                delete newErrors.nombre;
-                                                                delete newErrors.correo;
-                                                                delete newErrors.telefono;
-                                                                delete newErrors.relacion;
-                                                                setErrors(newErrors);
-                                                            }
-                                                        }}
-                                                    />
-                                                    Anónimo
-                                                </div>
-
-                                                <p className="text-sm text-muted-foreground text-start mt-1">
-                                                    Marque esta casilla si desea realizar la denuncia de forma anónima
-                                                </p>
-                                            </div>
-                                        </Label>
-
-                                        {/* Empresa */}
-                                        <div className="space-y-2">
-                                            <Label htmlFor="empresa" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
-                                                Empresa
-                                            </Label>
-                                            <Select
-                                                value={data.empresa}
-                                                onValueChange={(value) => setData({ ...data, empresa: value })}
-                                            >
-                                                <SelectTrigger
-                                                    id="empresa"
-                                                    className={errors.empresa ? "border-destructive focus-visible:ring-destructive" : ""}
-                                                >
-                                                    <SelectValue placeholder="Seleccione empresa..." />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {empresas.map((emp) => (
-                                                        <SelectItem key={emp.id} value={emp.id.toString()}>
-                                                            {emp.name}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                            <InputError message={errors.empresa} />
+                                    {/* Barra de progreso */}
+                                    <div className="mb-6">
+                                        <div className="flex justify-between mb-2">
+                                            <span className="text-sm font-medium text-primary">
+                                                Paso {currentStep} de {steps.length}
+                                            </span>
+                                            <span className="text-sm text-muted-foreground">
+                                                {Math.round(progress)}% completado
+                                            </span>
                                         </div>
+                                        <Progress value={progress} className="h-2" />
+                                    </div>
 
-                                        {/* Campos condicionales (no anónimo) */}
-                                        {!data.anonimo && (
-                                            <>
-                                                {/* Nombre */}
-                                                <div className="space-y-2">
-                                                    <Label htmlFor="nombre" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
-                                                        Nombre completo
-                                                    </Label>
-                                                    <Input
-                                                        id="nombre"
-                                                        placeholder="Ingrese su nombre completo"
-                                                        value={data.nombre}
-                                                        onChange={(e) => setData({ ...data, nombre: e.target.value })}
-                                                        onKeyDown={(e) => {
-                                                            handleTextKeyDown(e);
-                                                            handleLimit(e, data.nombre, LIMITS.nombre);
-                                                        }}
-                                                        className={errors.nombre ? "border-destructive focus-visible:ring-destructive" : ""}
-                                                        maxLength={LIMITS.nombre}
-                                                    />
-                                                    <div className="relative">
-                                                        <InputError message={errors.nombre} />
-                                                        <span className="text-xs text-muted-foreground absolute top-0 right-0">
-                                                            {data.nombre.length}/{LIMITS.nombre}
-                                                        </span>
-                                                    </div>
-                                                </div>
+                                    {/* Steps indicators */}
+                                    <div className="grid grid-cols-4 gap-2">
+                                        {steps.map((step) => {
+                                            const Icon = step.icon;
+                                            const isActive = currentStep === step.number;
+                                            const isCompleted = currentStep > step.number;
 
-                                                {/* Correo */}
-                                                <div className="space-y-2">
-                                                    <Label htmlFor="correo" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
-                                                        Correo electrónico
-                                                    </Label>
-                                                    <Input
-                                                        id="correo"
-                                                        type="email"
-                                                        placeholder="ejemplo@correo.com"
-                                                        value={data.correo}
-                                                        onChange={(e) => setData({ ...data, correo: e.target.value })}
-                                                        onKeyDown={(e) => {
-                                                            handleEmailKeyDown(e);
-                                                            handleLimit(e, data.correo, LIMITS.correo);
-                                                        }}
-                                                        className={errors.correo ? "border-destructive focus-visible:ring-destructive" : ""}
-                                                        maxLength={LIMITS.correo}
-                                                    />
-                                                    <div className="relative">
-                                                        <InputError message={errors.correo} />
-                                                        <span className="text-xs text-muted-foreground absolute top-0 right-0">
-                                                            {data.correo.length}/{LIMITS.correo}
-                                                        </span>
-                                                    </div>
-                                                </div>
-
-                                                {/* Teléfono */}
-                                                <div className="space-y-2">
-                                                    <Label htmlFor="telefono" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
-                                                        Teléfono
-                                                    </Label>
-                                                    <Input
-                                                        id="telefono"
-                                                        type="tel"
-                                                        placeholder="Ingrese su teléfono"
-                                                        value={data.telefono}
-                                                        onChange={(e) => setData({ ...data, telefono: e.target.value })}
-                                                        onKeyDown={(e) => {
-                                                            handleNumberKeyDown(e);
-                                                            handleLimit(e, data.telefono, LIMITS.telefono);
-                                                        }}
-                                                        className={errors.telefono ? "border-destructive focus-visible:ring-destructive" : ""}
-                                                        maxLength={LIMITS.telefono}
-                                                    />
-                                                    <div className="relative">
-                                                        <InputError message={errors.telefono} />
-                                                        <span className="text-xs text-muted-foreground absolute top-0 right-0">
-                                                            {data.telefono.length}/{LIMITS.telefono}
-                                                        </span>
-                                                    </div>
-                                                </div>
-
-                                                {/* Relación */}
-                                                <div className="space-y-2">
-                                                    <Label htmlFor="relacion" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
-                                                        Relación con la empresa
-                                                    </Label>
-                                                    <Select
-                                                        value={data.relacion}
-                                                        onValueChange={(value) => setData({ ...data, relacion: value })}
+                                            return (
+                                                <div
+                                                    key={step.number}
+                                                    className={`flex flex-col items-center p-3 rounded-lg transition-all ${isActive
+                                                        ? 'bg-primary/10 border-2 border-primary'
+                                                        : isCompleted
+                                                            ? 'bg-green-50 border-2 border-green-500'
+                                                            : 'bg-muted border-2 border-transparent'
+                                                        }`}
+                                                >
+                                                    <div
+                                                        className={`rounded-full p-2 mb-2 ${isActive
+                                                            ? 'bg-primary text-white'
+                                                            : isCompleted
+                                                                ? 'bg-green-500 text-white'
+                                                                : 'bg-muted-foreground/20 text-muted-foreground'
+                                                            }`}
                                                     >
-                                                        <SelectTrigger
-                                                            id="relacion"
-                                                            className={errors.relacion ? "border-destructive focus-visible:ring-destructive" : ""}
-                                                        >
-                                                            <SelectValue placeholder="Seleccione relación..." />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            <SelectItem value="cliente">Cliente</SelectItem>
-                                                            <SelectItem value="empleado">Empleado</SelectItem>
-                                                            <SelectItem value="proveedor">Proveedor</SelectItem>
-                                                            <SelectItem value="otro">Otro</SelectItem>
-                                                        </SelectContent>
-                                                    </Select>
-                                                    <InputError message={errors.relacion} />
+                                                        {isCompleted ? (
+                                                            <CheckCircle className="w-5 h-5" />
+                                                        ) : (
+                                                            <Icon className="w-5 h-5" />
+                                                        )}
+                                                    </div>
+                                                    <span
+                                                        className={`text-xs font-medium text-center ${isActive || isCompleted
+                                                            ? 'text-foreground'
+                                                            : 'text-muted-foreground'
+                                                            }`}
+                                                    >
+                                                        {step.title}
+                                                    </span>
                                                 </div>
-                                            </>
+                                            );
+                                        })}
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            {/* Contenido del paso actual */}
+                            <Card>
+                                <CardContent className="p-6 md:p-8">
+                                    {/* Título del paso */}
+                                    <div className="mb-8">
+                                        <h2 className="text-2xl font-bold text-primary mb-2">
+                                            {steps[currentStep - 1].title}
+                                        </h2>
+                                        <p className="text-muted-foreground">
+                                            {steps[currentStep - 1].description}
+                                        </p>
+                                    </div>
+
+                                    {/* Formularios por paso */}
+                                    <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
+                                        {/* PASO 1: Información PQRSD */}
+                                        {currentStep === 1 && (
+                                            <div className="space-y-6 animate-in fade-in duration-300">
+                                                <div className="grid md:grid-cols-2 gap-6">
+                                                    {/* Empresa */}
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="empresa" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
+                                                            Empresa
+                                                        </Label>
+                                                        <Select
+                                                            value={data.empresa}
+                                                            onValueChange={(value) => setData({ ...data, empresa: value })}
+                                                        >
+                                                            <SelectTrigger
+                                                                id="empresa"
+                                                                className={errors.empresa ? "border-destructive" : ""}
+                                                            >
+                                                                <SelectValue placeholder="Seleccione empresa..." />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                {empresas.map((emp) => (
+                                                                    <SelectItem key={emp.id} value={emp.id.toString()}>
+                                                                        {emp.name}
+                                                                    </SelectItem>
+                                                                ))}
+                                                            </SelectContent>
+                                                        </Select>
+                                                        <InputError className='absolute top-0 left-0 !-mt-1' message={errors.empresa} />
+                                                    </div>
+
+                                                    {/* Tipo de PQRS */}
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="tipoPqrs" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
+                                                            Tipo de PQRSD
+                                                        </Label>
+                                                        <Select
+                                                            value={data.tipoPqrs}
+                                                            onValueChange={(value) => setData({ ...data, tipoPqrs: value })}
+                                                        >
+                                                            <SelectTrigger
+                                                                id="tipoPqrs"
+                                                                className={errors.tipoPqrs ? "border-destructive" : ""}
+                                                            >
+                                                                <SelectValue placeholder="Seleccione tipo..." />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                {tiposPqrs.map((tipo) => (
+                                                                    <SelectItem key={tipo.id} value={tipo.id.toString()}>
+                                                                        {`${tipo.abreviatura} - ${tipo.nombre}`}
+                                                                    </SelectItem>
+                                                                ))}
+                                                            </SelectContent>
+                                                        </Select>
+                                                        <InputError className='absolute top-0 left-0 !-mt-1' message={errors.tipoPqrs} />
+                                                    </div>
+                                                </div>
+                                            </div>
                                         )}
 
-                                        {/* Mensaje */}
-                                        <div className="space-y-2">
-                                            <Label htmlFor="mensaje" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
-                                                Mensaje
-                                            </Label>
-                                            <Textarea
-                                                id="mensaje"
-                                                placeholder="Describa su petición, queja, reclamo, sugerencia o denuncia..."
-                                                className={`min-h-[150px] ${errors.mensaje ? "border-destructive focus-visible:ring-destructive" : ""}`}
-                                                value={data.mensaje}
-                                                onChange={(e) => setData({ ...data, mensaje: e.target.value })}
-                                                onKeyDown={(e) => {
-                                                    handleMessagesKeyDown(e);
-                                                    handleLimit(e, data.mensaje, LIMITS.mensaje);
-                                                }}
-                                                maxLength={LIMITS.mensaje}
-                                            />
-                                            <div className="relative">
-                                                <InputError message={errors.mensaje} />
-                                                <span className="text-xs text-muted-foreground absolute top-0 right-0">
-                                                    {data.mensaje.length}/{LIMITS.mensaje}
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        {/* Archivos adjuntos */}
-                                        <div className="space-y-4">
-                                            <Label>Archivos adjuntos (opcional)</Label>
-                                            <div className="space-y-2">
-                                                <Input
-                                                    type="file"
-                                                    accept=".pdf,.jpg,.jpeg"
-                                                    multiple
-                                                    onChange={handleFileChange}
-                                                    className="cursor-pointer"
-                                                    disabled={files.length >= 5}
-                                                />
-                                                <p className="text-xs text-muted-foreground">
-                                                    Solo archivos PDF y JPG, máximo 500KB por archivo.
-                                                </p>
-                                            </div>
-
-                                            {files.length > 0 && (
-                                                <div className="space-y-2">
-                                                    {files.map((file, index) => (
-                                                        <div
-                                                            key={index}
-                                                            className="flex items-center justify-between p-3 bg-muted rounded-md"
-                                                        >
-                                                            <div className="flex-1 min-w-0">
-                                                                <span className="text-sm truncate block">{file.name}</span>
-                                                                <span className="text-xs text-muted-foreground absolute top-0 right-0">
-                                                                    {(file.size / 1024).toFixed(2)} KB
-                                                                </span>
-                                                            </div>
-                                                            <Button
-                                                                type="button"
-                                                                variant="ghost"
-                                                                size="icon"
-                                                                onClick={() => removeFile(index)}
-                                                                className="text-destructive hover:text-destructive hover:bg-destructive/10 ml-2"
-                                                            >
-                                                                <X className="h-4 w-4" />
-                                                            </Button>
+                                        {/* PASO 2: Datos Personales */}
+                                        {currentStep === 2 && (
+                                            <div className="space-y-6 animate-in fade-in duration-300">
+                                                <div className="grid md:grid-cols-2 gap-6">
+                                                    {/* Nombre */}
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="nombre" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
+                                                            Nombres
+                                                        </Label>
+                                                        <Input
+                                                            id="nombre"
+                                                            placeholder="Ingrese sus nombres"
+                                                            value={data.nombre}
+                                                            onChange={(e) => setData({ ...data, nombre: e.target.value })}
+                                                            onKeyDown={(e) => {
+                                                                handleTextKeyDown(e);
+                                                                handleLimit(e, data.nombre, LIMITS.nombre);
+                                                            }}
+                                                            className={errors.nombre ? "border-destructive" : ""}
+                                                            maxLength={LIMITS.nombre}
+                                                        />
+                                                        <div className="relative">
+                                                            <InputError className='absolute top-0 left-0 !-mt-1' message={errors.nombre} />
+                                                            <span className="text-xs text-muted-foreground absolute top-0 right-0">
+                                                                {data.nombre.length}/{LIMITS.nombre}
+                                                            </span>
                                                         </div>
-                                                    ))}
-                                                </div>
-                                            )}
-                                        </div>
+                                                    </div>
 
-                                        {/* Botón envío */}
-                                        <Button
-                                            type="submit"
-                                            className="w-full"
-                                            size="lg"
-                                            disabled={processing}
-                                        >
-                                            {processing ? (
-                                                <>
-                                                    Enviando
-                                                    <LoaderCircle className="ml-2 h-5 w-5 animate-spin" />
-                                                </>
-                                            ) : (
-                                                <>
-                                                    Enviar denuncia
-                                                    <Send className="ml-2 h-5 w-5" />
-                                                </>
-                                            )}
-                                        </Button>
+                                                    {/* Apellido */}
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="apellido" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
+                                                            Apellidos
+                                                        </Label>
+                                                        <Input
+                                                            id="apellido"
+                                                            placeholder="Ingrese sus apellidos"
+                                                            value={data.apellido}
+                                                            onChange={(e) => setData({ ...data, apellido: e.target.value })}
+                                                            onKeyDown={(e) => {
+                                                                handleTextKeyDown(e);
+                                                                handleLimit(e, data.apellido, LIMITS.apellido);
+                                                            }}
+                                                            className={errors.apellido ? "border-destructive" : ""}
+                                                            maxLength={LIMITS.apellido}
+                                                        />
+                                                        <div className="relative">
+                                                            <InputError className='absolute top-0 left-0 !-mt-1' message={errors.apellido} />
+                                                            <span className="text-xs text-muted-foreground absolute top-0 right-0">
+                                                                {data.apellido.length}/{LIMITS.apellido}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Tipo ID */}
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="tipoId" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
+                                                            Tipo de Identificación
+                                                        </Label>
+                                                        <Select
+                                                            value={data.tipoId}
+                                                            onValueChange={(value) => setData({ ...data, tipoId: value })}
+                                                        >
+                                                            <SelectTrigger
+                                                                id="tipoId"
+                                                                className={errors.tipoId ? "border-destructive" : ""}
+                                                            >
+                                                                <SelectValue placeholder="Seleccione tipo..." />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                {tiposId.map((tipo) => (
+                                                                    <SelectItem key={tipo.id} value={tipo.id.toString()}>
+                                                                        {`${tipo.abreviatura} - ${tipo.nombre}`}
+                                                                    </SelectItem>
+                                                                ))}
+                                                            </SelectContent>
+                                                        </Select>
+                                                        <InputError className='absolute top-0 left-0 !-mt-1' message={errors.tipoId} />
+                                                    </div>
+
+                                                    {/* Número ID */}
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="numId" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
+                                                            N° Documento
+                                                        </Label>
+                                                        <Input
+                                                            id="numId"
+                                                            type="tel"
+                                                            placeholder="Ingrese su número"
+                                                            value={data.numId}
+                                                            onChange={(e) => setData({ ...data, numId: e.target.value })}
+                                                            onKeyDown={(e) => {
+                                                                handleNumberKeyDown(e);
+                                                                handleLimit(e, data.numId, LIMITS.numId);
+                                                            }}
+                                                            className={errors.numId ? "border-destructive" : ""}
+                                                            maxLength={LIMITS.numId}
+                                                        />
+                                                        <div className="relative">
+                                                            <InputError className='absolute top-0 left-0 !-mt-1' message={errors.numId} />
+                                                            <span className="text-xs text-muted-foreground absolute top-0 right-0">
+                                                                {data.numId.length}/{LIMITS.numId}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* PASO 3: Contacto y Ubicación */}
+                                        {currentStep === 3 && (
+                                            <div className="space-y-6 animate-in fade-in duration-300">
+                                                <div className="grid md:grid-cols-2 gap-6">
+                                                    {/* Correo */}
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="correo" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
+                                                            Correo electrónico
+                                                        </Label>
+                                                        <Input
+                                                            id="correo"
+                                                            type="email"
+                                                            placeholder="ejemplo@correo.com"
+                                                            value={data.correo}
+                                                            onChange={(e) => setData({ ...data, correo: e.target.value })}
+                                                            onKeyDown={(e) => {
+                                                                handleEmailKeyDown(e);
+                                                                handleLimit(e, data.correo, LIMITS.correo);
+                                                            }}
+                                                            className={errors.correo ? "border-destructive" : ""}
+                                                            maxLength={LIMITS.correo}
+                                                        />
+                                                        <div className="relative">
+                                                            <InputError className='absolute top-0 left-0 !-mt-1' message={errors.correo} />
+                                                            <span className="text-xs text-muted-foreground absolute top-0 right-0">
+                                                                {data.correo.length}/{LIMITS.correo}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Teléfono */}
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="telefono" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
+                                                            Teléfono
+                                                        </Label>
+                                                        <Input
+                                                            id="telefono"
+                                                            type="tel"
+                                                            placeholder="Ingrese su teléfono"
+                                                            value={data.telefono}
+                                                            onChange={(e) => setData({ ...data, telefono: e.target.value })}
+                                                            onKeyDown={(e) => {
+                                                                handleNumberKeyDown(e);
+                                                                handleLimit(e, data.telefono, LIMITS.telefono);
+                                                            }}
+                                                            className={errors.telefono ? "border-destructive" : ""}
+                                                            maxLength={LIMITS.telefono}
+                                                        />
+                                                        <div className="relative">
+                                                            <InputError className='absolute top-0 left-0 !-mt-1' message={errors.telefono} />
+                                                            <span className="text-xs text-muted-foreground absolute top-0 right-0">
+                                                                {data.telefono.length}/{LIMITS.telefono}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Departamento */}
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="dpto" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
+                                                            Departamento
+                                                        </Label>
+                                                        <Select
+                                                            value={data.dpto}
+                                                            onValueChange={(value) => {
+                                                                setData({ ...data, dpto: value, ciudad: "" });
+                                                            }}
+                                                        >
+                                                            <SelectTrigger
+                                                                id="dpto"
+                                                                className={errors.dpto ? "border-destructive" : ""}
+                                                            >
+                                                                <SelectValue placeholder="Seleccione..." />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                {departamentos.map((dpto) => (
+                                                                    <SelectItem key={dpto.id} value={dpto.id.toString()}>
+                                                                        {dpto.name}
+                                                                    </SelectItem>
+                                                                ))}
+                                                            </SelectContent>
+                                                        </Select>
+                                                        <InputError className='absolute top-0 left-0 !-mt-1' message={errors.dpto} />
+                                                    </div>
+
+                                                    {/* Ciudad */}
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="ciudad" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
+                                                            Ciudad
+                                                        </Label>
+                                                        <Select
+                                                            value={data.ciudad}
+                                                            onValueChange={(value) => setData({ ...data, ciudad: value })}
+                                                            disabled={!data.dpto}
+                                                        >
+                                                            <SelectTrigger
+                                                                id="ciudad"
+                                                                className={errors.ciudad ? "border-destructive" : ""}
+                                                            >
+                                                                <SelectValue placeholder="Seleccione..." />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                {ciudades
+                                                                    .filter(ciudad => ciudad.id_dpto == parseInt(data.dpto))
+                                                                    .map((ciudad) => (
+                                                                        <SelectItem key={ciudad.id} value={ciudad.id.toString()}>
+                                                                            {ciudad.name}
+                                                                        </SelectItem>
+                                                                    ))}
+                                                            </SelectContent>
+                                                        </Select>
+                                                        <InputError className='absolute top-0 left-0 !-mt-1' message={errors.ciudad} />
+                                                    </div>
+
+                                                    {/* Dirección */}
+                                                    <div className="space-y-2 md:col-span-2">
+                                                        <Label htmlFor="direccion">
+                                                            Dirección (Opcional)
+                                                        </Label>
+                                                        <Input
+                                                            id="direccion"
+                                                            placeholder="Ingrese su dirección"
+                                                            value={data.direccion}
+                                                            onChange={(e) => setData({ ...data, direccion: e.target.value })}
+                                                            onKeyDown={(e) => handleLimit(e, data.direccion, LIMITS.direccion)}
+                                                            className={errors.direccion ? "border-destructive" : ""}
+                                                            maxLength={LIMITS.direccion}
+                                                        />
+                                                        <div className="relative">
+                                                            <InputError className='absolute top-0 left-0 !-mt-1' message={errors.direccion} />
+                                                            <span className="text-xs text-muted-foreground absolute top-0 right-0">
+                                                                {data.direccion.length}/{LIMITS.direccion}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Relación */}
+                                                    <div className="space-y-2 md:col-span-2">
+                                                        <Label htmlFor="relacion" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
+                                                            Relación con la empresa
+                                                        </Label>
+                                                        <Select
+                                                            value={data.relacion}
+                                                            onValueChange={(value) => setData({ ...data, relacion: value })}
+                                                        >
+                                                            <SelectTrigger
+                                                                id="relacion"
+                                                                className={errors.relacion ? "border-destructive" : ""}
+                                                            >
+                                                                <SelectValue placeholder="Seleccione..." />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="cliente">Cliente</SelectItem>
+                                                                <SelectItem value="empleado">Empleado</SelectItem>
+                                                                <SelectItem value="proveedor">Proveedor</SelectItem>
+                                                                <SelectItem value="otro">Otro</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                        <InputError className='absolute top-0 left-0 !-mt-1' message={errors.relacion} />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* PASO 4: Descripción y Archivos */}
+                                        {currentStep === 4 && (
+                                            <div className="space-y-6 animate-in fade-in duration-300">
+                                                {/* Mensaje */}
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="mensaje" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
+                                                        Descripción de su PQRSD
+                                                    </Label>
+                                                    <Textarea
+                                                        id="mensaje"
+                                                        placeholder="Describa detalladamente su petición, queja, reclamo, sugerencia o denuncia..."
+                                                        className={`min-h-[100px] ${errors.mensaje ? "border-destructive" : ""}`}
+                                                        value={data.mensaje}
+                                                        onChange={(e) => setData({ ...data, mensaje: e.target.value })}
+                                                        onKeyDown={(e) => {
+                                                            handleMessagesKeyDown(e);
+                                                            handleLimit(e, data.mensaje, LIMITS.mensaje);
+                                                        }}
+                                                        maxLength={LIMITS.mensaje}
+                                                    />
+                                                    <div className="relative">
+                                                        <InputError className='absolute top-0 left-0 !-mt-1' message={errors.mensaje} />
+                                                        <span className="text-xs text-muted-foreground absolute top-0 right-0">
+                                                            {data.mensaje.length}/{LIMITS.mensaje}
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                {/* Archivos adjuntos */}
+                                                <div className="space-y-4">
+                                                    <div>
+                                                        <Label className="mb-2 block">
+                                                            Archivos adjuntos (opcional)
+                                                        </Label>
+                                                        <div
+                                                            className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors 
+                                                                ${isDragging ? 'border-primary bg-primary/5' 
+                                                                    : 'border-muted-foreground/25 hover:border-primary/50'}`}
+                                                            onDragOver={handleDragOver}
+                                                            onDragLeave={handleDragLeave}
+                                                            onDrop={handleDrop}
+                                                        >
+                                                            <FileText className="w-12 h-12 mx-auto mb-3 text-muted-foreground" />
+                                                            <p className="text-sm text-muted-foreground mb-2">
+                                                                Arrastre archivos aquí o haga clic para seleccionar
+                                                            </p>
+                                                            <Input
+                                                                type="file"
+                                                                accept=".pdf,.jpg,.jpeg"
+                                                                multiple
+                                                                onChange={handleFileChange}
+                                                                className="hidden"
+                                                                id="file-upload"
+                                                                disabled={files.length >= 5}
+                                                            />
+                                                            <Label
+                                                                htmlFor="file-upload"
+                                                                className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
+                                                            >
+                                                                Seleccionar archivos
+                                                            </Label>
+                                                            <p className="text-xs text-muted-foreground mt-2">
+                                                                Solo PDF y JPG. Máximo 500KB por archivo. Hasta 5 archivos.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Lista de archivos */}
+                                                    {files.length > 0 && (
+                                                        <div className="space-y-2">
+                                                            <Label className="text-sm font-medium">
+                                                                Archivos seleccionados ({files.length}/5)
+                                                            </Label>
+                                                            {files.map((file, index) => (
+                                                                <div
+                                                                    key={index}
+                                                                    className="flex items-center gap-3 p-3 bg-muted rounded-lg group hover:bg-muted/80 transition-colors"
+                                                                >
+                                                                    <FileText className="w-5 h-5 text-primary flex-shrink-0" />
+                                                                    <div className="flex-1 min-w-0">
+                                                                        <p className="text-sm font-medium truncate">
+                                                                            {file.name}
+                                                                        </p>
+                                                                        <p className="text-xs text-muted-foreground">
+                                                                            {(file.size / 1024).toFixed(2)} KB
+                                                                        </p>
+                                                                    </div>
+                                                                    <Button
+                                                                        type="button"
+                                                                        variant="ghost"
+                                                                        size="icon"
+                                                                        onClick={() => removeFile(index)}
+                                                                        className="text-destructive hover:text-destructive hover:bg-destructive/10 flex-shrink-0"
+                                                                    >
+                                                                        <X className="h-4 w-4" />
+                                                                    </Button>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                {/* Aviso legal */}
+                                                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 flex gap-3">
+                                                    <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                                                    <div className="text-sm">
+                                                        <p className="font-semibold text-amber-900 mb-1">
+                                                            Aviso Legal
+                                                        </p>
+                                                        <p className="text-amber-800">
+                                                            De conformidad con el artículo 14 de la Ley 1755 de 2015,
+                                                            el término de respuesta es de <strong>15 días hábiles</strong>,
+                                                            contados a partir del día siguiente al envío de este formulario.
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
                                     </form>
+
+                                    {/* Botones de navegación */}
+                                    <div className="flex justify-between items-center mt-8 pt-6 border-t">
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            onClick={prevStep}
+                                            disabled={currentStep === 1 || processing}
+                                            className="gap-2"
+                                        >
+                                            <ChevronLeft className="w-4 h-4" />
+                                            Anterior
+                                        </Button>
+
+                                        {currentStep < steps.length ? (
+                                            <Button
+                                                type="button"
+                                                onClick={nextStep}
+                                                disabled={processing}
+                                                className="gap-2"
+                                            >
+                                                Siguiente
+                                                <ChevronRight className="w-4 h-4" />
+                                            </Button>
+                                        ) : (
+                                            <Button
+                                                type="button"
+                                                onClick={handleSubmit}
+                                                disabled={processing}
+                                                className="gap-2"
+                                            >
+                                                {processing ? (
+                                                    <>
+                                                        Enviando
+                                                        <LoaderCircle className="w-4 h-4 animate-spin" />
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        Enviar PQRSD
+                                                        <Send className="w-4 h-4" />
+                                                    </>
+                                                )}
+                                            </Button>
+                                        )}
+                                    </div>
                                 </CardContent>
                             </Card>
                         </div>
