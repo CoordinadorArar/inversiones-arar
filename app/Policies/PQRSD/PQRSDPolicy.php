@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Policies;
+namespace App\Policies\PQRSD;
 
-use App\Models\PQRSD;
+use App\Models\PQRSD\PQRSD;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 

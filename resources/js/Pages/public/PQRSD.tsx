@@ -3,8 +3,8 @@
  * Diseño moderno y dinámico para mejorar la experiencia del usuario
  * 
  * @author Yariangel Aray
- * @version 2.0
- * @date 2025-11-13
+ * @version 1.0
+ * @date 2025-11-14
  */
 
 import PublicLayout from '@/Layouts/PublicLayout';
