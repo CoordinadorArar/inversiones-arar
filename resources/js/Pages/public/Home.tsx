@@ -13,7 +13,6 @@ import { Head, Link } from '@inertiajs/react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Target, Users, Building2, ArrowRight, Lightbulb, TrendingUp, Eye } from "lucide-react";
 import { Button } from '@/components/ui/button';
-import AnimatedCounter from "@/components/AnimatedCounter";
 
 export default function Home() {
 
