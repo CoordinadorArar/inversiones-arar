@@ -69,13 +69,13 @@ export default function Companies() {
             <Head title="Compañías" />
             <main>
                 {/* Hero Section */}
-                <section className="relative pb-16 pt-28 bg-gradient-to-br from-primary/30 via-accent/20 to-background overflow-hidden">
-                    <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <section className="relative pb-10 pt-28 bg-gradient-to-br from-primary/30 via-accent/20 to-background overflow-hidden">
+                    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="max-w-3xl">
-                            <h1 className="text-4xl md:text-5xl lg:text-6xl text-primary font-bold mb-6 leading-tight">
+                            <h1 className="text-3xl md:text-4xl lg:text-5xl text-primary font-bold mb-4">
                                 Nuestras Empresas
                             </h1>
-                            <p className="text-lg text-muted-foreground">
+                            <p className="text-base md:text-lg text-muted-foreground">
                                 Un portafolio diversificado de empresas líderes en sus respectivos sectores,
                                 trabajando juntas por un futuro sostenible y próspero.
                             </p>
@@ -84,7 +84,7 @@ export default function Companies() {
                 </section>
 
                 {/* Empresas Grid/Carousel */}
-                <section className="py-16 bg-secondary/30 border-t">
+                <section className="py-10 bg-secondary/30 border-t">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                         {/* Desktop: Grid centrado - Mobile: Scroll horizontal */}
                         <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-6 place-items-center">
@@ -116,7 +116,7 @@ export default function Companies() {
                 </section>
 
                 {/* Banner informativo */}
-                <section className="py-12 bg-gradient-to-r from-background via-primary/5 to-primary/20">
+                <section className="py-12 bg-gradient-to-t from-background via-primary/5 to-primary/10 border-t">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="max-w-4xl mx-auto text-center">
                             <p className="text-lg md:text-xl font-medium text-foreground">
@@ -144,7 +144,7 @@ export default function Companies() {
 // Componente de tarjeta de empresa
 function CompanyCard({ empresa }: { empresa: any }) {
     return (
-        <Card className="py-0 group w-full h-full overflow-hidden border border-primary/20 shadow-sm hover:shadow-xl hover:border-primary/40 transition-all duration-300 rounded-2xl bg-card">
+        <Card className="group w-full h-full overflow-hidden border border-primary/20 shadow-sm hover:shadow-xl hover:border-primary/40 transition-all duration-300 rounded-2xl bg-card">
             <CardContent className="p-6 flex flex-col h-full">
                 {/* Header con logo y nombre */}
                 <div className="flex items-center gap-4 mb-6">

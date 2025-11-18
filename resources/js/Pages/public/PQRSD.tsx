@@ -1,11 +1,14 @@
 /**
- * Componente PQRSD con formulario multi-paso
- * Diseño moderno y dinámico para mejorar la experiencia del usuario
+ * Componente PQRSD - Formulario Multi-Paso para PQRs.
+ * 
+ * Permite enviar PQRs con validación por pasos, drag-and-drop de archivos, y envío AJAX.
+ * Usa Zod para validación, y validaciones de teclado personalizadas.
  * 
  * @author Yariangel Aray
  * @version 1.0
  * @date 2025-11-14
  */
+
 
 import PublicLayout from '@/Layouts/PublicLayout';
 import { Head } from '@inertiajs/react';
@@ -30,11 +33,19 @@ import {
     Building2, User, MapPin, MessageSquare,
     ChevronLeft, ChevronRight, Send,
     LoaderCircle, X, FileText, CheckCircle,
-    AlertCircle
+    AlertCircle,
+    HelpCircle,
+    Clock
 } from 'lucide-react';
 import { Progress } from '@/Components/ui/progress';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
 
-// Interfaces
+// Interfaces: Tipos para props y datos del formulario.
 interface FormData {
     empresa: string;
     tipoPqrs: string;
@@ -59,7 +70,7 @@ interface PQRSDProps {
     tiposId: Array<{ id: number; nombre: string; abreviatura: string }>;
 }
 
-// Constantes
+// Constantes: Límites de caracteres para inputs.
 const LIMITS = {
     nombre: 50,
     apellido: 50,
@@ -70,7 +81,7 @@ const LIMITS = {
     mensaje: 2000,
 } as const;
 
-// Schemas de validación por paso
+// Schemas de validación con Zod: Uno por paso para validación incremental.
 const step1Schema = z.object({
     empresa: z.string().min(1, "Debe seleccionar una empresa"),
     tipoPqrs: z.string().min(1, "Debe seleccionar el tipo de PQRSD"),
@@ -78,18 +89,18 @@ const step1Schema = z.object({
 
 const step2Schema = z.object({
     nombre: z.string().trim()
+        .regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/, "Solo se permiten letras")
         .min(1, "El nombre es obligatorio")
-        .max(LIMITS.nombre, `Máximo ${LIMITS.nombre} caracteres`)
-        .regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/, "Solo se permiten letras"),
+        .max(LIMITS.nombre, `Máximo ${LIMITS.nombre} caracteres`),
     apellido: z.string().trim()
+        .regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/, "Solo se permiten letras")
         .min(1, "El apellido es obligatorio")
-        .max(LIMITS.apellido, `Máximo ${LIMITS.apellido} caracteres`)
-        .regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/, "Solo se permiten letras"),
+        .max(LIMITS.apellido, `Máximo ${LIMITS.apellido} caracteres`),
     tipoId: z.string().min(1, "Debe seleccionar el tipo de identificación"),
     numId: z.string().trim()
+        .regex(/^[0-9]+$/, "Solo se permiten números")
         .min(1, "El número de documento es obligatorio")
-        .max(LIMITS.numId, `Máximo ${LIMITS.numId} caracteres`)
-        .regex(/^[0-9]+$/, "Solo se permiten números"),
+        .max(LIMITS.numId, `Máximo ${LIMITS.numId} caracteres`),
 });
 
 const step3Schema = z.object({
@@ -113,71 +124,112 @@ const step4Schema = z.object({
 });
 
 export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, tiposId }: PQRSDProps) {
+    // Estado para el paso actual del formulario (inicia en 1, va de 1 a 4).
     const [currentStep, setCurrentStep] = useState(1);
+
+    // Estado para los datos del formulario: objeto con todos los campos del form.
+    // Cada propiedad corresponde a un input/select del formulario.
     const [data, setData] = useState<FormData>({
-        empresa: "",
-        tipoPqrs: "",
-        nombre: "",
-        apellido: "",
-        tipoId: "",
-        numId: "",
-        correo: "",
-        telefono: "",
-        dpto: "",
-        ciudad: "",
-        direccion: "",
-        relacion: "",
-        mensaje: "",
+        empresa: "",      // ID de la empresa seleccionada.
+        tipoPqrs: "",     // ID del tipo de PQR seleccionado.
+        nombre: "",       // Nombre del usuario.
+        apellido: "",     // Apellido del usuario.
+        tipoId: "",       // ID del tipo de identificación.
+        numId: "",        // Número de documento.
+        correo: "",       // Email de contacto.
+        telefono: "",     // Teléfono de contacto.
+        dpto: "",         // ID del departamento seleccionado.
+        ciudad: "",       // ID de la ciudad seleccionada.
+        direccion: "",    // Dirección opcional.
+        relacion: "",     // Relación con la empresa (cliente, empleado, etc.).
+        mensaje: "",      // Descripción de la PQR.
     });
 
+    // Estado para archivos adjuntos: array de objetos File seleccionados.
+    // Se llena con handleFileChange o handleDrop, máximo 5 archivos.
     const [files, setFiles] = useState<File[]>([]);
-    const [isDragging, setIsDragging] = useState(false); // Estado para drag
+
+    // Estado para indicar si el usuario está arrastrando archivos sobre la zona de drop.
+    // Se usa para cambiar estilos visuales (border, bg).
+    const [isDragging, setIsDragging] = useState(false);
+
+    // Estado para errores de validación: objeto con claves como nombres de campos y mensajes de error.
+    // Se llena en validateStep si Zod falla, se muestra en InputError.
     const [errors, setErrors] = useState<Record<string, string>>({});
+
+    // Estado para indicar si el formulario está procesando (enviando).
+    // Deshabilita botones y muestra spinner durante fetch.
     const [processing, setProcessing] = useState(false);
+
+    // Hook de toast para notificaciones: éxito, error, etc.
+    // Se usa en validaciones de archivos y envío.
     const { toast } = useToast();
 
-    // Configuración de pasos
+    // Array constante con configuración de los 4 pasos del formulario.
+    // Cada objeto tiene number (1-4), title, icon (de Lucide), description.
+    // Se usa para renderizar indicadores de progreso y títulos dinámicos.
     const steps = [
         {
             number: 1,
             title: "Información PQRSD",
-            icon: Building2,
+            icon: Building2,  // Ícono para el paso 1.
             description: "Seleccione la empresa y tipo"
         },
         {
             number: 2,
             title: "Datos Personales",
-            icon: User,
+            icon: User,  // Ícono para el paso 2.
             description: "Complete su información personal"
         },
         {
             number: 3,
             title: "Contacto y Ubicación",
-            icon: MapPin,
+            icon: MapPin,  // Ícono para el paso 3.
             description: "Datos de contacto y dirección"
         },
         {
             number: 4,
             title: "Descripción",
-            icon: MessageSquare,
+            icon: MessageSquare,  // Ícono para el paso 4.
             description: "Describa su petición o denuncia"
         },
     ];
 
+    // Cálculo del progreso: porcentaje basado en currentStep / total steps.
+    // Se usa en la barra de progreso visual.
     const progress = (currentStep / steps.length) * 100;
 
-    // Validación por paso
+    /**
+     * Función validateStep: Valida los datos del paso actual usando schemas de Zod.
+     * 
+     * @param step Número del paso a validar (1-4).
+     * @returns boolean True si válido, false si hay errores.
+     * 
+     * Lógica:
+     * - Limpia errores previos con setErrors({}).
+     * - Selecciona schema y data según paso (switch).
+     * - Ejecuta safeParse de Zod.
+     * - Si falla, mapea errores a newErrors y los setea.
+     * - Hace scroll al primer campo con error.
+     * - Retorna false para bloquear navegación/envío.
+     */
     const validateStep = (step: number): boolean => {
+        // Limpia errores previos para evitar acumulación.
         setErrors({});
+
+        // Variables para schema y data a validar, se asignan en switch.
         let schema;
         let dataToValidate;
 
+        // Switch para seleccionar qué validar según paso.
         switch (step) {
             case 1:
+                // Paso 1: Solo empresa y tipoPqrs.
                 schema = step1Schema;
                 dataToValidate = { empresa: data.empresa, tipoPqrs: data.tipoPqrs };
                 break;
             case 2:
+                // Paso 2: Datos personales (nombre, apellido, tipoId, numId).
                 schema = step2Schema;
                 dataToValidate = {
                     nombre: data.nombre,
@@ -187,6 +239,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                 };
                 break;
             case 3:
+                // Paso 3: Contacto y ubicación (correo, telefono, dpto, ciudad, etc.).
                 schema = step3Schema;
                 dataToValidate = {
                     correo: data.correo,
@@ -198,61 +251,100 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                 };
                 break;
             case 4:
+                // Paso 4: Solo mensaje.
                 schema = step4Schema;
                 dataToValidate = { mensaje: data.mensaje };
                 break;
             default:
+                // Si paso inválido, retorna true (no valida nada).
                 return true;
         }
 
+        // Ejecuta validación con Zod (safeParse no lanza excepciones).
         const result = schema.safeParse(dataToValidate);
 
+        // Si validación falla (result.success es false).
         if (!result.success) {
+            // Inicializa objeto para nuevos errores.
             const newErrors: Record<string, string> = {};
+
+            // Itera sobre issues de Zod (cada error es un objeto con path y message).
             result.error.issues.forEach((err) => {
+                // Verifica que path tenga elementos (err.path es array como ['nombre']).
                 if (err.path.length > 0) {
+                    // Usa el primer elemento de path como clave (ej. 'nombre').
                     newErrors[err.path[0].toString()] = err.message;
                 }
             });
+
+            // Setea errores en estado para mostrar en UI.
             setErrors(newErrors);
 
-            // Scroll al primer error
+            // Scroll suave al primer campo con error después de un delay (para render).
             setTimeout(() => {
+                // Obtiene la primera clave de errores.
                 const firstErrorField = Object.keys(newErrors)[0];
+                // Busca el elemento por ID y hace scroll.
                 document.getElementById(firstErrorField)?.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'center'
+                    behavior: 'smooth',  // Animación suave.
+                    block: 'center'      // Centra el elemento en viewport.
                 });
-            }, 100);
+            }, 100);  // Delay de 100ms para asegurar render.
 
+            // Retorna false para indicar fallo.
             return false;
         }
 
+        // Si todo válido, retorna true.
         return true;
     };
 
-    // Navegación entre pasos
+    /**
+     * Función nextStep: Avanza al siguiente paso si el actual es válido.
+     * 
+     * Llama a validateStep, si pasa, incrementa currentStep (máximo steps.length).
+     * Hace scroll a top para mejor UX.
+     */
     const nextStep = () => {
+        // Valida el paso actual antes de avanzar.
         if (validateStep(currentStep)) {
+            // Incrementa paso, limita a máximo.
             setCurrentStep(prev => Math.min(prev + 1, steps.length));
-            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     };
 
+    /**
+     * Función prevStep: Retrocede al paso anterior.
+     * 
+     * Decrementa currentStep (mínimo 1).
+     * Hace scroll a top.
+     */
     const prevStep = () => {
+        // Decrementa paso, limita a mínimo.
         setCurrentStep(prev => Math.max(prev - 1, 1));
-        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    // Manejo de archivos
+    /**
+     * Función handleFileChange: Maneja selección de archivos desde input file.
+     * 
+     * Filtra archivos válidos (tipo PDF/JPG, tamaño <=500KB), muestra toasts para inválidos.
+     * Agrega válidos a estado files.
+     * 
+     * @param e Evento de cambio del input.
+     */
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        // Verifica que haya archivos seleccionados.
         if (e.target.files) {
+            // Convierte FileList a array y filtra válidos.
             const newFiles = Array.from(e.target.files).filter((file) => {
+                // Verifica tipo MIME válido.
                 const isValidType = file.type === "application/pdf" ||
                     file.type === "image/jpeg" ||
                     file.type === "image/jpg";
+                // Verifica tamaño (500KB = 500000 bytes).
                 const isValidSize = file.size <= 500000;
 
+                // Si tipo inválido, muestra toast y excluye.
                 if (!isValidType) {
                     toast({
                         title: "Formato no válido",
@@ -262,6 +354,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                     return false;
                 }
 
+                // Si tamaño inválido, muestra toast y excluye.
                 if (!isValidSize) {
                     toast({
                         title: "Archivo muy grande",
@@ -271,39 +364,62 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                     return false;
                 }
 
+                // Si válido, incluye en array.
                 return true;
             });
 
+            // Agrega archivos válidos al estado existente.
             setFiles([...files, ...newFiles]);
         }
     };
 
+    /**
+     * Función removeFile: Elimina un archivo del array por índice.
+     * 
+     * @param index Índice del archivo a eliminar.
+     */
     const removeFile = (index: number) => {
+        // Filtra el array excluyendo el índice.
         setFiles(files.filter((_, i) => i !== index));
     };
 
-    // Función para validar y agregar archivos (reutiliza lógica de handleFileChange)
+    /**
+     * Función handleDrop: Maneja archivos soltados en zona de drag-and-drop.
+     * 
+     * Previene default, valida límite total (5 archivos), filtra válidos, agrega a estado.
+     * Muestra toasts para errores.
+     * 
+     * @param e Evento de drop.
+     */
     const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+        // Previene comportamiento default del navegador.
         e.preventDefault();
+        // Desactiva estado de dragging.
         setIsDragging(false);
+
+        // Si hay archivos en el drop.
         if (e.dataTransfer.files) {
+            // Convierte a array.
             const droppedFiles = Array.from(e.dataTransfer.files);
 
-            // Chequea límite total antes de procesar
+            // Chequea límite total antes de procesar (para evitar toasts innecesarios).
             if (files.length + droppedFiles.length > 5) {
                 toast({
                     title: "Límite excedido",
                     description: "Máximo 5 archivos permitidos",
                     variant: "destructive",
                 });
-                return;
+                return;  // Sale sin procesar.
             }
-            // Filtra y valida archivos, mostrando toasts para inválidos
+
+            // Filtra archivos válidos (reutiliza lógica de handleFileChange).
             const validFiles = droppedFiles.filter((file) => {
                 const isValidType = file.type === "application/pdf" ||
                     file.type === "image/jpeg" ||
                     file.type === "image/jpg";
                 const isValidSize = file.size <= 500000;
+
+                // Toasts para inválidos.
                 if (!isValidType) {
                     toast({
                         title: "Formato no válido",
@@ -322,56 +438,87 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                 }
                 return true;
             });
-            // Agrega solo válidos
+
+            // Agrega solo válidos al estado.
             setFiles([...files, ...validFiles]);
         }
     }
 
-    // Handlers para drag
+    /**
+     * Función handleDragOver: Maneja evento drag over en zona de drop.
+     * 
+     * Previene default y activa estado de dragging para estilos.
+     * 
+     * @param e Evento drag over.
+     */
     const handleDragOver = (e) => {
-        e.preventDefault();
-        setIsDragging(true);
-    };
-    const handleDragLeave = (e) => {
-        e.preventDefault();
-        setIsDragging(false);
+        e.preventDefault();  // Previene default.
+        setIsDragging(true);  // Activa dragging.
     };
 
-    // Envío del formulario
+    /**
+     * Función handleDragLeave: Maneja evento drag leave en zona de drop.
+     * 
+     * Previene default y desactiva estado de dragging.
+     * 
+     * @param e Evento drag leave.
+     */
+    const handleDragLeave = (e) => {
+        e.preventDefault();  // Previene default.
+        setIsDragging(false);  // Desactiva dragging.
+    };
+
+    /**
+     * Función handleSubmit: Envía el formulario completo vía fetch.
+     * 
+     * Valida paso final, setea processing, construye FormData, envía POST.
+     * Maneja respuesta: éxito (toast + reset), errores (422 setea errores, otros toast).
+     * Catch para errores de red. Finally limpia processing.
+     */
     const handleSubmit = async () => {
+        // Valida paso actual (debería ser 4) antes de enviar.
         if (!validateStep(currentStep)) return;
 
+        // Activa processing para UI.
         setProcessing(true);
 
         try {
-
+            // Crea FormData para enviar datos + archivos.
             const formData = new FormData();
+
+            // Agrega todos los campos de data como strings.
             Object.entries(data).forEach(([key, value]) => {
                 formData.append(key, value.toString());
             });
 
+            // Agrega archivos con clave files[index].
             files.forEach((file, index) => {
                 formData.append(`files[${index}]`, file);
             });
 
+            // Fetch POST a ruta pqrsd.store.
             const response = await fetch(route('pqrsd.store'), {
                 method: 'POST',
-                headers: {                    
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                headers: {
+                    'Accept': 'application/json',  // Espera JSON.
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',  // Token CSRF.
                 },
-                body: formData,
+                body: formData,  // Envía FormData.
             });
+
+            // Parsea respuesta JSON.
             const result = await response.json();
 
+            // Si respuesta OK (200).
             if (response.ok) {
+                // Toast de éxito.
                 toast({
                     title: "¡PQRSD enviada!",
                     variant: "success",
                     description: "Su solicitud ha sido recibida y será procesada en los próximos 15 días hábiles.",
                 });
 
-                // Reset
+                // Reset completo: data, files, step.
                 setData({
                     empresa: "",
                     tipoPqrs: "",
@@ -390,6 +537,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                 setFiles([]);
                 setCurrentStep(1);
             } else if (response.status === 422) {
+                // Errores de validación backend: setea en estado.
                 setErrors(result.errors || {});
                 toast({
                     title: "Error al enviar",
@@ -397,6 +545,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                     variant: "destructive",
                 });
             } else {
+                // Otros errores: toast genérico.
                 toast({
                     title: "Error al enviar",
                     description: result.error || "Intenta de nuevo más tarde.",
@@ -405,12 +554,14 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
             }
 
         } catch (error) {
+            // Error de red/conexión.
             toast({
                 title: "Error de conexión",
                 description: "Revisa tu conexión e intenta de nuevo.",
                 variant: "destructive",
             });
         } finally {
+            // Siempre desactiva processing.
             setProcessing(false);
         }
     };
@@ -419,42 +570,77 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
         <PublicLayout>
             <Head title="PQRSD" />
             <main>
-                {/* Header con información */}
-                <section className="pb-5 pt-28 bg-gradient-to-br from-primary/20 via-accent/10 to-background">
+                {/* Header con información en dos columnas */}
+                <section className="pb-8 pt-28 bg-gradient-to-br from-primary/30 via-accent/20 to-background">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="max-w-4xl mx-auto text-center">
-                            <h1 className="text-4xl md:text-5xl text-primary font-bold mb-6">
-                                PQRSD
-                            </h1>
-                            <p className="text-lg text-accent-foreground/80 mb-4">
-                                Bienvenido al módulo de <strong>PQRSD de Inversiones Arar S.A.</strong>
-                            </p>
-                            <p className="text-muted-foreground text-sm max-w-2xl mx-auto">
-                                Si desea realizar una Solicitud, Petición, Queja, Reclamo o Denuncia  relacionada con Inversiones Arar o alguna de sus empresas filiales,
-                                complete el siguiente formulario. Recibirá respuesta en un máximo de
-                                <strong> 15 días hábiles</strong> según el articulo 14 de la Ley 1755 de 2015.
-                            </p>
-                            <p className="text-primary font-semibold text-sm mt-5">
-                                Agradecemos el uso responsable del formulario.
-                            </p>
+                        <div className="max-w-6xl mx-auto">
+
+                            {/* Contenido en dos columnas */}
+                            <div className="grid md:grid-cols-2 gap-8 items-center">
+                                {/* Columna izquierda - Bienvenida */}
+                                <div className="text-center md:text-left">
+                                    {/* Título */}
+                                    <div className="flex items-center max-md:justify-center gap-3 mb-5">
+                                        <h1 className="text-3xl md:text-4xl lg:text-5xl text-primary font-bold">
+                                            PQRSD
+                                        </h1>
+                                        <TooltipProvider delayDuration={200}>
+                                            <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                    <a
+                                                        href="/docs/Manual-PQRSD.pdf"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        aria-label='ayuda-pqrsd'
+                                                        className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors"
+                                                    >
+                                                        <HelpCircle className="h-5 w-5 text-primary" />
+                                                    </a>
+                                                </TooltipTrigger>
+                                                <TooltipContent>
+                                                    <p className="text-sm">Ver manual de ayuda</p>
+                                                </TooltipContent>
+                                            </Tooltip>
+                                        </TooltipProvider>
+                                    </div>
+                                    <p className="text-base md:text-lg text-accent-foreground/80 mb-3">
+                                        Bienvenido al módulo de <strong>PQRSD de Inversiones Arar S.A.</strong>
+                                    </p>
+                                    <p className="text-muted-foreground text-sm md:text-base">
+                                        Complete el formulario para realizar una Solicitud, Petición, Queja, Reclamo o Denuncia relacionada con Inversiones Arar o sus empresas filiales.
+                                    </p>
+                                </div>
+
+                                {/* Columna derecha - Información legal */}
+                                <div className="bg-background/50 backdrop-blur-sm rounded-lg p-5 shadow-md border border-primary/10">
+                                    <div className="flex items-start gap-3 mb-3">
+                                        <Clock className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                                        <p className="text-sm text-muted-foreground">
+                                            Recibirá respuesta en un máximo de <strong className="text-foreground">15 días hábiles</strong> según el artículo 14 de la Ley 1755 de 2015.
+                                        </p>
+                                    </div>
+                                    <p className="text-primary font-semibold text-sm max-md:text-center">
+                                        Agradecemos el uso responsable del formulario.
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
 
                 {/* Formulario Multi-Paso */}
-                <section className="py-12 bg-accent/30 border-t">
+                <section className="py-10 bg-accent/30 border-t">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="max-w-4xl mx-auto">
                             {/* Indicador de progreso */}
-                            <Card className="mb-8">
-                                <CardContent className="p-6">
-                                    {/* Barra de progreso */}
-                                    <div className="mb-6">
+                            <Card className="mb-6 md:mb-8">
+                                <CardContent className="p-4 md:p-6">
+                                    <div className="mb-4 md:mb-6">
                                         <div className="flex justify-between mb-2">
-                                            <span className="text-sm font-medium text-primary">
+                                            <span className="text-xs md:text-sm font-medium text-primary">
                                                 Paso {currentStep} de {steps.length}
                                             </span>
-                                            <span className="text-sm text-muted-foreground">
+                                            <span className="text-xs md:text-sm text-muted-foreground">
                                                 {Math.round(progress)}% completado
                                             </span>
                                         </div>
@@ -462,7 +648,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                     </div>
 
                                     {/* Steps indicators */}
-                                    <div className="grid grid-cols-4 gap-2">
+                                    <div className="grid grid-cols-4 gap-1.5 md:gap-2">
                                         {steps.map((step) => {
                                             const Icon = step.icon;
                                             const isActive = currentStep === step.number;
@@ -471,7 +657,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                             return (
                                                 <div
                                                     key={step.number}
-                                                    className={`flex flex-col items-center p-3 rounded-lg transition-all ${isActive
+                                                    className={`flex flex-col items-center p-2 md:p-3 rounded-lg transition-all ${isActive
                                                         ? 'bg-primary/10 border-2 border-primary'
                                                         : isCompleted
                                                             ? 'bg-green-50 border-2 border-green-500'
@@ -479,7 +665,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                         }`}
                                                 >
                                                     <div
-                                                        className={`rounded-full p-2 mb-2 ${isActive
+                                                        className={`rounded-full p-1.5 md:p-2 md:mb-2 ${isActive
                                                             ? 'bg-primary text-white'
                                                             : isCompleted
                                                                 ? 'bg-green-500 text-white'
@@ -487,13 +673,13 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                             }`}
                                                     >
                                                         {isCompleted ? (
-                                                            <CheckCircle className="w-5 h-5" />
+                                                            <CheckCircle className="w-4 h-4 md:w-5 md:h-5" />
                                                         ) : (
-                                                            <Icon className="w-5 h-5" />
+                                                            <Icon className="w-4 h-4 md:w-5 md:h-5" />
                                                         )}
                                                     </div>
                                                     <span
-                                                        className={`text-xs font-medium text-center ${isActive || isCompleted
+                                                        className={`hidden md:block md:text-xs font-medium text-center leading-tight ${isActive || isCompleted
                                                             ? 'text-foreground'
                                                             : 'text-muted-foreground'
                                                             }`}
@@ -509,24 +695,21 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
 
                             {/* Contenido del paso actual */}
                             <Card>
-                                <CardContent className="p-6 md:p-8">
-                                    {/* Título del paso */}
-                                    <div className="mb-8">
-                                        <h2 className="text-2xl font-bold text-primary mb-2">
+                                <CardContent className="p-4 md:p-6 lg:p-8">
+                                    <div className="mb-6 md:mb-8">
+                                        <h2 className="text-xl md:text-2xl font-bold text-primary mb-2">
                                             {steps[currentStep - 1].title}
                                         </h2>
-                                        <p className="text-muted-foreground">
+                                        <p className="text-sm md:text-base text-muted-foreground">
                                             {steps[currentStep - 1].description}
                                         </p>
                                     </div>
 
-                                    {/* Formularios por paso */}
-                                    <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
-                                        {/* PASO 1: Información PQRSD */}
+                                    <form onSubmit={(e) => e.preventDefault()} className="space-y-4 md:space-y-6">
+                                        {/* PASO 1 */}
                                         {currentStep === 1 && (
                                             <div className="space-y-6 animate-in fade-in duration-300">
                                                 <div className="grid md:grid-cols-2 gap-6">
-                                                    {/* Empresa */}
                                                     <div className="space-y-2">
                                                         <Label htmlFor="empresa" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
                                                             Empresa
@@ -549,10 +732,9 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                                 ))}
                                                             </SelectContent>
                                                         </Select>
-                                                        <InputError className='absolute top-0 left-0 !-mt-1' message={errors.empresa} />
+                                                        <InputError message={errors.empresa} />
                                                     </div>
 
-                                                    {/* Tipo de PQRS */}
                                                     <div className="space-y-2">
                                                         <Label htmlFor="tipoPqrs" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
                                                             Tipo de PQRSD
@@ -575,17 +757,16 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                                 ))}
                                                             </SelectContent>
                                                         </Select>
-                                                        <InputError className='absolute top-0 left-0 !-mt-1' message={errors.tipoPqrs} />
+                                                        <InputError message={errors.tipoPqrs} />
                                                     </div>
                                                 </div>
                                             </div>
                                         )}
 
-                                        {/* PASO 2: Datos Personales */}
+                                        {/* PASO 2 */}
                                         {currentStep === 2 && (
                                             <div className="space-y-6 animate-in fade-in duration-300">
                                                 <div className="grid md:grid-cols-2 gap-6">
-                                                    {/* Nombre */}
                                                     <div className="space-y-2">
                                                         <Label htmlFor="nombre" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
                                                             Nombres
@@ -603,14 +784,13 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                             maxLength={LIMITS.nombre}
                                                         />
                                                         <div className="relative">
-                                                            <InputError className='absolute top-0 left-0 !-mt-1' message={errors.nombre} />
+                                                            <InputError className='absolute top-0 left-0 !-mt-2 pt-1' message={errors.nombre} />
                                                             <span className="text-xs text-muted-foreground absolute top-0 right-0">
                                                                 {data.nombre.length}/{LIMITS.nombre}
                                                             </span>
                                                         </div>
                                                     </div>
 
-                                                    {/* Apellido */}
                                                     <div className="space-y-2">
                                                         <Label htmlFor="apellido" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
                                                             Apellidos
@@ -628,14 +808,13 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                             maxLength={LIMITS.apellido}
                                                         />
                                                         <div className="relative">
-                                                            <InputError className='absolute top-0 left-0 !-mt-1' message={errors.apellido} />
+                                                            <InputError className='absolute top-0 left-0 !-mt-2 pt-1' message={errors.apellido} />
                                                             <span className="text-xs text-muted-foreground absolute top-0 right-0">
                                                                 {data.apellido.length}/{LIMITS.apellido}
                                                             </span>
                                                         </div>
                                                     </div>
 
-                                                    {/* Tipo ID */}
                                                     <div className="space-y-2">
                                                         <Label htmlFor="tipoId" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
                                                             Tipo de Identificación
@@ -658,10 +837,11 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                                 ))}
                                                             </SelectContent>
                                                         </Select>
-                                                        <InputError className='absolute top-0 left-0 !-mt-1' message={errors.tipoId} />
+
+                                                        <InputError message={errors.tipoId} />
+
                                                     </div>
 
-                                                    {/* Número ID */}
                                                     <div className="space-y-2">
                                                         <Label htmlFor="numId" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
                                                             N° Documento
@@ -680,7 +860,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                             maxLength={LIMITS.numId}
                                                         />
                                                         <div className="relative">
-                                                            <InputError className='absolute top-0 left-0 !-mt-1' message={errors.numId} />
+                                                            <InputError className='absolute top-0 left-0 !-mt-2 pt-1' message={errors.numId} />
                                                             <span className="text-xs text-muted-foreground absolute top-0 right-0">
                                                                 {data.numId.length}/{LIMITS.numId}
                                                             </span>
@@ -694,7 +874,6 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                         {currentStep === 3 && (
                                             <div className="space-y-6 animate-in fade-in duration-300">
                                                 <div className="grid md:grid-cols-2 gap-6">
-                                                    {/* Correo */}
                                                     <div className="space-y-2">
                                                         <Label htmlFor="correo" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
                                                             Correo electrónico
@@ -713,14 +892,13 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                             maxLength={LIMITS.correo}
                                                         />
                                                         <div className="relative">
-                                                            <InputError className='absolute top-0 left-0 !-mt-1' message={errors.correo} />
+                                                            <InputError className='absolute top-0 left-0 !-mt-2 pt-1' message={errors.correo} />
                                                             <span className="text-xs text-muted-foreground absolute top-0 right-0">
                                                                 {data.correo.length}/{LIMITS.correo}
                                                             </span>
                                                         </div>
                                                     </div>
 
-                                                    {/* Teléfono */}
                                                     <div className="space-y-2">
                                                         <Label htmlFor="telefono" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
                                                             Teléfono
@@ -739,14 +917,13 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                             maxLength={LIMITS.telefono}
                                                         />
                                                         <div className="relative">
-                                                            <InputError className='absolute top-0 left-0 !-mt-1' message={errors.telefono} />
+                                                            <InputError className='absolute top-0 left-0 !-mt-2 pt-1' message={errors.telefono} />
                                                             <span className="text-xs text-muted-foreground absolute top-0 right-0">
                                                                 {data.telefono.length}/{LIMITS.telefono}
                                                             </span>
                                                         </div>
                                                     </div>
 
-                                                    {/* Departamento */}
                                                     <div className="space-y-2">
                                                         <Label htmlFor="dpto" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
                                                             Departamento
@@ -771,10 +948,9 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                                 ))}
                                                             </SelectContent>
                                                         </Select>
-                                                        <InputError className='absolute top-0 left-0 !-mt-1' message={errors.dpto} />
+                                                        <InputError message={errors.dpto} />
                                                     </div>
 
-                                                    {/* Ciudad */}
                                                     <div className="space-y-2">
                                                         <Label htmlFor="ciudad" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
                                                             Ciudad
@@ -800,10 +976,9 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                                     ))}
                                                             </SelectContent>
                                                         </Select>
-                                                        <InputError className='absolute top-0 left-0 !-mt-1' message={errors.ciudad} />
+                                                        <InputError message={errors.ciudad} />
                                                     </div>
 
-                                                    {/* Dirección */}
                                                     <div className="space-y-2 md:col-span-2">
                                                         <Label htmlFor="direccion">
                                                             Dirección (Opcional)
@@ -818,14 +993,13 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                             maxLength={LIMITS.direccion}
                                                         />
                                                         <div className="relative">
-                                                            <InputError className='absolute top-0 left-0 !-mt-1' message={errors.direccion} />
+                                                            <InputError className='absolute top-0 left-0 !-mt-2 pt-1' message={errors.direccion} />
                                                             <span className="text-xs text-muted-foreground absolute top-0 right-0">
                                                                 {data.direccion.length}/{LIMITS.direccion}
                                                             </span>
                                                         </div>
                                                     </div>
 
-                                                    {/* Relación */}
                                                     <div className="space-y-2 md:col-span-2">
                                                         <Label htmlFor="relacion" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
                                                             Relación con la empresa
@@ -847,7 +1021,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                                 <SelectItem value="otro">Otro</SelectItem>
                                                             </SelectContent>
                                                         </Select>
-                                                        <InputError className='absolute top-0 left-0 !-mt-1' message={errors.relacion} />
+                                                        <InputError message={errors.relacion} />
                                                     </div>
                                                 </div>
                                             </div>
@@ -856,15 +1030,14 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                         {/* PASO 4: Descripción y Archivos */}
                                         {currentStep === 4 && (
                                             <div className="space-y-6 animate-in fade-in duration-300">
-                                                {/* Mensaje */}
-                                                <div className="space-y-2">
+                                                <div className="space-y-2 !mb-8">
                                                     <Label htmlFor="mensaje" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
                                                         Descripción de su PQRSD
                                                     </Label>
                                                     <Textarea
                                                         id="mensaje"
                                                         placeholder="Describa detalladamente su petición, queja, reclamo, sugerencia o denuncia..."
-                                                        className={`min-h-[100px] ${errors.mensaje ? "border-destructive" : ""}`}
+                                                        className={`min-h-[150px] ${errors.mensaje ? "border-destructive" : ""}`}
                                                         value={data.mensaje}
                                                         onChange={(e) => setData({ ...data, mensaje: e.target.value })}
                                                         onKeyDown={(e) => {
@@ -874,7 +1047,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                         maxLength={LIMITS.mensaje}
                                                     />
                                                     <div className="relative">
-                                                        <InputError className='absolute top-0 left-0 !-mt-1' message={errors.mensaje} />
+                                                        <InputError className='absolute top-0 left-0 !-mt-2 pt-1' message={errors.mensaje} />
                                                         <span className="text-xs text-muted-foreground absolute top-0 right-0">
                                                             {data.mensaje.length}/{LIMITS.mensaje}
                                                         </span>
@@ -889,15 +1062,15 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                         </Label>
                                                         <div
                                                             className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors 
-                                                                ${isDragging ? 'border-primary bg-primary/5' 
+                                                                ${isDragging ? 'border-primary bg-primary/5'
                                                                     : 'border-muted-foreground/25 hover:border-primary/50'}`}
                                                             onDragOver={handleDragOver}
                                                             onDragLeave={handleDragLeave}
                                                             onDrop={handleDrop}
                                                         >
-                                                            <FileText className="w-12 h-12 mx-auto mb-3 text-muted-foreground" />
-                                                            <p className="text-sm text-muted-foreground mb-2">
-                                                                Arrastre archivos aquí o haga clic para seleccionar
+                                                            <FileText className="w-10 h-10 md:w-12 md:h-12 mx-auto mb-3 text-muted-foreground" />
+                                                            <p className="text-xs md:text-sm text-muted-foreground mb-2">
+                                                                Arrastre archivos aquí o seleccionelos desde su dispositivo.
                                                             </p>
                                                             <Input
                                                                 type="file"
@@ -910,7 +1083,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                             />
                                                             <Label
                                                                 htmlFor="file-upload"
-                                                                className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
+                                                                className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors text-sm"
                                                             >
                                                                 Seleccionar archivos
                                                             </Label>
@@ -920,7 +1093,6 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                         </div>
                                                     </div>
 
-                                                    {/* Lista de archivos */}
                                                     {files.length > 0 && (
                                                         <div className="space-y-2">
                                                             <Label className="text-sm font-medium">
@@ -974,13 +1146,13 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                     </form>
 
                                     {/* Botones de navegación */}
-                                    <div className="flex justify-between items-center mt-8 pt-6 border-t">
+                                    <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 mt-6 md:mt-8 pt-4 md:pt-6 border-t">
                                         <Button
                                             type="button"
                                             variant="outline"
                                             onClick={prevStep}
                                             disabled={currentStep === 1 || processing}
-                                            className="gap-2"
+                                            className="gap-2 w-full sm:w-auto order-2 sm:order-1"
                                         >
                                             <ChevronLeft className="w-4 h-4" />
                                             Anterior
@@ -991,7 +1163,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                 type="button"
                                                 onClick={nextStep}
                                                 disabled={processing}
-                                                className="gap-2"
+                                                className="gap-2 w-full sm:w-auto order-1 sm:order-2"
                                             >
                                                 Siguiente
                                                 <ChevronRight className="w-4 h-4" />
@@ -1001,7 +1173,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                 type="button"
                                                 onClick={handleSubmit}
                                                 disabled={processing}
-                                                className="gap-2"
+                                                className="gap-2 w-full sm:w-auto order-1 sm:order-2"
                                             >
                                                 {processing ? (
                                                     <>

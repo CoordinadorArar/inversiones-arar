@@ -67,20 +67,22 @@ export default function Login({ status }) {
                     <InputGroup>
                         <InputGroupAddon align="inline-start">
 
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <InputGroupButton
-                                        variant="ghost"
-                                        aria-label="Info"
-                                        size="icon-xs"
-                                    >
-                                        <InfoIcon />
-                                    </InputGroupButton>
-                                </TooltipTrigger>
-                                <TooltipContent side='top' align='start'  className='rounded-full'>
-                                    <p>Si es la primera vez que ingresa al sistema, por favor, digite su documento.</p>
-                                </TooltipContent>
-                            </Tooltip>
+                            <TooltipProvider delayDuration={200}>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <InputGroupButton
+                                            variant="ghost"
+                                            aria-label="Info"
+                                            size="icon-xs"
+                                        >
+                                            <InfoIcon />
+                                        </InputGroupButton>
+                                    </TooltipTrigger>
+                                    <TooltipContent side='top' align='start' className='rounded-full'>
+                                        <p>Si es la primera vez que ingresa al sistema, por favor, digite su documento.</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
 
                         </InputGroupAddon>
                         <InputGroupInput

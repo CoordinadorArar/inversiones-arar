@@ -54,7 +54,7 @@ export default function Header() {
 
     return (
         <header className='fixed top-0 left-1/2 -translate-x-1/2 z-50 w-full'>
-            <div className='container mx-auto mt-4 px-4 sm:px-6'>
+            <div className='container mx-auto mt-4 px-4 '>
                 <div className='bg-background/95 backdrop-blur-sm rounded-2xl border border-primary/10 shadow-md transition-shadow px-4 sm:px-6 py-1 flex items-center justify-between'>
                     {/* Logo */}
                     <Link
@@ -128,7 +128,7 @@ export default function Header() {
                         </DropdownMenu>
 
                         {/* Separador visual */}
-                        <div className="hidden sm:block h-6 w-px bg-border"></div>
+                        <div className="hidden lg:block h-6 w-px bg-border"></div>
 
                         {/* Botón Intranet */}
                         <Link href={route('login')} className="hidden lg:block">

@@ -4,10 +4,33 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * Migración para crear la tabla 'pqrsds'.
+ * 
+ * Propósito: Almacenar PQRs (Peticiones, Quejas, Reclamos, Sugerencias, Denuncias).
+ * Incluye datos personales, contacto, descripción, adjuntos y seguimiento.
+ * 
+ * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
+ * @version 1.0
+ * @date 2025-11-18
+ */
+
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * BLOQUE: up - Crear tabla 'pqrsds'.
+     * 
+     * Campos principales:
+     * - Información PQR: empresa_id, tipo_pqrs_id (FKs).
+     * - Datos personales: nombre, apellido, tipo_identificacion_id (FK), numero_identificacion.
+     * - Contacto: correo, telefono, departamento_codigo, ciudad_codigo, direccion, relacion.
+     * - Descripción: descripcion (text), adjuntos (JSON), directorio (path a archivos).
+     * - Seguimiento: estado_id (FK), usuario_asignado_id (FK nullable), fechas (creacion/modificacion/finalizacion).
+     * - Soft deletes y índices para búsquedas eficientes.
+     * 
+     * Propósito: Tabla central para gestionar PQRs con integridad referencial.
+     * 
+     * @return void
      */
     public function up(): void
     {
@@ -65,7 +88,11 @@ return new class extends Migration
     }
 
     /**
-     * Reverse the migrations.
+     * BLOQUE: down - Eliminar tabla 'pqrsds'.
+     * 
+     * Propósito: Revertir la migración eliminando la tabla si es necesario (rollback).
+     * 
+     * @return void
      */
     public function down(): void
     {

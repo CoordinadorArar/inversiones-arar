@@ -30,7 +30,12 @@ use Carbon\Carbon;
 class PQRSDController extends Controller
 {
     /**
-     * Método index - Muestra la página de PQRSD
+     * BLOQUE: Método index - Muestra la página de PQRSD.
+     * 
+     * Carga datos de departamentos, ciudades, tipos PQRs e identificaciones desde DB.
+     * Pasa datos a componente React 'Public/PQRSD' vía Inertia.
+     * 
+     * Propósito: Renderizar formulario de PQRs con opciones dinámicas.
      * 
      * @return \Inertia\Response
      */
@@ -57,14 +62,16 @@ class PQRSDController extends Controller
     }
 
     /**
-     * Método store - Procesa y guarda una nueva denuncia PQRSD.
+     * BLOQUE: Método store - Procesa y guarda una nueva denuncia PQRSD.
      * 
-     * Este método:
-     * 1. Valida los datos (mediante StorePQRSDRequest)
-     * 2. Crea directorio personalizado para archivos adjuntos
-     * 3. Guarda la denuncia en la base de datos
-     * 4. Guarda archivos adjuntos en storage/app/public/pqrsd/{año}/{mes}/{dia}/{id_pqrs}
-     * 5. Envía correos al área responsable y al denunciante 
+     * Pasos:
+     * 1. Valida datos con StorePQRSDRequest.
+     * 2. Crea directorio para adjuntos (pqrsd/año/mes/dia/id).
+     * 3. Guarda PQR en DB con estado inicial 1 (Pendiente).
+     * 4. Procesa y guarda archivos adjuntos en storage.
+     * 5. Envía emails a responsables y confirmación al denunciante.
+     * 
+     * Usa transacciones DB para rollback en errores. Elimina archivos si falla.
      * 
      * @param StorePQRSDRequest $request
      * @return \Illuminate\Http\JsonResponse
@@ -95,11 +102,11 @@ class PQRSDController extends Controller
                 'estado_id' => 1,
             ];
 
-            // Guardar en base de datos
+            // Crear PQR en DB.
             $pqrsd = Pqrsd::create($pqrsdData);
 
-            // ID → radicado organizado
-            $id = str_pad($pqrsd->id, 6, '0', STR_PAD_LEFT);
+            // Generar radicado (ID con padding).
+            $radicado = $radicado;
 
             $attachments = [];
 
@@ -111,14 +118,14 @@ class PQRSDController extends Controller
                 $fechaMes  = ucfirst(now()->translatedFormat('F'));
                 $fechaDia  = now()->format('d');
 
-                $directoryPath = "pqrsd/{$fechaAño}/{$fechaMes}/{$fechaDia}/{$id}"; // Ahora se define aquí
+                $directoryPath = "pqrsd/{$fechaAño}/{$fechaMes}/{$fechaDia}/{$radicado}";
 
                 foreach ($request->file('files') as $index => $file) {
                     // Generar nombre único para el archivo
                     $extension = $file->getClientOriginalExtension();
                     $filename = "archivo_{$index}.{$extension}";
 
-                    // Guardar archivo en storage/app/public/pqrsd/[directorio]
+                    // Guardar en storage público.
                     $path = $file->storeAs($directoryPath, $filename, 'public');
 
                     $attachments[] = [
@@ -128,14 +135,14 @@ class PQRSDController extends Controller
                     ];
                 }
 
-                // Se actualizan los datos de archivos adjuntos y directorio
+                // Actualizar PQR con adjuntos y directorio.
                 $pqrsd->update([
                     'adjuntos' => json_encode($attachments),
                     'directorio' => $directoryPath,
                 ]);
             }
 
-            // Preparar datos para los correos
+            // Preparar datos para emails (consulta modelos para nombres).
             $empresa       = Empresa::find($validated['empresa'])->f010_razon_social;
             $tipoPqrs      = TipoPqrs::find($validated['tipoPqrs'])->nombre;
             $tipoId        = TipoIdentificacion::find($validated['tipoId'])->abreviatura;
@@ -149,7 +156,7 @@ class PQRSDController extends Controller
 
             $emailData = [
                 'id' => $pqrsd->id,
-                'radicado' => str_pad($pqrsd->id, 6, '0', STR_PAD_LEFT),
+                'radicado' => $radicado,
                 'empresa' => $empresa,
                 'tipo_pqrs' => $tipoPqrs,
                 'nombre_completo' => $nombreCompleto,
@@ -174,12 +181,12 @@ class PQRSDController extends Controller
                 ->bcc($destinatarios['copia'])
                 ->send(new PQRSDFormMail($emailData, $attachments));
 
-            // Si no es anónimo, enviar correo de confirmación al denunciante
+            // Enviar correo de confirmación al denunciante
             Mail::to($validated['correo'])
                 ->send(new PQRSDConfirmationMail([
                     'nombre' => $validated['nombre'],
                     'apellido' => $validated['apellido'],
-                    'numero_radicado' => str_pad($pqrsd->id, 6, '0', STR_PAD_LEFT),
+                    'numero_radicado' => $radicado,
                     'tipo_pqrs' => $tipoPqrs
                 ]));
 
@@ -187,12 +194,13 @@ class PQRSDController extends Controller
 
             return response()->json([
                 'message' => '¡PQRSD enviada correctamente!',
-                'radicado' => str_pad($pqrsd->id, 6, '0', STR_PAD_LEFT)
+                'radicado' => $radicado
             ], 200);
+
         } catch (\Exception $e) {
             DB::rollBack();
 
-            // Eliminar archivos si hubo error (solo si el directorio se creó)
+            // Eliminar archivos si hubo error
             if (isset($directoryPath)) {
                 Storage::disk('public')->deleteDirectory($directoryPath);
             }
@@ -210,7 +218,9 @@ class PQRSDController extends Controller
 
 
     /**
-     * Determina los destinatarios del correo según la relación con la empresa
+     * BLOQUE: Método getDestinatarios - Determina emails según relación.
+     * 
+     * Lógica: Empleados van a control interno, otros a jurídico/desarrollo.
      * 
      * @param string|null $relacion
      * @return array
@@ -226,7 +236,7 @@ class PQRSDController extends Controller
             ];
         }
 
-        // Para otros casos (cliente, proveedor, otro, anónimo)
+        // Para otros casos (cliente, proveedor, otro)
         return [
             'principal' => 'desarrollo01@inversionesarar.com',
             // 'principal' => 'juridico01@inversionesarar.com',

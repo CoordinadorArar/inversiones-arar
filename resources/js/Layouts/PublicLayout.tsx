@@ -9,6 +9,7 @@
 
 import Footer from "@/Components/Footer";
 import Header from "@/Components/Header";
+import ScrollToTop from "@/Components/ScrollToTop";
 import { Toaster } from "@/components/ui/toaster"
 
 export default function PublicLayout({ children }) {
@@ -18,6 +19,7 @@ export default function PublicLayout({ children }) {
             <Header />
             {/* children: Contenido dinámico de la página (ej. secciones de Home). */}
             {children}
+            <ScrollToTop />
             {/* Toaster: Componente para mostrar notificaciones/toasts (ej. éxito/error)*/}
             <Toaster />
             {/* Footer: Pie de página común con info/contacto. */}

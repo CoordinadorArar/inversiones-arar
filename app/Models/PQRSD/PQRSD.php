@@ -7,18 +7,30 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * Modelo PQRSD.
+ * 
+ * Propósito: Representar PQRs (Peticiones, Quejas, etc.) en la tabla 'pqrsds'.
+ * Tabla central para gestionar PQRs con datos personales, contacto y seguimiento.
+ * 
+ * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
+ * @version 1.0
+ * @date 2025-11-18
+ */
+
 class PQRSD extends Model
 {
     /** @use HasFactory<\Database\Factories\PQRSDFactory> */
     use HasFactory;
-    use HasAuditoria;
-    use SoftDeletes;
+    use HasAuditoria;  // Trait para registrar cambios en auditoría automáticamente.
+    use SoftDeletes;   // Soft deletes: marca deleted_at en lugar de eliminar.
 
+    // Tabla específica.
     protected $table = 'pqrsds';
 
     /**
-     * The attributes that are mass assignable.
-     *
+     * Campos mass assignable (todos los campos editables).
+     * 
      * @var array<int, string>
      */
     protected $fillable = [
@@ -42,9 +54,10 @@ class PQRSD extends Model
         'fecha_finalizacion',
     ];
 
-
+    // Deshabilitar timestamps automáticos (usa fecha_creacion/modificacion manuales).
     public $timestamps = false;
 
+    // Campos tratados como fechas.
     protected $dates = [
         'fecha_creacion',
         'fecha_modificacion',

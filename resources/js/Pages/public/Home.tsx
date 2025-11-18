@@ -11,7 +11,7 @@
 import PublicLayout from '@/Layouts/PublicLayout';
 import { Head, Link } from '@inertiajs/react';
 import { Card, CardContent } from "@/components/ui/card";
-import { Target, Users, Building2, ArrowRight } from "lucide-react";
+import { Target, Users, Building2, ArrowRight, Lightbulb, TrendingUp, Eye } from "lucide-react";
 import { Button } from '@/components/ui/button';
 import AnimatedCounter from "@/components/AnimatedCounter";
 
@@ -28,10 +28,10 @@ export default function Home() {
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="grid md:grid-cols-2 gap-12 items-center">
                             <div>
-                                <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight text-primary">
+                                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
                                     Inversiones Arar
                                 </h1>
-                                <p className="text-lg md:text-xl text-accent-foreground/80 mb-8">
+                                <p className="text-base md:text-lg text-muted-foreground mb-8">
                                     Holding empresarial con más de 20 años de experiencia, comprometido con el crecimiento
                                     sostenible y el desarrollo económico de la región Santander.
                                 </p>
@@ -43,7 +43,7 @@ export default function Home() {
                                             <ArrowRight className="ml-2 h-4 w-4" />
                                         </Button>
                                     </Link>
-                                    <Button  variant="outline" asChild>
+                                    <Button variant="outline" asChild>
                                         <a href="#nosotros">Sobre nosotros</a>
                                     </Button>
                                 </div>
@@ -52,7 +52,7 @@ export default function Home() {
                                 <img
                                     src="images/logo-arar.png"
                                     alt="Inversiones Arar"
-                                    className="w-full max-w-md h-auto transform -translate-y-10"
+                                    className="w-full max-w-md h-auto"
                                 />
                             </div>
                         </div>
@@ -138,43 +138,96 @@ export default function Home() {
                 </section>
 
                 {/* Sección Sobre Nosotros */}
-                <section id="nosotros" className="py-20 bg-gradient-to-b from-primary/20 via-secondary/30 to-secondary/30 scroll-mt-16">
+                <section id="nosotros" className="py-20 bg-gradient-to-b from-primary/10 via-secondary/30 to-secondary/30 scroll-mt-5">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="max-w-6xl mx-auto">
-                            <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center">Sobre Nosotros</h2>
-
-                            <div className="space-y-6 text-accent-foreground/80 mb-12">
-                                <p className="text-lg">
-                                    Inversiones Arar S.A.S. es un holding empresarial con sede en Floridablanca, Santander,
-                                    con más de 20 años de trayectoria en la gestión y desarrollo de empresas líderes
+                            <h2 className="text-center text-3xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
+                                Sobre Nosotros
+                            </h2>
+                            <div className="max-w-3xl mx-auto space-y-4 text-center mb-16">
+                                <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
+                                    Inversiones Arar S.A.S. es un <span className="text-foreground font-semibold">holding empresarial</span> con sede en Floridablanca, Santander,
+                                    con más de <span className="text-primary font-semibold">20 años de trayectoria</span> en la gestión y desarrollo de empresas líderes
                                     en diversos sectores de la economía colombiana.
                                 </p>
-                                <p className="text-lg">
+                                <p className="text-lg text-muted-foreground leading-relaxed">
                                     Ubicados en el Ecoparque Empresarial Natura, nos dedicamos a actividades inmobiliarias
                                     y a la administración estratégica de un portafolio diversificado de empresas en los
                                     sectores de seguros, manufactura, servicios financieros y desarrollo inmobiliario.
                                 </p>
                             </div>
 
-                            <div className="grid md:grid-cols-2 gap-8">
-                                <Card className="group border-2 py-0 border-primary/20 hover:bg-primary/5 transition-all duration-300 hover:-translate-y-1">
+                            <div className="grid md:grid-cols-2 gap-8 mb-12">
+                                <Card className="group border-2 border-primary/20 hover:border-primary/40 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-gradient-to-br from-card to-card/80">
                                     <CardContent className="p-8">
-                                        <h3 className="text-2xl font-bold mb-4 text-primary">Misión</h3>
-                                        <p className="text-muted-foreground">
+                                        <div className="flex items-start gap-4 mb-4">
+                                            <div className="p-3 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+                                                <Target className="h-8 w-8" />
+                                            </div>
+                                            <h3 className="text-2xl font-bold text-primary group-hover:text-primary/80 transition-colors mt-2">
+                                                Misión
+                                            </h3>
+                                        </div>
+                                        <p className="text-muted-foreground leading-relaxed">
                                             Crear valor sostenible a través de la gestión eficiente de un portafolio
-                                            diversificado de empresas, promoviendo la excelencia operativa, la innovación
-                                            y el compromiso con nuestros colaboradores y comunidades.
+                                            diversificado de empresas, promoviendo la <span className="text-foreground font-medium">excelencia operativa</span>,
+                                            la <span className="text-foreground font-medium">innovación</span> y el compromiso con nuestros colaboradores y comunidades.
                                         </p>
                                     </CardContent>
                                 </Card>
 
-                                <Card className="border-2 py-0 border-primary/20 hover:bg-primary/5 transition-all duration-300 hover:-translate-y-1">
+                                <Card className="group border-2 border-primary/20 hover:border-primary/40 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-gradient-to-br from-card to-card/80">
                                     <CardContent className="p-8">
-                                        <h3 className="text-2xl font-bold mb-4 text-primary">Visión</h3>
-                                        <p className="text-muted-foreground">
-                                            Ser reconocidos como un holding empresarial líder en Colombia, referente en
-                                            gestión corporativa, desarrollo sostenible y generación de oportunidades
-                                            para todos nuestros grupos de interés.
+                                        <div className="flex items-start gap-4 mb-4">
+                                            <div className="p-3 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+                                                <Eye className="h-8 w-8" />
+                                            </div>
+                                            <h3 className="text-2xl font-bold text-primary group-hover:text-primary/80 transition-colors mt-2">
+                                                Visión
+                                            </h3>
+                                        </div>
+                                        <p className="text-muted-foreground leading-relaxed">
+                                            Ser reconocidos como un <span className="text-foreground font-medium">holding empresarial líder</span> en Colombia,
+                                            referente en gestión corporativa, <span className="text-foreground font-medium">desarrollo sostenible</span> y
+                                            generación de oportunidades para todos nuestros grupos de interés.
+                                        </p>
+                                    </CardContent>
+                                </Card>
+                            </div>
+
+                            <div className="grid md:grid-cols-3 gap-6">
+                                <Card className="group border border-border hover:border-primary/30 transition-all duration-300 hover:shadow-lg">
+                                    <CardContent className="p-6 text-center">
+                                        <div className="inline-flex p-3 rounded-full bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300 mb-4">
+                                            <Lightbulb className="h-6 w-6" />
+                                        </div>
+                                        <h4 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors">Innovación</h4>
+                                        <p className="text-sm text-muted-foreground">
+                                            Impulsamos la transformación digital y la mejora continua en todos nuestros procesos.
+                                        </p>
+                                    </CardContent>
+                                </Card>
+
+                                <Card className="group border border-border hover:border-primary/30 transition-all duration-300 hover:shadow-lg">
+                                    <CardContent className="p-6 text-center">
+                                        <div className="inline-flex p-3 rounded-full bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300 mb-4">
+                                            <TrendingUp className="h-6 w-6" />
+                                        </div>
+                                        <h4 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors">Crecimiento</h4>
+                                        <p className="text-sm text-muted-foreground">
+                                            Buscamos el desarrollo sostenible y la expansión estratégica de nuestro portafolio.
+                                        </p>
+                                    </CardContent>
+                                </Card>
+
+                                <Card className="group border border-border hover:border-primary/30 transition-all duration-300 hover:shadow-lg">
+                                    <CardContent className="p-6 text-center">
+                                        <div className="inline-flex p-3 rounded-full bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300 mb-4">
+                                            <Building2 className="h-6 w-6" />
+                                        </div>
+                                        <h4 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors">Solidez</h4>
+                                        <p className="text-sm text-muted-foreground">
+                                            Más de 20 años de experiencia respaldan nuestra gestión empresarial.
                                         </p>
                                     </CardContent>
                                 </Card>
@@ -197,7 +250,7 @@ export default function Home() {
 
                         <Link href={route('contact')}>
                             <Button size="lg"
-                                className="shadow-lg hover:shadow-xl transform transition-all duration-300 hover:scale-105 hover:shadow-2xl1"
+                                className="shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-2xl"
                             >
                                 Contáctanos
                             </Button>

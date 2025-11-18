@@ -6,10 +6,28 @@ use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
+/**
+ * Seeder principal de la base de datos.
+ * 
+ * Propósito: Ejecutar otros seeders para poblar la DB con datos iniciales.
+ * Llamado desde artisan (php artisan db:seed) para setup inicial.
+ * 
+ * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
+ * @version 1.0
+ * @date 2025-11-18
+ */
+
 class DatabaseSeeder extends Seeder
 {
     /**
-     * Seed the application's database.
+     * BLOQUE: run - Ejecutar seeders.
+     * 
+     * Llama a seeders específicos para poblar tablas auxiliares de PQRs.
+     * Orden: Tipos PQRs, Tipos Identificaciones, Estados PQRs.
+     * 
+     * Propósito: Asegurar que las tablas de referencia tengan datos antes de PQRs.
+     * 
+     * @return void
      */
     public function run(): void
     {

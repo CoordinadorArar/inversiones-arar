@@ -9,8 +9,8 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * Mailable para enviar correo de confirmación al denunciante (no anónimo)
- * Confirma la recepción de la denuncia y proporciona número de radicado
+ * Mailable para enviar correo de confirmación al denunciante.
+ * Confirma la recepción de la denuncia y proporciona número de radicado.
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
  * @version 1.0
@@ -22,14 +22,14 @@ class PQRSDConfirmationMail extends Mailable
     use Queueable, SerializesModels;
 
     /**
-     * Datos del denunciante y radicado
+     * Datos del denunciante y radicado.
      * 
      * @var array
      */
     public $confirmationData;
 
     /**
-     * Constructor del Mailable
+     * BLOQUE: Constructor - Inicializa datos de confirmación.
      * 
      * @param array $confirmationData Datos de confirmación
      */
@@ -39,7 +39,7 @@ class PQRSDConfirmationMail extends Mailable
     }
 
     /**
-     * Configura el sobre del correo
+     * BLOQUE: envelope - Configura sobre del correo (asunto con radicado).
      * 
      * @return \Illuminate\Mail\Mailables\Envelope
      */
@@ -51,7 +51,7 @@ class PQRSDConfirmationMail extends Mailable
     }
 
     /**
-     * Configura el contenido del correo
+     * BLOQUE: content - Define vista y pasa datos.
      * 
      * @return \Illuminate\Mail\Mailables\Content
      */
@@ -64,7 +64,7 @@ class PQRSDConfirmationMail extends Mailable
     }
 
     /**
-     * No hay adjuntos en correos de confirmación
+     * BLOQUE: attachments - Sin adjuntos en confirmaciones.
      * 
      * @return array<int, \Illuminate\Mail\Mailables\Attachment>
      */

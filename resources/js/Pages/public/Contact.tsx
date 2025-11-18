@@ -30,16 +30,28 @@ import { useToast } from "@/hooks/use-toast";
 import InputError from '@/Components/InputError';
 import { z } from "zod";
 
+/**
+ * Interface FormData: Define la estructura de los datos del formulario de contacto.
+ * 
+ * Cada propiedad corresponde a un campo del form, con tipos específicos.
+ * Se usa para tipar el estado 'data' y asegurar consistencia en TypeScript.
+ */
 interface FormData {
-    subject: string;
-    name: string;
-    company: string;
-    email: string;
-    phone: string;
-    message: string;
-    acceptsPolicy: boolean;
+    subject: string;        // Asunto del mensaje (obligatorio, string).
+    name: string;           // Nombre completo del remitente (obligatorio, string).
+    company: string;        // Empresa del remitente (opcional, string).
+    email: string;          // Correo electrónico (obligatorio, string válido como email).
+    phone: string;          // Teléfono (obligatorio, string numérico).
+    message: string;        // Mensaje del contacto (obligatorio, string).
+    acceptsPolicy: boolean; // Checkbox para aceptar política (obligatorio true).
 }
 
+/**
+ * Constante LIMITS: Define límites de caracteres para cada campo del formulario.
+ * 
+ * Se usa en validaciones de Zod y en handleLimit para prevenir input excesivo.
+ * 'as const' asegura que sea tratado como literal, no como tipo amplio.
+ */
 const LIMITS = {
     subject: 50,
     name: 30,
@@ -49,104 +61,155 @@ const LIMITS = {
     message: 500,
 } as const;
 
+/**
+ * Schema contactSchema: Validación completa del formulario usando Zod.
+ * 
+ * Define reglas para cada campo: obligatorios, formatos, longitudes, regex.
+ * Se usa en handleSubmit para validar antes de enviar.
+ * Cada campo tiene mensajes de error personalizados.
+ */
 const contactSchema = z.object({
+    // Campo subject: Obligatorio, solo letras/espacios, max 50 chars.
     subject: z.string()
-        .trim()
-        .min(1, "Este campo es obligatorio")
-        .max(LIMITS.subject, `El asunto debe tener máximo ${LIMITS.subject} caracteres`)
-        .regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/, "Solo se permiten letras"),
+        .trim()  // Elimina espacios al inicio/fin.
+        .min(1, "Este campo es obligatorio")  // Debe tener al menos 1 char.
+        .max(LIMITS.subject, `El asunto debe tener máximo ${LIMITS.subject} caracteres`)  // Max según LIMITS.
+        .regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/, "Solo se permiten letras"),  // Regex para letras y espacios.
+
+    // Campo name: Similar a subject, obligatorio, solo letras.
     name: z.string()
         .trim()
         .min(1, "Este campo es obligatorio")
         .max(LIMITS.name, `El nombre debe tener máximo ${LIMITS.name} caracteres`)
         .regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/, "Solo se permiten letras"),
+
+    // Campo company: Opcional, max 100 chars, permite vacío.
     company: z.string()
         .trim()
         .max(LIMITS.company, `La empresa debe tener máximo ${LIMITS.company} caracteres`)
-        .optional()
-        .or(z.literal('')),
+        .optional()  // No obligatorio.
+        .or(z.literal('')),  // Permite string vacío.
+
+    // Campo email: Obligatorio, formato email válido, max 50.
     email: z.string()
         .trim()
         .min(1, "Este campo es obligatorio")
-        .email("Ingrese un correo electrónico válido")
+        .email("Ingrese un correo electrónico válido")  // Valida formato email.
         .max(LIMITS.email, `El correo debe tener máximo ${LIMITS.email} caracteres`),
+
+    // Campo phone: Obligatorio, solo números, min 7 max 15, permite + al inicio.
     phone: z.string()
         .trim()
         .min(1, "Este campo es obligatorio")
-        .regex(/^\+?[0-9]+$/, "Ingrese un número de teléfono válido")
-        .min(7, "El teléfono debe tener al menos 7 dígitos")
+        .regex(/^\+?[0-9]+$/, "Ingrese un número de teléfono válido")  // Solo dígitos, opcional +.
+        .min(7, "El teléfono debe tener al menos 7 dígitos")  // Mínimo lógico.
         .max(LIMITS.phone, `El teléfono debe tener máximo ${LIMITS.phone} caracteres`),
+
+    // Campo message: Obligatorio, min 10 max 500 chars.
     message: z.string()
         .trim()
         .min(1, "Este campo es obligatorio")
-        .min(10, "El mensaje debe tener al menos 10 caracteres")
+        .min(10, "El mensaje debe tener al menos 10 caracteres")  // Mínimo para mensaje útil.
         .max(LIMITS.message, `El mensaje debe tener máximo ${LIMITS.message} caracteres`),
+
+    // Campo acceptsPolicy: Booleano, debe ser true para pasar.
     acceptsPolicy: z.boolean()
-        .refine(val => val === true, "Debes aceptar la política de privacidad"),
+        .refine(val => val === true, "Debes aceptar la política de privacidad"),  // Refine para mensaje custom.
 });
 
 export default function Contact() {
+    // Estado para datos del formulario: inicializado con valores vacíos/default.
+    // Se actualiza con setData en onChange de inputs.
     const [data, setData] = useState<FormData>({
-        subject: "",
-        name: "",
-        company: "",
-        email: "",
-        phone: "",
-        message: "",
-        acceptsPolicy: false,
+        subject: "",       // Asunto vacío.
+        name: "",          // Nombre vacío.
+        company: "",       // Empresa vacía (opcional).
+        email: "",         // Email vacío.
+        phone: "",         // Teléfono vacío.
+        message: "",       // Mensaje vacío.
+        acceptsPolicy: false,  // Checkbox en false.
     });
-    const [errors, setErrors] = useState<Record<string, string>>({});
-    const [processing, setProcessing] = useState(false);
 
+    // Estado para errores: objeto con claves de campos y mensajes.
+    // Se llena en validación Zod, se muestra en InputError.
+    const [errors, setErrors] = useState<Record<string, string>>({});
+
+    // Estado para processing: indica si está enviando (deshabilita form).
+    // Se setea true en envío, false en finally.
+    const [processing, setProcessing] = useState(false);
+    // Hook toast: para notificaciones de éxito/error.
     const { toast } = useToast();
 
+    /**
+    * Función handleSubmit: Maneja envío del formulario.
+    * 
+    * Previene default, limpia errores, valida con Zod, envía fetch si válido.
+    * Maneja respuestas: éxito (toast + reset), errores (setea errores o toast).
+    * Catch para errores de red. Finally limpia processing.
+    * 
+    * @param e Evento de submit del form.
+    */
     const handleSubmit = async (e: React.FormEvent) => {
+        // Previene recarga de página.
         e.preventDefault();
-        setErrors({});
 
+        // Limpia errores previos.
+        setErrors({});
+        // Valida data con schema Zod.
         const result = contactSchema.safeParse(data);
 
+        // Si validación falla.
         if (!result.success) {
+            // Inicializa objeto para errores.
             const newErrors: Record<string, string> = {};
-
+            // Verifica que error sea ZodError (seguridad).
             if (result.error instanceof z.ZodError) {
+                // Itera issues y mapea a newErrors.
                 result.error.issues.forEach((err) => {
+                    // Si path tiene elementos, usa primero como clave.
                     if (err.path.length > 0) {
                         newErrors[err.path[0].toString()] = err.message;
                     }
                 });
             }
-
+            // Setea errores en estado.
             setErrors(newErrors);
-
+            // Scroll al primer error.
             const firstErrorField = Object.keys(newErrors)[0];
             document.getElementById(firstErrorField)?.scrollIntoView({
                 behavior: 'smooth',
                 block: 'center'
             });
-
+            // Sale sin enviar.
             return;
         }
 
+        // Si válido, activa processing.
         setProcessing(true);
+
         try {
+            // Fetch POST a ruta contact.store.
             const response = await fetch(route('contact.store'), {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                    'Content-Type': 'application/json',  // Envía JSON.
+                    'Accept': 'application/json',        // Espera JSON.
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',  // Token CSRF.
                 },
-                body: JSON.stringify(data),
+                body: JSON.stringify(data),  // Serializa data a JSON.
             });
-            const result = await response.json();
 
+            // Parsea respuesta.
+            const result = await response.json();
+            // Si OK (200).
             if (response.ok) {
+                // Toast éxito.
                 toast({
                     title: "¡Mensaje enviado!",
                     description: "Nos pondremos en contacto contigo pronto.",
                     variant: "success",
                 });
+                // Reset data a valores iniciales.
                 setData({
                     subject: "",
                     name: "",
@@ -157,8 +220,10 @@ export default function Contact() {
                     acceptsPolicy: false,
                 });
             } else if (response.status === 422) {
+                // Errores backend: setea en estado.
                 setErrors(result.errors || {});
             } else {
+                // Otros errores: toast.
                 toast({
                     title: "Error al enviar",
                     description: result.error || "Intenta de nuevo más tarde.",
@@ -166,12 +231,14 @@ export default function Contact() {
                 });
             }
         } catch (error) {
+            // Error de conexión.
             toast({
                 title: "Error de conexión",
                 description: "Revisa tu conexión e intenta de nuevo.",
                 variant: "destructive",
             });
         } finally {
+            // Siempre desactiva processing.
             setProcessing(false);
         }
     };
@@ -180,26 +247,29 @@ export default function Contact() {
         <PublicLayout>
             <Head title="Contacto" />
             <main className="flex-1">
-                <section className="relative pb-20 pt-28 bg-gradient-to-br from-primary/30 via-background to-secondary overflow-hidden">
-
-                    <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                        {/* Header mejorado */}
-                        <div className="text-center max-w-3xl mx-auto mb-16">
-                            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary mb-6 leading-tight">
+                {/* Hero Section - RESPONSIVE */}
+                <section className="relative pb-8 md:pb-10 pt-24 md:pt-28 bg-gradient-to-br from-primary/30 via-accent/20 to-background overflow-hidden">
+                    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="max-w-3xl">
+                            <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-primary mb-4 md:mb-6 leading-tight">
                                 Contáctanos
                             </h1>
-                            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                            <p className="text-base md:text-lg text-muted-foreground">
                                 Nuestro equipo está disponible para atender tus necesidades y responder
                                 todas tus preguntas. Te responderemos en nuestra disponibilidad de tiempo.
                             </p>
                         </div>
+                    </div>
+                </section>
 
-                        <div className="grid lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+                {/* Sección Principal - RESPONSIVE */}
+                <section className="relative py-8 md:py-10 bg-secondary/30 border-t">
+                    <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">                                            
+                        <div className="grid lg:grid-cols-3 gap-6 md:gap-8">
                             {/* Info de contacto - Columna izquierda */}
                             <div className="lg:col-span-1 space-y-6">
                                 {/* Tarjetas de contacto mejoradas */}
-                                <Card className="group hover:shadow-lg transition-all duration-300 border-primary/20 hover:border-primary/40 overflow-hidden py-0">
-
+                                <Card className="group hover:shadow-lg transition-all duration-300 border-primary/20 hover:border-primary/40 overflow-hidden">
                                     <CardContent className="relative p-6">
                                         <div className="flex items-start gap-4">
                                             <div className="relative">
@@ -224,8 +294,7 @@ export default function Contact() {
                                     </CardContent>
                                 </Card>
 
-                                <Card className="group hover:shadow-lg transition-all duration-300 border-primary/20 hover:border-primary/40 overflow-hidden py-0">
-
+                                <Card className="group hover:shadow-lg transition-all duration-300 border-primary/20 hover:border-primary/40 overflow-hidden">
                                     <CardContent className="relative p-6">
                                         <div className="flex items-start gap-4">
                                             <div className="relative">
@@ -250,7 +319,7 @@ export default function Contact() {
                                     </CardContent>
                                 </Card>
 
-                                <Card className="group hover:shadow-lg transition-all duration-300 border-primary/20 hover:border-primary/40 overflow-hidden py-0">
+                                <Card className="group hover:shadow-lg transition-all duration-300 border-primary/20 hover:border-primary/40 overflow-hidden">
                                     <CardContent className="relative p-6">
                                         <div className="flex items-start gap-4">
                                             <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center flex-shrink-0 transition-transform shadow-lg">
@@ -262,7 +331,7 @@ export default function Contact() {
                                                     href="https://maps.app.goo.gl/mm8MPxAzZs99BV1D8"
                                                     target='_blank'
                                                     rel="noopener noreferrer"
-                                                    className="text-sm text-muted-foreground hover:text-primary transition-colors hover:text-primary"
+                                                    className="text-sm text-muted-foreground transition-colors hover:text-primary"
                                                 >
                                                     <span className="block mb-1">Km 2 • Torre Uno • Oficina 206</span>
                                                     <span className="block mb-1">Ecoparque Empresarial Natura</span>
@@ -276,14 +345,13 @@ export default function Contact() {
                                 </Card>
 
                                 {/* Horario de atención */}
-                                <Card className="py-0 bg-gradient-to-br from-primary/70 to-primary shadow-lg border hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                                <Card className="bg-gradient-to-br from-primary/70 to-primary shadow-lg border hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                                     <CardContent className="p-6">
                                         <h3 className="font-semibold text-xl mb-4 text-white tracking-wide drop-shadow-sm">
                                             Horario de Atención
                                         </h3>
 
                                         <div className="space-y-3 text-sm">
-
                                             <div className="flex justify-between items-center">
                                                 <span className="text-orange-50/90">Lunes a Viernes</span>
                                                 <span className="font-semibold text-white drop-shadow-sm">
@@ -304,27 +372,25 @@ export default function Contact() {
                                                     Cerrado
                                                 </span>
                                             </div>
-
                                         </div>
                                     </CardContent>
                                 </Card>
-
                             </div>
 
-                            {/* Formulario - Columna derecha (más ancha) */}
+                            {/* Formulario - Columna derecha (más ancha) - RESPONSIVE */}
                             <div className="lg:col-span-2">
-                                <Card className="shadow-xl border-primary/20 overflow-hidden py-0">
-                                    <CardContent className="p-6 md:p-8">
+                                <Card className="shadow-xl border-primary/20 overflow-hidden">
+                                    <CardContent className="p-4 sm:p-6 md:p-8">
                                         {/* Header del formulario */}
-                                        <div className="pb-8">
-                                            <h2 className="text-2xl font-bold text-primary mb-2">Envíanos un mensaje</h2>
-                                            <p className="text-sm text-muted-foreground">
+                                        <div className="pb-6 md:pb-8">
+                                            <h2 className="text-xl md:text-2xl font-bold text-primary mb-2">Envíanos un mensaje</h2>
+                                            <p className="text-xs md:text-sm text-muted-foreground">
                                                 Completa el formulario y nos pondremos en contacto contigo lo antes posible
                                             </p>
                                         </div>
-                                        <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+                                        <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6" noValidate>
                                             {/* Grid de campos */}
-                                            <div className="grid md:grid-cols-2 gap-6">
+                                            <div className="grid md:grid-cols-2 gap-4 md:gap-6">
                                                 {/* Asunto */}
                                                 <div className="md:col-span-2 space-y-2">
                                                     <Label htmlFor="subject" className='flex items-center gap-2 after:ml-0.5 after:text-red-500 after:content-["*"]'>
@@ -344,7 +410,7 @@ export default function Contact() {
                                                         maxLength={LIMITS.subject}
                                                     />
                                                     <div className="relative">
-                                                        <InputError className='absolute top-0 !-mt-1' message={errors.subject} />
+                                                        <InputError className='absolute top-0 !-mt-2 pt-1' message={errors.subject} />
                                                         <span className="text-xs text-muted-foreground absolute top-0 right-0">
                                                             {data.subject.length}/{LIMITS.subject}
                                                         </span>
@@ -370,7 +436,7 @@ export default function Contact() {
                                                         maxLength={LIMITS.name}
                                                     />
                                                     <div className="relative">
-                                                        <InputError className='absolute top-0 !-mt-1' message={errors.name} />
+                                                        <InputError className='absolute top-0 !-mt-2 pt-1' message={errors.name} />
                                                         <span className="text-xs text-muted-foreground absolute top-0 right-0">
                                                             {data.name.length}/{LIMITS.name}
                                                         </span>
@@ -397,7 +463,7 @@ export default function Contact() {
                                                         maxLength={LIMITS.email}
                                                     />
                                                     <div className="relative">
-                                                        <InputError className='absolute top-0 !-mt-1' message={errors.email} />
+                                                        <InputError className='absolute top-0 !-mt-2 pt-1' message={errors.email} />
                                                         <span className="text-xs text-muted-foreground absolute top-0 right-0">
                                                             {data.email.length}/{LIMITS.email}
                                                         </span>
@@ -424,7 +490,7 @@ export default function Contact() {
                                                         maxLength={LIMITS.phone}
                                                     />
                                                     <div className="relative">
-                                                        <InputError className='absolute top-0 !-mt-1' message={errors.phone} />
+                                                        <InputError className='absolute top-0 !-mt-2 pt-1' message={errors.phone} />
                                                         <span className="text-xs text-muted-foreground absolute top-0 right-0">
                                                             {data.phone.length}/{LIMITS.phone}
                                                         </span>
@@ -450,7 +516,7 @@ export default function Contact() {
                                                         maxLength={LIMITS.company}
                                                     />
                                                     <div className="relative">
-                                                        <InputError className='absolute top-0 !-mt-1' message={errors.company} />
+                                                        <InputError className='absolute top-0 !-mt-2 pt-1' message={errors.company} />
                                                         <span className="text-xs text-muted-foreground absolute top-0 right-0">
                                                             {data.company.length}/{LIMITS.company}
                                                         </span>
@@ -478,7 +544,7 @@ export default function Contact() {
                                                     maxLength={LIMITS.message}
                                                 />
                                                 <div className="relative">
-                                                    <InputError className='absolute top-0 !-mt-1' message='{errors.message}' />
+                                                    <InputError className='absolute top-0 !-mt-2 pt-1' message={errors.message} />
                                                     <span className="text-xs text-muted-foreground absolute top-0 right-0">
                                                         {data.message.length}/{LIMITS.message}
                                                     </span>
@@ -486,7 +552,7 @@ export default function Contact() {
                                             </div>
 
                                             {/* Checkbox de políticas */}
-                                            <div className="flex items-center space-x-3 px-4 py-2 rounded-lg bg-primary/5 border border-primary/10 !mt-8">
+                                            <div className="flex items-center space-x-3 px-4 py-2 rounded-lg bg-primary/5 border border-primary/10 !mt-6 md:!mt-9">
                                                 <Checkbox
                                                     id="acceptsPolicy"
                                                     checked={data.acceptsPolicy}
@@ -496,7 +562,7 @@ export default function Contact() {
                                                 <div className="grid gap-1.5 leading-none">
                                                     <label
                                                         htmlFor="acceptsPolicy"
-                                                        className="text-sm font-medium leading-relaxed peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                                                        className="text-xs md:text-sm font-medium leading-relaxed peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
                                                     >
                                                         Acepto la{' '}
                                                         <a
@@ -510,7 +576,7 @@ export default function Contact() {
                                                         {' '}y el tratamiento de mis datos personales
                                                     </label>
                                                     {errors.acceptsPolicy && (
-                                                        <InputError className='absolute top-0 !-mt-1' message={errors.acceptsPolicy} />
+                                                        <InputError className='absolute top-0 !-mt-2 pt-1' message={errors.acceptsPolicy} />
                                                     )}
                                                 </div>
                                             </div>
@@ -518,7 +584,7 @@ export default function Contact() {
                                             {/* Botón envío */}
                                             <Button
                                                 type="submit"
-                                                className="w-full text-base font-semibold group"
+                                                className="w-full text-sm md:text-base font-semibold group"
                                                 size="lg"
                                                 disabled={processing || !data.acceptsPolicy}
                                             >

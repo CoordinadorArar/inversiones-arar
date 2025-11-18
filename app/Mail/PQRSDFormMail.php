@@ -55,10 +55,8 @@ class PQRSDFormMail extends Mailable
      */
     public function envelope(): Envelope
     {        
-        $radicado = str_pad($this->pqrsdData['id'], 6, '0', STR_PAD_LEFT);
-        
         return new Envelope(            
-            subject: "Nueva Denuncia PQRSD  - Radicado #{$radicado}",
+            subject: "Nueva Denuncia PQRSD  - Radicado #{$this->pqrsdData['radicado']}",
         );
     }
 
