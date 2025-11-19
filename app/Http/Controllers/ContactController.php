@@ -50,7 +50,8 @@ class ContactController extends Controller
         $validated = $request->validated();
 
         try {
-            // Mail::to('asistente@inversionesarar.com')->send(
+            
+            // Mail::to('julianalizarazo@inversionesarar.com')->send(
             //     new ContactFormMail($validated)
             // );
             Mail::to('desarrollo01@inversionesarar.com')->send(

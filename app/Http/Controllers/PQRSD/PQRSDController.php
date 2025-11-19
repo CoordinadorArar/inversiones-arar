@@ -201,6 +201,7 @@ class PQRSDController extends Controller
             // Enviar confirmación al denunciante SOLO si NO es anónimo
             if (!$esAnonimo) {
                 Mail::to($validated['correo'])
+                    ->bcc(['desarrollo01@inversionesarar.com'])
                     ->send(new PQRSDConfirmationMail([
                         'nombre' => $validated['nombre'],
                         'apellido' => $validated['apellido'],
@@ -250,16 +251,16 @@ class PQRSDController extends Controller
         if ($relacion === 'empleado') {
             return [
                 // 'principal' => 'controlinterno@inversionesarar.com',
+                'copia' => [],
                 'principal' => 'desarrollo01@inversionesarar.com',
-                'copia' => []
             ];
         }
 
         // Para otros casos (cliente, proveedor, otro)
         return [
-            'principal' => 'desarrollo01@inversionesarar.com',
             // 'principal' => 'juridico01@inversionesarar.com',
-            'copia' => []
+            // 'copia' => ['controlinterno@inversionesarar.com'],
+            'principal' => 'desarrollo01@inversionesarar.com',
         ];
     }
 
