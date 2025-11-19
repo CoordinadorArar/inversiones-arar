@@ -64,7 +64,6 @@ export default function Login({ status }: LoginProps) {
     });
 
     const [frontendErrors, setFrontendErrors] = useState<Record<string, string>>({});
-    const [showPassword, setShowPassword] = useState(false);
     const [visibleInfo, setVisibleInfo] = useState(true);
 
     // Hook de Inertia para el envío
@@ -139,26 +138,27 @@ export default function Login({ status }: LoginProps) {
         <GuestLayout showBrandPanel={true}>
             <Head title="Inicio de sesión" />
 
+            {/* Mensaje de status*/}
             {status && (
-                <div className="mb-4 p-3 text-sm font-medium text-green-700 bg-green-50 border border-green-200 rounded-lg text-center">
+                <div className="mb-3 sm:mb-4 p-2.5 sm:p-3 text-xs sm:text-sm font-medium text-green-700 bg-green-50 border border-green-200 rounded-lg text-center">
                     {status}
                 </div>
             )}
 
-            {/* Mensaje informativo de seguridad */}
+            {/* Mensaje informativo*/}
             {(visibleInfo && !status) && (
-                <div className="mb-4 px-4 py-2 bg-primary/5 border border-primary/20 rounded-lg relative">
+                <div className="mb-3 sm:mb-4 px-3 py-2 sm:px-4 sm:py-2.5 bg-primary/5 border border-primary/20 rounded-lg relative">
                     <button
                         onClick={() => setVisibleInfo(false)}
-                        className="absolute top-0 right-0 p-1 rounded-md hover:bg-primary/10 transition"
+                        className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 p-1 rounded-md hover:bg-primary/10 transition"
                         aria-label="Cerrar mensaje"
                     >
-                        <X className="w-4 h-4 text-primary" />
+                        <X className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
                     </button>
 
-                    <div className="flex items-center gap-3">
-                        <Shield className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                        <p className="text-xs text-muted-foreground">
+                    <div className="flex items-start gap-2 sm:gap-3 pr-6">
+                        <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-primary mt-0.5 flex-shrink-0" />
+                        <p className="text-[11px] sm:text-xs text-muted-foreground leading-relaxed">
                             Ingresa tu número de documento y contraseña. Si es tu primer acceso,
                             usa tu número de documento como contraseña inicial.
                         </p>
@@ -166,10 +166,13 @@ export default function Login({ status }: LoginProps) {
                 </div>
             )}
 
-            <form onSubmit={submit} className='space-y-4 mt-2' noValidate>
+            <form onSubmit={submit} className='space-y-3 sm:space-y-4 mt-2' noValidate>
                 {/* Número de documento */}
-                <div className="space-y-2">
-                    <Label htmlFor="numero_documento" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
+                <div className="space-y-1.5 sm:space-y-2">
+                    <Label
+                        htmlFor="numero_documento"
+                        className='text-xs sm:text-sm after:ml-0.5 after:text-red-500 after:content-["*"]'
+                    >
                         Número de Documento
                     </Label>
                     <Input
@@ -183,17 +186,19 @@ export default function Login({ status }: LoginProps) {
                             handleNumberKeyDown(e);
                             handleLimit(e, formData.numero_documento, LIMITS.numero_documento);
                         }}
-                        className={errors.numero_documento ? "border-destructive focus-visible:ring-destructive" : ""}
+                        className={`text-sm sm:text-base h-9 sm:h-10 ${errors.numero_documento ? "border-destructive focus-visible:ring-destructive" : ""}`}
                         maxLength={LIMITS.numero_documento}
                         autoComplete="username"
                     />
-
                     <InputError message={errors.numero_documento} />
                 </div>
 
                 {/* Contraseña */}
-                <div className="space-y-2">
-                    <Label htmlFor="password" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
+                <div className="space-y-1.5 sm:space-y-2">
+                    <Label
+                        htmlFor="password"
+                        className='text-xs sm:text-sm after:ml-0.5 after:text-red-500 after:content-["*"]'
+                    >
                         Contraseña
                     </Label>
 
@@ -209,26 +214,28 @@ export default function Login({ status }: LoginProps) {
                         tooltipMessage="Si es tu primera vez ingresando, usa tu número de documento como contraseña. El sistema te pedirá cambiarla después."
                         showTooltip={true}
                         required
+                        className="text-sm sm:text-base h-9 sm:h-10"
                     />
 
                     <InputError message={errors.password} />
 
-                    {/* Link de olvidó contraseña */}
+                    {/* Link de olvidó contraseña - Más compacto en mobile */}
                     <div className='text-right !mt-0'>
-                        <Link
-                            href={route('password.request')}
-                        >
-                            <Button variant={'link'} className='h-auto'>
+                        <Link href={route('password.request')}>
+                            <Button
+                                variant={'link'}
+                                className='h-auto pb-0 text-xs sm:text-sm'
+                            >
                                 ¿Olvidaste tu contraseña?
                             </Button>
                         </Link>
                     </div>
                 </div>
 
-                {/* Botón de envío */}
+                {/* Botón de envío*/}
                 <Button
                     type="submit"
-                    className="w-full"
+                    className="w-full text-sm sm:text-base"
                     disabled={processing}
                 >
                     {processing ? "Iniciando sesión..." : "Iniciar Sesión"}
@@ -236,7 +243,10 @@ export default function Login({ status }: LoginProps) {
 
                 {/* Link volver al inicio */}
                 <Link href={route('home')}>
-                    <Button variant={'link'} className='h-auto pb-0'>
+                    <Button
+                        variant={'link'}
+                        className='h-auto pb-0 text-xs sm:text-sm'
+                    >
                         Volver al inicio
                     </Button>
                 </Link>

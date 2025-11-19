@@ -11,10 +11,10 @@ import InputError from '@/Components/InputError';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import GuestLayout from '@/Layouts/GuestLayout';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import { AlertCircle, Mail, Shield } from 'lucide-react';
 import { useState } from 'react'; // Agregado para estado local
-import { handleNumberKeyDown, handleLimit } from '@/lib/keydownValidations'; 
+import { handleNumberKeyDown, handleLimit } from '@/lib/keydownValidations';
 import { z } from 'zod';
 
 // Interfaz para los datos del formulario
@@ -119,83 +119,96 @@ export default function ForgotPassword({ status }: ForgotPasswordProps) {
         <GuestLayout showBrandPanel={false} maxWidth="4xl">
             <Head title="Recuperar Contraseña" />
 
-            <div className="mb-4 flex gap-2">
-                {/* Card izquierda: Instrucciones para ingresar documento. */}
-                <div className="flex-1 p-4 bg-primary/5 rounded-lg border border-primary/20 text-sm text-foreground/80 leading-relaxed">
+            {/* Cards informativos - Stack en mobile, lado a lado en desktop */}
+            <div className="mb-3 sm:mb-4 flex flex-col sm:flex-row gap-3 sm:gap-2">
+                {/* Card izquierda: Instrucciones */}
+                <div className="flex-1 p-3 sm:p-4 bg-primary/5 rounded-lg border border-primary/20 text-xs sm:text-sm text-foreground/80 leading-relaxed">
                     <div className='flex gap-2 items-center mb-2'>
-                        <Shield className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                        <p className="font-semibold text-foreground">
+                        <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0" />
+                        <p className="font-semibold text-foreground text-xs sm:text-sm">
                             ¿Olvidaste tu contraseña?
                         </p>
                     </div>
-                    <p>
+                    <p className="text-[11px] sm:text-sm">
                         No hay problema. Ingresa tu <span className="font-medium text-primary">número de documento</span> y
                         te enviaremos un enlace al correo electrónico registrado para restablecer tu contraseña.
                     </p>
                 </div>
 
-                {/* Card derecha: Info si no hay correo registrado. */}
-                <div className="flex-1 p-4 bg-muted/50 rounded-lg border border-border text-sm text-muted-foreground leading-relaxed">
+                {/* Card derecha: Info adicional */}
+                <div className="flex-1 p-3 sm:p-4 bg-muted/50 rounded-lg border border-border text-xs sm:text-sm text-muted-foreground leading-relaxed">
                     <div className="flex gap-2 items-center mb-2">
-                        <AlertCircle className="w-5 h-5 text-muted-foreground mt-0.5 flex-shrink-0" />
-                        <p className="font-medium text-foreground">
+                        <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground flex-shrink-0" />
+                        <p className="font-medium text-foreground text-xs sm:text-sm">
                             ¿No tienes correo registrado?
                         </p>
                     </div>
-                    <p>
+                    <p className="text-[11px] sm:text-sm">
                         Envía un correo a{' '}
                         <a
                             href="mailto:coordinadordesarrollo@inversionesarar.com"
-                            className="font-medium text-primary hover:underline inline-flex items-center gap-1"
+                            className="font-medium text-primary hover:underline inline-flex items-center gap-1 break-all"
                         >
-                            <Mail className="w-3.5 h-3.5" />
-                            coordinadordesarrollo@inversionesarar.com
+                            <Mail className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" />
+                            <span className="break-all">coordinadordesarrollo@inversionesarar.com</span>
                         </a>
                         {' '}para solicitar el cambio o registro de tu correo electrónico.
                     </p>
                 </div>
             </div>
 
+            {/* Mensaje de status */}
             {status && (
-                <div className="mb-4 p-4 py-2 text-sm font-medium text-green-700 bg-green-50 border border-green-200 rounded-lg">
+                <div className="mb-3 sm:mb-4 p-2.5 sm:p-4 py-2 text-xs sm:text-sm font-medium text-green-700 bg-green-50 border border-green-200 rounded-lg">
                     {status}
                 </div>
             )}
 
-            <form onSubmit={submit} className="space-y-4" noValidate>
+            <form onSubmit={submit} className="space-y-3 sm:space-y-4" noValidate>
                 <div>
-                    <label htmlFor="numero_documento" className="block text-sm font-medium text-foreground mb-2">
+                    <label
+                        htmlFor="numero_documento"
+                        className="block text-xs sm:text-sm font-medium text-foreground mb-1.5 sm:mb-2"
+                    >
                         Número de Documento
                     </label>
                     <Input
                         id="numero_documento"
-                        type="text" 
+                        type="text"
                         name="numero_documento"
-                        value={formData.numero_documento} // Usar estado local
+                        value={formData.numero_documento}
                         placeholder="Ingresa tu número de documento"
-                        className={`w-full ${errors.numero_documento ? "border-destructive focus-visible:ring-destructive" : ""}`} // Estilo de error
+                        className={`w-full text-sm sm:text-base ${errors.numero_documento ? "border-destructive focus-visible:ring-destructive" : ""}`}
                         onChange={(e) => handleInputChange('numero_documento', e.target.value)}
                         onKeyDown={(e) => {
-                            handleNumberKeyDown(e); // Restricción a números
-                            handleLimit(e, formData.numero_documento, LIMITS.numero_documento); // Límite de caracteres
+                            handleNumberKeyDown(e);
+                            handleLimit(e, formData.numero_documento, LIMITS.numero_documento);
                         }}
-                        maxLength={LIMITS.numero_documento} // Máximo de caracteres
+                        maxLength={LIMITS.numero_documento}
                         autoComplete="username"
                     />
-                    <div className="relative">
+                    <div className='relative'>
                         <InputError className='absolute top-0 left-0' message={errors.numero_documento} />
-                    </div>                    
+                    </div>
                 </div>
 
-                {/* Botón envío: Deshabilitado durante processing. */}
-                <div className="flex items-center justify-end pt-2">
+                {/* Botón envío - Full width en mobile, auto en desktop */}
+                <div className="flex items-center justify-end">
+                    <Link href={route('login')}>
+                        <Button
+                            variant={'link'}
+                            className='h-auto text-xs sm:text-sm'
+                        >
+                            Volver
+                        </Button>
+                    </Link>
                     <Button
                         type="submit"
-                        className="w-full sm:w-auto"
+                        className="w-full sm:w-auto text-sm sm:text-base"
                         disabled={processing}
                     >
-                        <Mail className="w-4 h-4 mr-2" />
-                        Enviar enlace de recuperación
+                        <Mail className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2" />
+                        {processing ? "Enviando..." : "Enviar enlace"}
                     </Button>
                 </div>
             </form>

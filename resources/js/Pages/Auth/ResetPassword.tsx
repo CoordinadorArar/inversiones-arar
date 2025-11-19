@@ -127,9 +127,13 @@ export default function ResetPassword({ token, numero_documento }: ResetPassword
         <GuestLayout showBrandPanel={false} maxWidth="xl">
             <Head title="Restablecer Contraseña" />
 
-            <form onSubmit={submit} className="space-y-4" noValidate>
+            <form onSubmit={submit} className="space-y-3 sm:space-y-4" noValidate>
+                {/* Número de documento (disabled) */}
                 <div>
-                    <Label htmlFor="numero_documento">
+                    <Label 
+                        htmlFor="numero_documento"
+                        className="text-xs sm:text-sm"
+                    >
                         Número de documento
                     </Label>
 
@@ -138,23 +142,27 @@ export default function ResetPassword({ token, numero_documento }: ResetPassword
                         type="text"
                         name="numero_documento"
                         disabled
-                        value={data.numero_documento} // Usar estado local
-                        className="mt-1 w-full bg-gray-100 !cursor-not-allowed"
+                        value={data.numero_documento}
+                        className="w-full bg-gray-100 !cursor-not-allowed text-sm sm:text-base"
                         autoComplete="username"
                         onChange={(e) => handleInputChange('numero_documento', e.target.value)}
                     />
                     <InputError message={errors.numero_documento} />
                 </div>
 
+                {/* Nueva contraseña */}
                 <div>
-                    <Label htmlFor="password" className='after:ml-0.5 after:text-red-500 after:content-["*"]'> {/* Agregado asterisco */}
-                        Contraseña
+                    <Label 
+                        htmlFor="password" 
+                        className='text-xs sm:text-sm after:ml-0.5 after:text-red-500 after:content-["*"]'
+                    >
+                        Nueva Contraseña
                     </Label>
 
                     <PasswordInput
                         id="password"
                         name="password"
-                        value={data.password} // Usar estado local
+                        value={data.password}
                         onChange={(e) => handleInputChange('password', e.target.value)}
                         placeholder="Ingresa tu nueva contraseña"
                         maxLength={LIMITS.password}
@@ -163,21 +171,25 @@ export default function ResetPassword({ token, numero_documento }: ResetPassword
                         tooltipMessage="La contraseña debe tener al menos 8 caracteres e incluir una combinación de letras mayúsculas, minúsculas, números y símbolos."
                         showTooltip={true}
                         required
-                        className={errors.password ? "border-destructive focus-visible:ring-destructive" : ""} // Estilo de error
+                        className={`text-sm sm:text-base ${errors.password ? "border-destructive focus-visible:ring-destructive" : ""}`}
                     />
 
                     <InputError message={errors.password}/>
                 </div>
 
+                {/* Confirmación de contraseña */}
                 <div>
-                    <Label htmlFor="password_confirmation" className='after:ml-0.5 after:text-red-500 after:content-["*"]'> {/* Agregado asterisco */}
-                        Confirmación de Contraseña
+                    <Label 
+                        htmlFor="password_confirmation" 
+                        className='text-xs sm:text-sm after:ml-0.5 after:text-red-500 after:content-["*"]'
+                    >
+                        Confirmar Contraseña
                     </Label>
 
                     <PasswordInput
                         id="password_confirmation"
                         name="password_confirmation"
-                        value={data.password_confirmation} // Usar estado local
+                        value={data.password_confirmation}
                         onChange={(e) => handleInputChange('password_confirmation', e.target.value)}
                         placeholder="Confirma tu nueva contraseña"
                         maxLength={LIMITS.password}
@@ -186,17 +198,18 @@ export default function ResetPassword({ token, numero_documento }: ResetPassword
                         tooltipMessage="Repite la contraseña para confirmar."
                         showTooltip={true}
                         required
-                        className={errors.password_confirmation ? "border-destructive focus-visible:ring-destructive" : ""} // Estilo de error
+                        className={`text-sm sm:text-base ${errors.password_confirmation ? "border-destructive focus-visible:ring-destructive" : ""}`}
                     />
 
-                    <InputError
-                        message={errors.password_confirmation}
-                        className="mt-2"
-                    />
+                    <InputError message={errors.password_confirmation} />
                 </div>
 
-                <div className="flex items-center justify-end pt-2">
-                    <Button className="w-full" disabled={processing}>
+                {/* Botón submit */}
+                <div className="flex items-center justify-end pt-1 sm:pt-2">
+                    <Button 
+                        className="w-full text-sm sm:text-base" 
+                        disabled={processing}
+                    >
                         {processing ? "Restableciendo..." : "Restablecer Contraseña"}
                     </Button>
                 </div>

@@ -2,11 +2,10 @@ import { Link } from '@inertiajs/react';
 import { Building2, CalendarDays, FileText, Users } from 'lucide-react';
 import Copyright from '@/Components/Copyright';
 
-// Props: children (contenido), showBrandPanel (mostrar panel derecho), maxWidth (ancho máximo del contenedor).
 interface GuestLayoutProps {
     children: React.ReactNode;
-    showBrandPanel?: boolean; // Para mostrar/ocultar el panel naranja
-    maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl'; // Ancho máximo
+    showBrandPanel?: boolean;
+    maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl';
 }
 
 export default function GuestLayout({
@@ -15,7 +14,6 @@ export default function GuestLayout({
     maxWidth = '5xl'
 }: GuestLayoutProps) {
 
-    // Mapa de clases Tailwind para maxWidth: Convierte prop a clase CSS.
     const maxWidthClasses = {
         'sm': 'max-w-sm',
         'md': 'max-w-md',
@@ -28,58 +26,65 @@ export default function GuestLayout({
     };
 
     return (
-        <div className="relative flex min-h-screen items-center justify-center bg-gradient-to-br from-primary/30 via-background to-primary/30 p-4">
-
-            {/* Contenedor principal: Fondo gradiente, centrado, padding. */}
-            <div className={`w-full ${maxWidthClasses[maxWidth]} overflow-hidden rounded-2xl bg-background shadow-2xl`}>
+        <div className="relative flex min-h-screen items-center justify-center bg-gradient-to-br from-primary/30 via-background to-primary/30 p-3 sm:p-4 md:p-6">
+            
+            {/* Contenedor principal mejorado para mobile */}
+            <div className={`w-full ${maxWidthClasses[maxWidth]} overflow-hidden rounded-xl sm:rounded-2xl bg-background shadow-xl sm:shadow-2xl`}>
                 <div className={showBrandPanel ? "grid md:grid-cols-2" : ""}>
-                    {/* Lado izquierdo: Logo, línea decorativa y children (contenido variable). */}
-                    <div className="p-8 md:p-10 flex flex-col items-center">
-                        {/* Logo: Enlace a home. */}
-                        <Link href={route('home')}>
+                    
+                    {/* Panel izquierdo - Formulario */}
+                    <div className="p-4 sm:p-6 md:p-8 lg:p-10 flex flex-col items-center">
+                        {/* Logo */}
+                        <Link href={route('home')} className="">
                             <img
                                 src={`${route('home')}/images/logo-arar.png`}
                                 alt="Arar Logo"
-                                className='w-52'
+                                className='w-44 md:w-52 transition-all'
                             />
                         </Link>
-                        <div className='w-full h-1 bg-gradient-to-r from-primary/50 via-primary to-primary/50 mt-2 mb-3 rounded-[50%]'></div>
+                        
+                        {/* Línea decorativa */}
+                        <div className='w-full h-1 bg-gradient-to-r from-primary/50 via-primary to-primary/50 mt-2 mb-4 sm:mb-5 rounded-[50%]'></div>
+                        
+                        {/* Contenido (formularios) */}
                         <div className="w-full">
                             {children}
                         </div>
                     </div>
 
-                    {/* Lado derecho: Panel de branding (opcional, solo en md+). */}
+                    {/* Panel derecho - Branding (solo desktop) */}
                     {showBrandPanel && (
-                        <div className="relative hidden md:block bg-gradient-to-br from-primary/65 to-primary p-12">
-                            <div className="flex flex-col justify-end h-full text-background">
+                        <div className="relative hidden md:flex bg-gradient-to-br from-primary/65 to-primary p-8 lg:p-12">
+                            <div className="flex flex-col justify-end h-full text-background w-full">
+                                {/* Icono y título */}
                                 <div className="mb-8">
-                                    <div className="animate-pulse w-24 h-24 bg-background/20 mx-auto rounded-full flex items-center justify-center mb-4 backdrop-blur-sm">
-                                        <Building2 size={54} />
+                                    <div className="animate-pulse w-20 h-20 lg:w-24 lg:h-24 bg-background/20 mx-auto rounded-full flex items-center justify-center mb-4 backdrop-blur-sm">
+                                        <Building2 className="w-11 h-11 lg:w-14 lg:h-14" />
                                     </div>
-                                    <h2 className="text-4xl text-center font-bold mb-4">
+                                    <h2 className="text-3xl lg:text-4xl text-center font-bold mb-4">
                                         Intranet
                                     </h2>
                                 </div>
 
-                                <div className="space-y-4">
+                                {/* Features */}
+                                <div className="space-y-3 lg:space-y-4">
                                     <div className="flex items-center space-x-3">
-                                        <div className="w-10 h-10 bg-background/20 rounded-lg flex items-center justify-center backdrop-blur-sm">
-                                            <Users size={20} />
+                                        <div className="w-9 h-9 lg:w-10 lg:h-10 bg-background/20 rounded-lg flex items-center justify-center backdrop-blur-sm flex-shrink-0">
+                                            <Users className="w-5 h-5" />
                                         </div>
-                                        <span className="text-orange-50">Gestión de Recursos Humanos</span>
+                                        <span className="text-orange-50 text-sm lg:text-base">Gestión de Recursos Humanos</span>
                                     </div>
                                     <div className="flex items-center space-x-3">
-                                        <div className="w-10 h-10 bg-background/20 rounded-lg flex items-center justify-center backdrop-blur-sm">
-                                            <FileText size={20} />
+                                        <div className="w-9 h-9 lg:w-10 lg:h-10 bg-background/20 rounded-lg flex items-center justify-center backdrop-blur-sm flex-shrink-0">
+                                            <FileText className="w-5 h-5" />
                                         </div>
-                                        <span className="text-orange-50">Documentos Corporativos</span>
+                                        <span className="text-orange-50 text-sm lg:text-base">Documentos Corporativos</span>
                                     </div>
                                     <div className="flex items-center space-x-3">
-                                        <div className="w-10 h-10 bg-background/20 rounded-lg flex items-center justify-center backdrop-blur-sm">
-                                            <CalendarDays size={20} />
+                                        <div className="w-9 h-9 lg:w-10 lg:h-10 bg-background/20 rounded-lg flex items-center justify-center backdrop-blur-sm flex-shrink-0">
+                                            <CalendarDays className="w-5 h-5" />
                                         </div>
-                                        <span className="text-orange-50">Calendario y Eventos</span>
+                                        <span className="text-orange-50 text-sm lg:text-base">Calendario y Eventos</span>
                                     </div>
                                 </div>
                             </div>
@@ -88,7 +93,8 @@ export default function GuestLayout({
                 </div>
             </div>
 
-            <Copyright className='absolute bottom-4 left-1/2 -translate-x-1/2' />
+            {/* Copyright */}
+            <Copyright className='absolute bottom-4' />
         </div>
     );
 }

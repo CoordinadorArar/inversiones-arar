@@ -601,7 +601,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                 {/* Columna izquierda - Bienvenida */}
                                 <div className="text-center md:text-left">
                                     {/* Título */}
-                                    <div className="flex items-center max-md:justify-center gap-3 mb-5">
+                                    <div className="flex items-start max-md:justify-center gap-3 mb-5">
                                         <h1 className="text-3xl md:text-4xl lg:text-5xl text-primary font-bold">
                                             PQRS y Denuncias
                                         </h1>
@@ -613,9 +613,9 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                         target="_blank"
                                                         rel="noopener noreferrer"
                                                         aria-label='ayuda-pqrsd'
-                                                        className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors"
+                                                        className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors"
                                                     >
-                                                        <HelpCircle className="h-5 w-5 text-primary" />
+                                                        <HelpCircle className="h-4 w-4 text-primary" />
                                                     </a>
                                                 </TooltipTrigger>
                                                 <TooltipContent>
@@ -834,7 +834,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
 
                                                         <Label htmlFor="esAnonimo" className="flex !py-2 text-primary items-center gap-2 rounded-lg border border-primary/40 p-4 bg-primary/5 hover:bg-primary/10 transition-colors cursor-pointer">
                                                             <HatGlasses className='!w-6 !h-6' />
-                                                            <div className='flex-1 flex gap-2 items-center'>
+                                                            <div className='flex-1 flex gap-2 items-center max-sm:text-[12px]'>
                                                                 <Checkbox
                                                                     id="esAnonimo"
                                                                     checked={data.esAnonimo}

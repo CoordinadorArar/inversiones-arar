@@ -273,7 +273,7 @@ export default function Contact() {
                                     <CardContent className="relative p-4">
                                         <div className="flex items-start gap-4">
                                             <div className="relative !mt-0">
-                                                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center flex-shrink-0  transition-transform shadow-lg">
+                                                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center flex-shrink-0  transition-transform shadow-lg">
                                                     <Mail className="h-6 w-6 text-white" />
                                                 </div>
                                                 <div className="absolute -bottom-1 -right-1 h-4 w-4 bg-green-500 rounded-full border-2 border-white"></div>
@@ -298,7 +298,7 @@ export default function Contact() {
                                     <CardContent className="relative p-4">
                                         <div className="flex items-start gap-4">
                                             <div className="relative !mt-0">
-                                                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center flex-shrink-0 transition-transform shadow-lg">
+                                                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center flex-shrink-0 transition-transform shadow-lg">
                                                     <Phone className="h-6 w-6 text-white" />
                                                 </div>
                                                 <div className="absolute -bottom-1 -right-1 h-4 w-4 bg-green-500 rounded-full border-2 border-white"></div>
@@ -322,7 +322,7 @@ export default function Contact() {
                                 <Card className="group hover:shadow-lg transition-all duration-300 border-primary/20 hover:border-primary/40 overflow-hidden">
                                     <CardContent className="relative p-4">
                                         <div className="flex items-start gap-4">
-                                            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center flex-shrink-0 transition-transform shadow-lg">
+                                            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center flex-shrink-0 transition-transform shadow-lg">
                                                 <MapPin className="h-6 w-6 text-white" />
                                             </div>
                                             <div className="flex-1">
