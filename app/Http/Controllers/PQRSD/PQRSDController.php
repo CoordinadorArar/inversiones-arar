@@ -106,7 +106,7 @@ class PQRSDController extends Controller
             $pqrsd = Pqrsd::create($pqrsdData);
 
             // Generar radicado (ID con padding).
-            $radicado = $radicado;
+            $radicado = str_pad($pqrsd->id, 6, '0', STR_PAD_LEFT);
 
             $attachments = [];
 

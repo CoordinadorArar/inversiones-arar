@@ -44,7 +44,7 @@ return new class extends Migration
             // Clave foránea a la tabla users (permite NULL si no hay usuario autenticado)
             $table->foreignId('usuario_id')
                 ->nullable()
-                ->constrained('users');
+                ->constrained('usuarios');
 
             $table->json('cambios')->nullable(); //{ "campo": {"antes": "x", "despues": "y"} }
             $table->timestamp('fecha_creacion')->useCurrent();

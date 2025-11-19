@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Models\User;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -27,8 +28,44 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'string', 'email'],
-            'password' => ['required', 'string'],
+            'numero_documento' => [
+                'required',
+                'string',
+                'max:15',
+                'regex:/^[0-9]+$/'
+            ],
+            'password' => ['required', 'string', 'max:20', 'regex:/^[a-zA-Z0-9@$!%*?&#+\-.]+$/'],
+        ];
+    }
+
+    /**
+     * Define mensajes de error personalizados en español.
+     * 
+     * @return array
+     */
+    public function messages(): array
+    {
+        return [
+            'numero_documento.required' => 'El número de documento es obligatorio',
+            'numero_documento.max' => 'El número de documento debe tener máximo 15 caracteres',
+            'numero_documento.regex' => 'El número de documento solo debe contener números',
+
+            'password.required' => 'La contraseña es obligatoria',
+            'password.max' => 'La contraseña debe tener máximo 20 caracteres',
+            'password.regex' => 'La contraseña contiene caracteres no permitidos',
+        ];
+    }
+
+    /**
+     * Configura los atributos personalizados para mensajes de error.
+     * 
+     * @return array
+     */
+    public function attributes(): array
+    {
+        return [
+            'numero_documento' => 'número de documento',
+            'password' => 'contraseña',
         ];
     }
 
@@ -39,18 +76,53 @@ class LoginRequest extends FormRequest
      */
     public function authenticate(): void
     {
-        $this->ensureIsNotRateLimited();
+        $usuario = User::where('numero_documento', $this->numero_documento)->first();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
-            RateLimiter::hit($this->throttleKey());
-
+        // Usuario no existe
+        if (! $usuario) {
             throw ValidationException::withMessages([
-                'email' => trans('auth.failed'),
+                'numero_documento' => 'No existe un usuario con este número de documento.',
             ]);
         }
 
-        RateLimiter::clear($this->throttleKey());
+        // Usuario bloqueado
+        if ($usuario->bloqueado_at || $usuario->intentos_fallidos >= 3) {
+            throw ValidationException::withMessages([
+                'numero_documento' => 'La cuenta está bloqueada. Comuníquese con un administrador.',
+            ]);
+        }
+
+        // Intento de login -> contraseña incorrecta
+        if (! Auth::attempt($this->only('numero_documento', 'password'), $this->boolean('remember'))) {
+
+            // Sumar intento fallido
+            $usuario->increment('intentos_fallidos');
+
+            if ($usuario->intentos_fallidos >= 3) {
+                $usuario->update([
+                    'bloqueado_at' => now(),
+                ]);
+
+                throw ValidationException::withMessages([
+                    'numero_documento' => 'Cuenta bloqueada por múltiples intentos fallidos. Contacte con un administrador.',
+                ]);
+            }
+
+            throw ValidationException::withMessages([
+                'password' => 'La contraseña es incorrecta.',
+            ]);
+        }
+
+        // Login exitoso → reiniciar intentos
+        $usuario->update([
+            'intentos_fallidos' => 0,
+            'bloqueado_at' => null,
+        ]);
+
+        $this->session()->regenerate();
     }
+
+
 
     /**
      * Ensure the login request is not rate limited.
@@ -80,6 +152,6 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
+        return Str::transliterate(Str::lower($this->string('email')) . '|' . $this->ip());
     }
 }

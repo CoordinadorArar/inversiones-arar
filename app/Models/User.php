@@ -3,6 +3,9 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Mail\ResetPasswordMail;
+use App\Traits\HasAuditoria;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -11,6 +14,9 @@ class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
+    use HasAuditoria;  // Trait para registrar cambios en auditoría automáticamente.
+
+    protected $table = 'usuarios'; // Especifica la tabla 'usuarios'.
 
     /**
      * The attributes that are mass assignable.
@@ -18,9 +24,11 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
+        'numero_documento',
         'email',
         'password',
+        'intentos_fallidos',
+        'bloqueado_at'
     ];
 
     /**
@@ -43,6 +51,13 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'bloqueado_at' => 'datetime',
         ];
+    }
+
+    public function sendPasswordResetNotification($token)
+    {
+        \Mail::to($this->email)
+            ->send(new ResetPasswordMail($token, $this->numero_documento));
     }
 }

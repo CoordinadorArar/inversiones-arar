@@ -69,7 +69,7 @@ return new class extends Migration
 
             $table->foreignId('usuario_asignado_id')
                 ->nullable()
-                ->constrained('users');
+                ->constrained('usuarios');
 
             $table->dateTime('fecha_creacion')->useCurrent();
             $table->dateTime('fecha_modificacion')->useCurrent()->useCurrentOnUpdate();

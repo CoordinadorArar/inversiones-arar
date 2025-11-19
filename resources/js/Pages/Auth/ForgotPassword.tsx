@@ -1,27 +1,125 @@
+/**
+ * Componente de Recuperación de Contraseña con validaciones robustas
+ * Implementa validaciones frontend con Zod, restricciones de teclado y límites de caracteres
+ * 
+ * @author Yariangel Aray
+ * @version 1.0
+ * @date 2025-11-19
+ */
+
 import InputError from '@/Components/InputError';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, useForm } from '@inertiajs/react';
 import { AlertCircle, Mail, Shield } from 'lucide-react';
+import { useState } from 'react'; // Agregado para estado local
+import { handleNumberKeyDown, handleLimit } from '@/lib/keydownValidations'; 
+import { z } from 'zod';
 
-export default function ForgotPassword({ status }) {
-    const { data, setData, post, processing, errors } = useForm({
-        email: '',
+// Interfaz para los datos del formulario
+interface ForgotFormData {
+    numero_documento: string;
+}
+
+// Constantes de límites 
+const LIMITS = {
+    numero_documento: 15,
+} as const;
+
+// Schema de validación con Zod (mantenido del original, pero ahora usado en validación frontend)
+const forgotSchema = z.object({
+    numero_documento: z.string()
+        .trim()
+        .regex(/^[0-9]+$/, "El número de documento solo debe contener números")
+        .min(6, "El número de documento debe tener al menos 6 dígitos")
+        .max(LIMITS.numero_documento, `El número de documento debe tener máximo ${LIMITS.numero_documento} dígitos`)
+        .min(1, "El número de documento es obligatorio"),
+});
+
+interface ForgotPasswordProps {
+    status?: string;
+}
+
+export default function ForgotPassword({ status }: ForgotPasswordProps) {
+    // Estado local para validaciones frontend 
+    const [formData, setFormData] = useState<ForgotFormData>({
+        numero_documento: '',
     });
 
-    const submit = (e) => {
+    const [frontendErrors, setFrontendErrors] = useState<Record<string, string>>({});
+
+    // Hook de Inertia para el envío
+    const { data, setData, post, processing, errors: backendErrors, reset } = useForm({
+        numero_documento: '',
+    });
+
+    // Combinar errores del frontend y backend 
+    const errors = { ...frontendErrors, ...backendErrors };
+
+    // Manejar cambios en los inputs 
+    const handleInputChange = (field: keyof ForgotFormData, value: string) => {
+        // Actualizar estado local
+        setFormData(prev => ({ ...prev, [field]: value }));
+
+        // Actualizar Inertia form
+        setData(field, value as any);
+
+        // Limpiar error del campo específico
+        if (frontendErrors[field]) {
+            setFrontendErrors(prev => {
+                const newErrors = { ...prev };
+                delete newErrors[field];
+                return newErrors;
+            });
+        }
+    };
+
+    // Validar formulario antes de enviar
+    const validateForm = (): boolean => {
+        const result = forgotSchema.safeParse(formData);
+
+        if (!result.success) {
+            const newErrors: Record<string, string> = {};
+            result.error.issues.forEach((err) => {
+                if (err.path[0]) {
+                    newErrors[err.path[0].toString()] = err.message;
+                }
+            });
+            setFrontendErrors(newErrors);
+
+            // Scroll al primer error
+            const firstErrorField = Object.keys(newErrors)[0];
+            document.getElementById(firstErrorField)?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+
+            return false;
+        }
+
+        setFrontendErrors({});
+        return true;
+    };
+
+    const submit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        post(route('password.email'));
+        // Validar antes de enviar
+        if (!validateForm()) {
+            return;
+        }
+
+        post(route('password.email'), {
+            onFinish: () => reset('numero_documento'), // Reset después de enviar
+        });
     };
 
     return (
-        // GuestLayout: Sin panel de branding, ancho 3xl.
         <GuestLayout showBrandPanel={false} maxWidth="4xl">
             <Head title="Recuperar Contraseña" />
 
-            <div className="mb-6 flex gap-2">
+            <div className="mb-4 flex gap-2">
                 {/* Card izquierda: Instrucciones para ingresar documento. */}
                 <div className="flex-1 p-4 bg-primary/5 rounded-lg border border-primary/20 text-sm text-foreground/80 leading-relaxed">
                     <div className='flex gap-2 items-center mb-2'>
@@ -59,26 +157,34 @@ export default function ForgotPassword({ status }) {
             </div>
 
             {status && (
-                <div className="mb-4 p-4 text-sm font-medium text-green-700 bg-green-50 border border-green-200 rounded-lg">
+                <div className="mb-4 p-4 py-2 text-sm font-medium text-green-700 bg-green-50 border border-green-200 rounded-lg">
                     {status}
                 </div>
             )}
 
-            <form onSubmit={submit} className="space-y-4">
+            <form onSubmit={submit} className="space-y-4" noValidate>
                 <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
+                    <label htmlFor="numero_documento" className="block text-sm font-medium text-foreground mb-2">
                         Número de Documento
                     </label>
                     <Input
-                        id="email"
-                        type="email"
-                        name="email"
-                        value={data.email}
+                        id="numero_documento"
+                        type="text" 
+                        name="numero_documento"
+                        value={formData.numero_documento} // Usar estado local
                         placeholder="Ingresa tu número de documento"
-                        className="w-full"
-                        onChange={(e) => setData('email', e.target.value)}
+                        className={`w-full ${errors.numero_documento ? "border-destructive focus-visible:ring-destructive" : ""}`} // Estilo de error
+                        onChange={(e) => handleInputChange('numero_documento', e.target.value)}
+                        onKeyDown={(e) => {
+                            handleNumberKeyDown(e); // Restricción a números
+                            handleLimit(e, formData.numero_documento, LIMITS.numero_documento); // Límite de caracteres
+                        }}
+                        maxLength={LIMITS.numero_documento} // Máximo de caracteres
+                        autoComplete="username"
                     />
-                    <InputError message={errors.email} className="mt-2" />
+                    <div className="relative">
+                        <InputError className='absolute top-0 left-0' message={errors.numero_documento} />
+                    </div>                    
                 </div>
 
                 {/* Botón envío: Deshabilitado durante processing. */}

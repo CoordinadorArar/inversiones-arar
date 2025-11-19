@@ -82,3 +82,13 @@ export const handleMessagesKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement
         e.preventDefault();
     }
 };
+
+// handlePasswordKeyDown: Permite letras, números, mayúsculas y caracteres especiales válidos en contraseñas.
+// Uso: En inputs de contraseña (ej. <input onKeyDown={handlePasswordKeyDown} />).
+// Permite: a-z, A-Z, 0-9, @$!%*?&#_+-.
+export const handlePasswordKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const allowed = /^[a-zA-Z0-9@$!%*?&#_+\-.]$/;
+    if (!allowed.test(e.key) && !allowedKeys.includes(e.key) && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+    }
+};
