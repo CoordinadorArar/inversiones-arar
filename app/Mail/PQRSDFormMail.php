@@ -54,10 +54,19 @@ class PQRSDFormMail extends Mailable
      * @return \Illuminate\Mail\Mailables\Envelope
      */
     public function envelope(): Envelope
-    {        
-        return new Envelope(            
-            subject: "Nueva Denuncia PQRSD  - Radicado #{$this->pqrsdData['radicado']}",
-        );
+    {
+        $esAnonimo = $this->pqrsdData['anonimo'] ?? false;
+        $tipoPqrs = $this->pqrsdData['letra_pqrs'];
+
+        // Determinar texto según tipo
+        $tipoTexto = $tipoPqrs == 'D' ? 'Denuncia' : 'PQRS';
+
+        // Agregar "Anónima" si aplica
+        $anonimo = $esAnonimo ? ' Anónima' : '';
+
+        $subject = "Nueva {$tipoTexto}{$anonimo} - Radicado #{$this->pqrsdData['radicado']}";
+
+        return new Envelope(subject: $subject);
     }
 
     /**

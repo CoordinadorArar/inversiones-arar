@@ -147,7 +147,7 @@ export default function Login({ status }: LoginProps) {
 
             {/* Mensaje informativo de seguridad */}
             {(visibleInfo && !status) && (
-                <div className="mb-4 p-4 bg-primary/5 border border-primary/20 rounded-lg relative">
+                <div className="mb-4 px-4 py-2 bg-primary/5 border border-primary/20 rounded-lg relative">
                     <button
                         onClick={() => setVisibleInfo(false)}
                         className="absolute top-0 right-0 p-1 rounded-md hover:bg-primary/10 transition"
@@ -166,7 +166,7 @@ export default function Login({ status }: LoginProps) {
                 </div>
             )}
 
-            <form onSubmit={submit} className='space-y-6 mt-2' noValidate>
+            <form onSubmit={submit} className='space-y-4 mt-2' noValidate>
                 {/* Número de documento */}
                 <div className="space-y-2">
                     <Label htmlFor="numero_documento" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
@@ -187,9 +187,8 @@ export default function Login({ status }: LoginProps) {
                         maxLength={LIMITS.numero_documento}
                         autoComplete="username"
                     />
-                    <div className="relative">
-                        <InputError className='absolute top-0 left-0 !-mt-1' message={errors.numero_documento} />
-                    </div>
+
+                    <InputError message={errors.numero_documento} />
                 </div>
 
                 {/* Contraseña */}
@@ -212,16 +211,14 @@ export default function Login({ status }: LoginProps) {
                         required
                     />
 
-                    <div className="relative">
-                        <InputError className='absolute top-0 left-0 !-mt-1' message={errors.password} />
-                    </div>
+                    <InputError message={errors.password} />
 
                     {/* Link de olvidó contraseña */}
-                    <div className='text-right'>
+                    <div className='text-right !mt-0'>
                         <Link
                             href={route('password.request')}
                         >
-                            <Button variant={'link'} className='h-auto pt-0'>
+                            <Button variant={'link'} className='h-auto'>
                                 ¿Olvidaste tu contraseña?
                             </Button>
                         </Link>
@@ -231,7 +228,7 @@ export default function Login({ status }: LoginProps) {
                 {/* Botón de envío */}
                 <Button
                     type="submit"
-                    className="w-full !mt-2"
+                    className="w-full"
                     disabled={processing}
                 >
                     {processing ? "Iniciando sesión..." : "Iniciar Sesión"}

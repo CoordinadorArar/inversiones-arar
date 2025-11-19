@@ -2,6 +2,15 @@
 
 namespace App\Http\Controllers\PQRSD;
 
+/**
+ * Controlador para el sistema PQRSD (Peticiones, Quejas, Reclamos, Sugerencias y Denuncias)
+ * Maneja el almacenamiento de denuncias y envío de correos a los responsables.
+ * 
+ * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
+ * @version 1.0
+ * @date 2025-11-13
+ */
+
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PQRSD\StorePQRSDRequest;
 use App\Http\Requests\PQRSD\UpdatePQRSDRequest;
@@ -18,14 +27,6 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
-/**
- * Controlador para el sistema PQRSD (Peticiones, Quejas, Reclamos, Sugerencias y Denuncias)
- * Maneja el almacenamiento de denuncias y envío de correos a los responsables.
- * 
- * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
- * @date 2025-11-13
- */
 
 class PQRSDController extends Controller
 {
@@ -79,7 +80,7 @@ class PQRSDController extends Controller
     public function store(StorePQRSDRequest $request)
     {
         $validated = $request->validated();
-        $directoryPath = null; 
+        $directoryPath = null;
 
         try {
             DB::beginTransaction();
@@ -88,16 +89,17 @@ class PQRSDController extends Controller
             $pqrsdData = [
                 'empresa_id' => $validated['empresa'],
                 'tipo_pqrs_id' => $validated['tipoPqrs'],
-                'nombre' => $validated['nombre'],
-                'apellido' => $validated['apellido'],
-                'tipo_identificacion_id' => $validated['tipoId'],
-                'numero_identificacion' => $validated['numId'],
-                'correo' => $validated['correo'],
-                'telefono' => $validated['telefono'],
-                'departamento_codigo' => $validated['dpto'],
-                'ciudad_codigo' => $validated['ciudad'],
+                'anonimo' => $request->boolean('esAnonimo', false),
+                'nombre' => $validated['nombre'] ?? null,  // Cambiar a nullable
+                'apellido' => $validated['apellido'] ?? null,
+                'tipo_identificacion_id' => $validated['tipoId'] ?? null,
+                'numero_identificacion' => $validated['numId'] ?? null,
+                'correo' => $validated['correo'] ?? null,
+                'telefono' => $validated['telefono'] ?? null,
+                'departamento_codigo' => $validated['dpto'] ?? null,
+                'ciudad_codigo' => $validated['ciudad'] ?? null,
                 'direccion' => $validated['direccion'] ?? null,
-                'relacion' => $validated['relacion'],
+                'relacion' => $validated['relacion'] ?? null,
                 'descripcion' => $validated['mensaje'],
                 'estado_id' => 1,
             ];
@@ -107,6 +109,7 @@ class PQRSDController extends Controller
 
             // Generar radicado (ID con padding).
             $radicado = str_pad($pqrsd->id, 6, '0', STR_PAD_LEFT);
+            $esAnonimo = $request->boolean('esAnonimo', false);
 
             $attachments = [];
 
@@ -118,7 +121,9 @@ class PQRSDController extends Controller
                 $fechaMes  = ucfirst(now()->translatedFormat('F'));
                 $fechaDia  = now()->format('d');
 
-                $directoryPath = "pqrsd/{$fechaAño}/{$fechaMes}/{$fechaDia}/{$radicado}";
+                $identificador = $esAnonimo ? "anonimo_{$radicado}" : $radicado;
+
+                $directoryPath = "pqrsd/{$fechaAño}/{$fechaMes}/{$fechaDia}/{$identificador}";
 
                 foreach ($request->file('files') as $index => $file) {
                     // Generar nombre único para el archivo
@@ -144,34 +149,46 @@ class PQRSDController extends Controller
 
             // Preparar datos para emails (consulta modelos para nombres).
             $empresa       = Empresa::find($validated['empresa'])->f010_razon_social;
-            $tipoPqrs      = TipoPqrs::find($validated['tipoPqrs'])->nombre;
-            $tipoId        = TipoIdentificacion::find($validated['tipoId'])->abreviatura;
-            $departamento  = Departamento::find($validated['dpto'])->f012_descripcion;
-            $ciudad        = Ciudad::where('f013_id_depto', $validated['dpto'])
-                            ->where('f013_id', $validated['ciudad'])
-                            ->first()
-                            ->f013_descripcion;
+            $tipoPqrs      = TipoPqrs::find($validated['tipoPqrs']);
 
-            $nombreCompleto = trim($validated['nombre'] . ' ' . $validated['apellido']);
+            // Si NO es anónimo, preparar datos completos del denunciante
+            if (!$esAnonimo) {
+                $tipoId = TipoIdentificacion::find($validated['tipoId'])->abreviatura;
+                $departamento = Departamento::find($validated['dpto'])->f012_descripcion;
+                $ciudad = Ciudad::where('f013_id_depto', $validated['dpto'])
+                    ->where('f013_id', $validated['ciudad'])
+                    ->first()
+                    ->f013_descripcion;
+                $nombreCompleto = trim($validated['nombre'] . ' ' . $validated['apellido']);
+            }
 
+            // Construir emailData según si es anónimo o no
             $emailData = [
                 'id' => $pqrsd->id,
                 'radicado' => $radicado,
                 'empresa' => $empresa,
-                'tipo_pqrs' => $tipoPqrs,
-                'nombre_completo' => $nombreCompleto,
-                'tipo_documento' => $tipoId,
-                'numero_documento' => $validated['numId'],
-                'correo' => $validated['correo'],
-                'telefono' => $validated['telefono'],
-                'ubicacion' => "{$ciudad}, {$departamento}",
-                'direccion' => $validated['direccion'] ?? 'No especificada',
-                'relacion' => ucfirst($validated['relacion']),
+                'tipo_pqrs' => $tipoPqrs->nombre,
+                'letra_pqrs' => $tipoPqrs->abreviatura,
+                'anonimo' => $esAnonimo,
                 'mensaje' => $validated['mensaje'],
                 'tiene_adjuntos' => !empty($attachments),
                 'cantidad_adjuntos' => count($attachments),
                 'fecha' => now()->format('Y-m-d H:i:s')
             ];
+
+            // Agregar datos personales solo si NO es anónimo
+            if (!$esAnonimo) {
+                $emailData += [
+                    'nombre_completo' => $nombreCompleto,
+                    'tipo_documento' => $tipoId,
+                    'numero_documento' => $validated['numId'],
+                    'correo' => $validated['correo'],
+                    'telefono' => $validated['telefono'],
+                    'ubicacion' => "{$ciudad}, {$departamento}",
+                    'direccion' => $validated['direccion'] ?? 'No especificada',
+                    'relacion' => ucfirst($validated['relacion']),
+                ];
+            }
 
             // Determinar destinatarios según relación con la empresa
             $destinatarios = $this->getDestinatarios($validated['relacion'] ?? null);
@@ -181,14 +198,17 @@ class PQRSDController extends Controller
                 ->bcc($destinatarios['copia'])
                 ->send(new PQRSDFormMail($emailData, $attachments));
 
-            // Enviar correo de confirmación al denunciante
-            Mail::to($validated['correo'])
-                ->send(new PQRSDConfirmationMail([
-                    'nombre' => $validated['nombre'],
-                    'apellido' => $validated['apellido'],
-                    'numero_radicado' => $radicado,
-                    'tipo_pqrs' => $tipoPqrs
-                ]));
+            // Enviar confirmación al denunciante SOLO si NO es anónimo
+            if (!$esAnonimo) {
+                Mail::to($validated['correo'])
+                    ->send(new PQRSDConfirmationMail([
+                        'nombre' => $validated['nombre'],
+                        'apellido' => $validated['apellido'],
+                        'radicado' => $radicado,
+                        'tipo_pqrs' => $tipoPqrs->nombre,
+                        'letra_pqrs' => $tipoPqrs->abreviatura,
+                    ]));
+            }
 
             DB::commit();
 
@@ -196,7 +216,6 @@ class PQRSDController extends Controller
                 'message' => '¡PQRSD enviada correctamente!',
                 'radicado' => $radicado
             ], 200);
-
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -211,7 +230,7 @@ class PQRSDController extends Controller
             ]);
 
             return response()->json([
-                'error' => 'Hubo un error al enviar la denuncia. Por favor intenta más tarde.'
+                'error' => 'Hubo un error al enviar la PQRSD. Por favor intenta más tarde.'
             ], 500);
         }
     }

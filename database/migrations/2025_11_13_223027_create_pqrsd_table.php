@@ -43,20 +43,22 @@ return new class extends Migration
                 ->constrained('tipos_pqrs');
 
             // Datos personales del solicitante
-            $table->string('nombre', 50);
-            $table->string('apellido', 50);
-            $table->foreignId('tipo_identificacion_id')                
+            $table->string('nombre', 50)->nullable();
+            $table->string('apellido', 50)->nullable();
+            $table->foreignId('tipo_identificacion_id')->nullable()                
                 ->constrained('tipos_identificaciones');
 
-            $table->string('numero_identificacion', 15);
+            $table->string('numero_identificacion', 15)->nullable();
 
             // Información de contacto
-            $table->string('correo', 50);
-            $table->string('telefono', 15);
-            $table->unsignedBigInteger('departamento_codigo');
-            $table->unsignedBigInteger('ciudad_codigo');
+            $table->string('correo', 50)->nullable();
+            $table->string('telefono', 15)->nullable();
+            $table->unsignedBigInteger('departamento_codigo')->nullable();
+            $table->unsignedBigInteger('ciudad_codigo')->nullable();
             $table->string('direccion', 100)->nullable();
-            $table->string('relacion', 50);
+            $table->string('relacion', 50)->nullable();
+
+            $table->boolean('anonimo')->default(false);
 
             // Descripción y archivos
             $table->text('descripcion');

@@ -34,14 +34,14 @@ export default function Header() {
             icon: Building2
         },
         {
-            name: 'PQRSD',
-            ref: 'pqrsd',
-            icon: CircleAlert
-        },
-        {
             name: 'Contacto',
             ref: 'contact',
             icon: Mail
+        },
+        {
+            name: 'Denuncias',
+            ref: 'pqrsd',
+            icon: CircleAlert
         },
     ];
 

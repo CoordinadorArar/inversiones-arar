@@ -5,8 +5,8 @@
  * Usa Zod para validación, y validaciones de teclado personalizadas.
  * 
  * @author Yariangel Aray
- * @version 1.0
- * @date 2025-11-14
+ * @version 2.0
+ * @date 2025-11-19
  */
 
 
@@ -35,7 +35,8 @@ import {
     LoaderCircle, X, FileText, CheckCircle,
     AlertCircle,
     HelpCircle,
-    Clock
+    Clock,
+    HatGlasses
 } from 'lucide-react';
 import { Progress } from '@/Components/ui/progress';
 import {
@@ -44,11 +45,13 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Checkbox } from '@/Components/ui/checkbox';
 
 // Interfaces: Tipos para props y datos del formulario.
 interface FormData {
     empresa: string;
     tipoPqrs: string;
+    esAnonimo: boolean;
     nombre: string;
     apellido: string;
     tipoId: string;
@@ -132,6 +135,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
     const [data, setData] = useState<FormData>({
         empresa: "",      // ID de la empresa seleccionada.
         tipoPqrs: "",     // ID del tipo de PQR seleccionado.
+        esAnonimo: false,  // Indica si es una PQR anónima.
         nombre: "",       // Nombre del usuario.
         apellido: "",     // Apellido del usuario.
         tipoId: "",       // ID del tipo de identificación.
@@ -165,35 +169,25 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
     // Se usa en validaciones de archivos y envío.
     const { toast } = useToast();
 
+    // Constante para el tipo de PQRSD "Denuncia", usada en lógica condicional.
+    // Si el tipo es denuncia se activa lógica especial para selección de empresa y anonimato.
+    const tipoDenuncia = tiposPqrs.find(t => t.abreviatura === 'D');
+
+
     // Array constante con configuración de los 4 pasos del formulario.
     // Cada objeto tiene number (1-4), title, icon (de Lucide), description.
     // Se usa para renderizar indicadores de progreso y títulos dinámicos.
-    const steps = [
-        {
-            number: 1,
-            title: "Información PQRSD",
-            icon: Building2,  // Ícono para el paso 1.
-            description: "Seleccione la empresa y tipo"
-        },
-        {
-            number: 2,
-            title: "Datos Personales",
-            icon: User,  // Ícono para el paso 2.
-            description: "Complete su información personal"
-        },
-        {
-            number: 3,
-            title: "Contacto y Ubicación",
-            icon: MapPin,  // Ícono para el paso 3.
-            description: "Datos de contacto y dirección"
-        },
-        {
-            number: 4,
-            title: "Descripción",
-            icon: MessageSquare,  // Ícono para el paso 4.
-            description: "Describa su petición o denuncia"
-        },
-    ];
+    const steps = data.esAnonimo
+        ? [
+            { number: 1, title: "Información PQRSD", icon: Building2, description: "Seleccione tipo y empresa" },
+            { number: 2, title: "Descripción", icon: MessageSquare, description: "Describa su denuncia" },
+        ]
+        : [
+            { number: 1, title: "Información PQRSD", icon: Building2, description: "Seleccione tipo y empresa" },
+            { number: 2, title: "Datos Personales", icon: User, description: "Complete su información personal" },
+            { number: 3, title: "Contacto y Ubicación", icon: MapPin, description: "Datos de contacto y dirección" },
+            { number: 4, title: "Descripción", icon: MessageSquare, description: "Describa su PQRS" },
+        ];
 
     // Cálculo del progreso: porcentaje basado en currentStep / total steps.
     // Se usa en la barra de progreso visual.
@@ -222,42 +216,60 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
         let dataToValidate;
 
         // Switch para seleccionar qué validar según paso.
-        switch (step) {
-            case 1:
-                // Paso 1: Solo empresa y tipoPqrs.
-                schema = step1Schema;
-                dataToValidate = { empresa: data.empresa, tipoPqrs: data.tipoPqrs };
-                break;
-            case 2:
-                // Paso 2: Datos personales (nombre, apellido, tipoId, numId).
-                schema = step2Schema;
-                dataToValidate = {
-                    nombre: data.nombre,
-                    apellido: data.apellido,
-                    tipoId: data.tipoId,
-                    numId: data.numId
-                };
-                break;
-            case 3:
-                // Paso 3: Contacto y ubicación (correo, telefono, dpto, ciudad, etc.).
-                schema = step3Schema;
-                dataToValidate = {
-                    correo: data.correo,
-                    telefono: data.telefono,
-                    dpto: data.dpto,
-                    ciudad: data.ciudad,
-                    direccion: data.direccion,
-                    relacion: data.relacion
-                };
-                break;
-            case 4:
-                // Paso 4: Solo mensaje.
-                schema = step4Schema;
-                dataToValidate = { mensaje: data.mensaje };
-                break;
-            default:
-                // Si paso inválido, retorna true (no valida nada).
-                return true;
+        if (data.esAnonimo) {
+            // Si es anónimo, solo validar paso 1 y paso 2
+            switch (step) {
+                case 1:
+                    schema = step1Schema;
+                    dataToValidate = { empresa: data.empresa, tipoPqrs: data.tipoPqrs };
+                    break;
+                case 2:
+                    // Paso 2 en anónimo = descripción
+                    schema = step4Schema;
+                    dataToValidate = { mensaje: data.mensaje };
+                    break;
+                default:
+                    return true;
+            }
+        } else {
+            // Si NO es anónimo, validación normal
+            switch (step) {
+                case 1:
+                    // Paso 1: Solo empresa y tipoPqrs.
+                    schema = step1Schema;
+                    dataToValidate = { empresa: data.empresa, tipoPqrs: data.tipoPqrs };
+                    break;
+                case 2:
+                    // Paso 2: Datos personales (nombre, apellido, tipoId, numId).
+                    schema = step2Schema;
+                    dataToValidate = {
+                        nombre: data.nombre,
+                        apellido: data.apellido,
+                        tipoId: data.tipoId,
+                        numId: data.numId
+                    };
+                    break;
+                case 3:
+                    // Paso 3: Contacto y ubicación (correo, telefono, dpto, ciudad, etc.).
+                    schema = step3Schema;
+                    dataToValidate = {
+                        correo: data.correo,
+                        telefono: data.telefono,
+                        dpto: data.dpto,
+                        ciudad: data.ciudad,
+                        direccion: data.direccion,
+                        relacion: data.relacion
+                    };
+                    break;
+                case 4:
+                    // Paso 4: Solo mensaje.
+                    schema = step4Schema;
+                    dataToValidate = { mensaje: data.mensaje };
+                    break;
+                default:
+                    // Si paso inválido, retorna true (no valida nada).
+                    return true;
+            }
         }
 
         // Ejecuta validación con Zod (safeParse no lanza excepciones).
@@ -308,8 +320,12 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
     const nextStep = () => {
         // Valida el paso actual antes de avanzar.
         if (validateStep(currentStep)) {
-            // Incrementa paso, limita a máximo.
-            setCurrentStep(prev => Math.min(prev + 1, steps.length));
+            // Si es anónimo, salta del paso 1 al 2 (descripción)
+            if (data.esAnonimo && currentStep === 1) {
+                setCurrentStep(2);
+            } else {
+                setCurrentStep(prev => Math.min(prev + 1, steps.length));
+            }
         }
     };
 
@@ -468,6 +484,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
         setIsDragging(false);  // Desactiva dragging.
     };
 
+
     /**
      * Función handleSubmit: Envía el formulario completo vía fetch.
      * 
@@ -496,12 +513,15 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                 formData.append(`files[${index}]`, file);
             });
 
+            formData.append('esAnonimo', data.esAnonimo ? '1' : '0');
+
             // Fetch POST a ruta pqrsd.store.
             const response = await fetch(route('pqrsd.store'), {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',  // Espera JSON.
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',  // Token CSRF.
+                    'X-Requested-With': 'XMLHttpRequest',
                 },
                 body: formData,  // Envía FormData.
             });
@@ -522,6 +542,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                 setData({
                     empresa: "",
                     tipoPqrs: "",
+                    esAnonimo: false,
                     nombre: "",
                     apellido: "",
                     tipoId: "",
@@ -582,7 +603,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                     {/* Título */}
                                     <div className="flex items-center max-md:justify-center gap-3 mb-5">
                                         <h1 className="text-3xl md:text-4xl lg:text-5xl text-primary font-bold">
-                                            PQRSD
+                                            PQRS y Denuncias
                                         </h1>
                                         <TooltipProvider delayDuration={200}>
                                             <Tooltip>
@@ -604,24 +625,47 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                         </TooltipProvider>
                                     </div>
                                     <p className="text-base md:text-lg text-accent-foreground/80 mb-3">
-                                        Bienvenido al módulo de <strong>PQRSD de Inversiones Arar S.A.</strong>
+                                        Canal oficial de <strong>Inversiones Arar S.A.</strong> para recibir sus inquietudes
                                     </p>
-                                    <p className="text-muted-foreground text-sm md:text-base">
-                                        Complete el formulario para realizar una Solicitud, Petición, Queja, Reclamo o Denuncia relacionada con Inversiones Arar o sus empresas filiales.
-                                    </p>
+                                    <div className="text-muted-foreground text-sm space-y-2">
+                                        <p>
+                                            <strong className="text-foreground">PQRS:</strong> Peticiones, Quejas, Reclamos y Sugerencias dirigidas a Inversiones Arar S.A.
+                                        </p>
+                                        <p>
+                                            <strong className="text-foreground">Denuncias:</strong> Puede realizarlas de forma <strong className="text-primary">anónima o identificada</strong> sobre cualquier empresa del grupo empresarial.
+                                        </p>
+                                    </div>
                                 </div>
 
                                 {/* Columna derecha - Información legal */}
-                                <div className="bg-background/50 backdrop-blur-sm rounded-lg p-5 shadow-md border border-primary/10">
-                                    <div className="flex items-start gap-3 mb-3">
-                                        <Clock className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                                        <p className="text-sm text-muted-foreground">
-                                            Recibirá respuesta en un máximo de <strong className="text-foreground">15 días hábiles</strong> según el artículo 14 de la Ley 1755 de 2015.
+                                <div className="space-y-4">
+                                    {/* Card principal */}
+                                    <div className="bg-background/50 backdrop-blur-sm rounded-lg p-4 shadow-md border border-primary/10">
+                                        <div className="flex items-start gap-3 mb-2">
+                                            <Clock className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                                            <p className="text-sm text-muted-foreground">
+                                                Recibirá respuesta en un máximo de <strong className="text-foreground">15 días hábiles</strong> según el artículo 14 de la Ley 1755 de 2015.
+                                            </p>
+                                        </div>
+                                        <p className="text-primary font-semibold text-sm text-end">
+                                            Agradecemos el uso responsable del formulario.
                                         </p>
                                     </div>
-                                    <p className="text-primary font-semibold text-sm max-md:text-center">
-                                        Agradecemos el uso responsable del formulario.
-                                    </p>
+
+                                    {/* Card adicional para denuncias anónimas */}
+                                    <div className="bg-primary/5 backdrop-blur-sm rounded-lg p-3 border border-primary/20">
+                                        <div className="flex items-start gap-3">
+                                            <HatGlasses className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                                            <div>
+                                                <p className="text-sm font-semibold text-primary">
+                                                    Denuncias Anónimas
+                                                </p>
+                                                <p className="text-xs text-muted-foreground">
+                                                    Su identidad se mantendrá completamente confidencial. No recibirá confirmación por correo.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -648,7 +692,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                     </div>
 
                                     {/* Steps indicators */}
-                                    <div className="grid grid-cols-4 gap-1.5 md:gap-2">
+                                    <div className={`grid gap-1.5 md:gap-2` + (data.esAnonimo ? ' grid-cols-2' : ' grid-cols-4')}>
                                         {steps.map((step) => {
                                             const Icon = step.icon;
                                             const isActive = currentStep === step.number;
@@ -711,37 +755,30 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                             <div className="space-y-6 animate-in fade-in duration-300">
                                                 <div className="grid md:grid-cols-2 gap-6">
                                                     <div className="space-y-2">
-                                                        <Label htmlFor="empresa" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
-                                                            Empresa
-                                                        </Label>
-                                                        <Select
-                                                            value={data.empresa}
-                                                            onValueChange={(value) => setData({ ...data, empresa: value })}
-                                                        >
-                                                            <SelectTrigger
-                                                                id="empresa"
-                                                                className={errors.empresa ? "border-destructive" : ""}
-                                                            >
-                                                                <SelectValue placeholder="Seleccione empresa..." />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                {empresas.map((emp) => (
-                                                                    <SelectItem key={emp.id} value={emp.id.toString()}>
-                                                                        {emp.name}
-                                                                    </SelectItem>
-                                                                ))}
-                                                            </SelectContent>
-                                                        </Select>
-                                                        <InputError message={errors.empresa} />
-                                                    </div>
-
-                                                    <div className="space-y-2">
                                                         <Label htmlFor="tipoPqrs" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
                                                             Tipo de PQRSD
                                                         </Label>
                                                         <Select
                                                             value={data.tipoPqrs}
-                                                            onValueChange={(value) => setData({ ...data, tipoPqrs: value })}
+                                                            onValueChange={(value) => {
+                                                                setData({ ...data, tipoPqrs: value })
+
+                                                                if (tipoDenuncia && value !== tipoDenuncia.id.toString()) {
+                                                                    const inversionesArar = empresas.find(e =>
+                                                                        e.id == 6 // Id de Inversiones Arar S.A.
+                                                                    );
+                                                                    if (inversionesArar) {
+                                                                        setData(prev => ({
+                                                                            ...prev,
+                                                                            tipoPqrs: value,
+                                                                            empresa: inversionesArar.id.toString(),
+                                                                            esAnonimo: false
+                                                                        }));
+                                                                    }
+                                                                } else {
+                                                                    setData(prev => ({ ...prev, tipoPqrs: value }));
+                                                                }
+                                                            }}
                                                         >
                                                             <SelectTrigger
                                                                 id="tipoPqrs"
@@ -759,12 +796,61 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                         </Select>
                                                         <InputError message={errors.tipoPqrs} />
                                                     </div>
+
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="empresa" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
+                                                            Empresa
+                                                        </Label>
+                                                        <Select
+                                                            value={data.empresa}
+                                                            onValueChange={(value) => setData({ ...data, empresa: value })}
+                                                            disabled={(() => {
+                                                                return !tipoDenuncia || data.tipoPqrs !== tipoDenuncia.id.toString();
+                                                            })()}
+                                                        >
+                                                            <SelectTrigger
+                                                                id="empresa"
+                                                                className={errors.empresa ? "border-destructive" : ""}
+                                                            >
+                                                                <SelectValue placeholder="Seleccione empresa..." />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                {empresas.map((emp) => (
+                                                                    <SelectItem key={emp.id} value={emp.id.toString()}>
+                                                                        {emp.name}
+                                                                    </SelectItem>
+                                                                ))}
+                                                            </SelectContent>
+                                                        </Select>
+                                                        <InputError message={errors.empresa} />
+                                                    </div>
                                                 </div>
+
+                                                {/* CHECKBOX ANÓNIMO - Solo si es Denuncia */}
+                                                {(() => {
+                                                    const tipoDenuncia = tiposPqrs.find(t => t.abreviatura === 'D');
+                                                    return tipoDenuncia && data.tipoPqrs === tipoDenuncia.id.toString() && (
+
+
+                                                        <Label htmlFor="esAnonimo" className="flex !py-2 text-primary items-center gap-2 rounded-lg border border-primary/40 p-4 bg-primary/5 hover:bg-primary/10 transition-colors cursor-pointer">
+                                                            <HatGlasses className='!w-6 !h-6' />
+                                                            <div className='flex-1 flex gap-2 items-center'>
+                                                                <Checkbox
+                                                                    id="esAnonimo"
+                                                                    checked={data.esAnonimo}
+                                                                    onCheckedChange={(checked) => setData({ ...data, esAnonimo: checked as boolean })}
+                                                                    className="!mt-0 border-primary"
+                                                                />
+                                                                Marque esta casilla si desea realizar la denuncia de forma anónima
+                                                            </div>
+                                                        </Label>
+                                                    );
+                                                })()}
                                             </div>
                                         )}
 
-                                        {/* PASO 2 */}
-                                        {currentStep === 2 && (
+                                        {/* PASO 2: Información personal - Solo si NO es anónimo */}
+                                        {currentStep === 2 && !data.esAnonimo && (
                                             <div className="space-y-6 animate-in fade-in duration-300">
                                                 <div className="grid md:grid-cols-2 gap-6">
                                                     <div className="space-y-2">
@@ -783,8 +869,8 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                             className={errors.nombre ? "border-destructive" : ""}
                                                             maxLength={LIMITS.nombre}
                                                         />
-                                                        <div className="relative">
-                                                            <InputError className='absolute top-0 left-0 !-mt-2 pt-1' message={errors.nombre} />
+                                                        <div className="relative !mt-0">
+                                                            <InputError message={errors.nombre} />
                                                             <span className="text-xs text-muted-foreground absolute top-0 right-0">
                                                                 {data.nombre.length}/{LIMITS.nombre}
                                                             </span>
@@ -807,8 +893,8 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                             className={errors.apellido ? "border-destructive" : ""}
                                                             maxLength={LIMITS.apellido}
                                                         />
-                                                        <div className="relative">
-                                                            <InputError className='absolute top-0 left-0 !-mt-2 pt-1' message={errors.apellido} />
+                                                        <div className="relative !mt-0">
+                                                            <InputError message={errors.apellido} />
                                                             <span className="text-xs text-muted-foreground absolute top-0 right-0">
                                                                 {data.apellido.length}/{LIMITS.apellido}
                                                             </span>
@@ -859,8 +945,8 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                             className={errors.numId ? "border-destructive" : ""}
                                                             maxLength={LIMITS.numId}
                                                         />
-                                                        <div className="relative">
-                                                            <InputError className='absolute top-0 left-0 !-mt-2 pt-1' message={errors.numId} />
+                                                        <div className="relative !mt-0">
+                                                            <InputError message={errors.numId} />
                                                             <span className="text-xs text-muted-foreground absolute top-0 right-0">
                                                                 {data.numId.length}/{LIMITS.numId}
                                                             </span>
@@ -870,8 +956,8 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                             </div>
                                         )}
 
-                                        {/* PASO 3: Contacto y Ubicación */}
-                                        {currentStep === 3 && (
+                                        {/* PASO 3: Contacto y Ubicación - Solo si NO es anónimo */}
+                                        {currentStep === 3 && !data.esAnonimo && (
                                             <div className="space-y-6 animate-in fade-in duration-300">
                                                 <div className="grid md:grid-cols-2 gap-6">
                                                     <div className="space-y-2">
@@ -891,8 +977,8 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                             className={errors.correo ? "border-destructive" : ""}
                                                             maxLength={LIMITS.correo}
                                                         />
-                                                        <div className="relative">
-                                                            <InputError className='absolute top-0 left-0 !-mt-2 pt-1' message={errors.correo} />
+                                                        <div className="relative !mt-0">
+                                                            <InputError message={errors.correo} />
                                                             <span className="text-xs text-muted-foreground absolute top-0 right-0">
                                                                 {data.correo.length}/{LIMITS.correo}
                                                             </span>
@@ -916,8 +1002,8 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                             className={errors.telefono ? "border-destructive" : ""}
                                                             maxLength={LIMITS.telefono}
                                                         />
-                                                        <div className="relative">
-                                                            <InputError className='absolute top-0 left-0 !-mt-2 pt-1' message={errors.telefono} />
+                                                        <div className="relative !mt-0">
+                                                            <InputError message={errors.telefono} />
                                                             <span className="text-xs text-muted-foreground absolute top-0 right-0">
                                                                 {data.telefono.length}/{LIMITS.telefono}
                                                             </span>
@@ -992,8 +1078,8 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                             className={errors.direccion ? "border-destructive" : ""}
                                                             maxLength={LIMITS.direccion}
                                                         />
-                                                        <div className="relative">
-                                                            <InputError className='absolute top-0 left-0 !-mt-2 pt-1' message={errors.direccion} />
+                                                        <div className="relative !mt-0">
+                                                            <InputError message={errors.direccion} />
                                                             <span className="text-xs text-muted-foreground absolute top-0 right-0">
                                                                 {data.direccion.length}/{LIMITS.direccion}
                                                             </span>
@@ -1028,11 +1114,11 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                         )}
 
                                         {/* PASO 4: Descripción y Archivos */}
-                                        {currentStep === 4 && (
+                                        {(currentStep === 4 || (data.esAnonimo && currentStep === 2)) && (
                                             <div className="space-y-6 animate-in fade-in duration-300">
                                                 <div className="space-y-2 !mb-8">
                                                     <Label htmlFor="mensaje" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
-                                                        Descripción de su PQRSD
+                                                        Descripción de su {tipoDenuncia?.nombre.toLowerCase() || "PQRS"}
                                                     </Label>
                                                     <Textarea
                                                         id="mensaje"
@@ -1046,8 +1132,8 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                         }}
                                                         maxLength={LIMITS.mensaje}
                                                     />
-                                                    <div className="relative">
-                                                        <InputError className='absolute top-0 left-0 !-mt-2 pt-1' message={errors.mensaje} />
+                                                    <div className="relative !mt-0">
+                                                        <InputError message={errors.mensaje} />
                                                         <span className="text-xs text-muted-foreground absolute top-0 right-0">
                                                             {data.mensaje.length}/{LIMITS.mensaje}
                                                         </span>

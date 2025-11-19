@@ -143,8 +143,7 @@ export default function ResetPassword({ token, numero_documento }: ResetPassword
                         autoComplete="username"
                         onChange={(e) => handleInputChange('numero_documento', e.target.value)}
                     />
-
-                    <InputError message={errors.numero_documento} className="mt-2" />
+                    <InputError message={errors.numero_documento} />
                 </div>
 
                 <div>
@@ -167,7 +166,7 @@ export default function ResetPassword({ token, numero_documento }: ResetPassword
                         className={errors.password ? "border-destructive focus-visible:ring-destructive" : ""} // Estilo de error
                     />
 
-                    <InputError message={errors.password} className="mt-2" />
+                    <InputError message={errors.password}/>
                 </div>
 
                 <div>

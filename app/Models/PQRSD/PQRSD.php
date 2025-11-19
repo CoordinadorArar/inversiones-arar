@@ -36,6 +36,7 @@ class PQRSD extends Model
     protected $fillable = [
         'empresa_id',
         'tipo_pqrs_id',
+        'anonimo',
         'nombre',
         'apellido',
         'tipo_identificacion_id',

@@ -44,10 +44,15 @@ class PQRSDConfirmationMail extends Mailable
      * @return \Illuminate\Mail\Mailables\Envelope
      */
     public function envelope(): Envelope
-    {
-        return new Envelope(            
-            subject: "Confirmación de Denuncia PQRSD - Radicado #{$this->confirmationData['numero_radicado']}",
-        );
+    {        
+        $tipoPqrs = $this->confirmationData['letra_pqrs'];
+
+        // Determinar texto según tipo
+        $tipoTexto = $tipoPqrs == 'D' ? 'Denuncia' : 'PQRS';
+
+        $subject = "Confirmación de {$tipoTexto} - Radicado #{$this->confirmationData['radicado']}";
+
+        return new Envelope(subject: $subject);
     }
 
     /**

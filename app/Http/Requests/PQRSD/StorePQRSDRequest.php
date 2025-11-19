@@ -48,57 +48,12 @@ class StorePQRSDRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            // Paso 1: Información de la PQRSD
+        $esAnonimo = $this->boolean('esAnonimo', false);
+
+        // Reglas base (siempre requeridas)
+        $rules = [
             'empresa' => ['required', 'exists:sqlsrv_second.t010_mm_companias,f010_id'],
             'tipoPqrs' => ['required', 'exists:tipos_pqrs,id'],
-
-            // Paso 2: Datos personales
-            'nombre' => [
-                'required',
-                'string',
-                'max:50',
-                'regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/'
-            ],
-            'apellido' => [
-                'required',
-                'string',
-                'max:50',
-                'regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/'
-            ],
-            'tipoId' => ['required', 'exists:tipos_identificaciones,id'],
-            'numId' => [
-                'required',
-                'string',
-                'max:15',
-                'regex:/^[0-9]+$/'
-            ],
-
-            // Paso 3: Información de contacto
-            'correo' => [
-                'required',
-                'email',
-                'max:50'
-            ],
-            'telefono' => [
-                'required',
-                'string',
-                'max:15',
-                'regex:/^\+?[0-9]+$/'
-            ],
-            'dpto' => ['required', 'exists:sqlsrv_second.t012_mm_deptos,f012_id'],
-            'ciudad' => ['required', 'exists:sqlsrv_second.t013_mm_ciudades,f013_id'],
-            'direccion' => [
-                'nullable',
-                'string',
-                'max:100'
-            ],
-            'relacion' => [
-                'required',
-                Rule::in(['cliente', 'empleado', 'proveedor', 'otro'])
-            ],
-
-            // Paso 4: Descripción y archivos
             'mensaje' => [
                 'required',
                 'string',
@@ -106,15 +61,62 @@ class StorePQRSDRequest extends FormRequest
                 'max:2000',
                 'regex:/^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑüÜ\s.,;:¿?¡!\-_()"\'\n]+$/'
             ],
-
-            // Archivos adjuntos (opcionales)
             'files' => ['nullable', 'array', 'max:5'],
             'files.*' => [
                 'file',
                 'mimes:pdf,jpg,jpeg',
-                'max:500' // 500KB
+                'max:500'
             ]
         ];
+
+        // Solo validar datos personales si NO es anónimo
+        if (!$esAnonimo) {
+            $rules += [
+                'nombre' => [
+                    'required',
+                    'string',
+                    'max:50',
+                    'regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/'
+                ],
+                'apellido' => [
+                    'required',
+                    'string',
+                    'max:50',
+                    'regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/'
+                ],
+                'tipoId' => ['required', 'exists:tipos_identificaciones,id'],
+                'numId' => [
+                    'required',
+                    'string',
+                    'max:15',
+                    'regex:/^[0-9]+$/'
+                ],
+                'correo' => [
+                    'required',
+                    'email',
+                    'max:50'
+                ],
+                'telefono' => [
+                    'required',
+                    'string',
+                    'max:15',
+                    'regex:/^\+?[0-9]+$/'
+                ],
+                'dpto' => ['required', 'exists:sqlsrv_second.t012_mm_deptos,f012_id'],
+                'ciudad' => ['required', 'exists:sqlsrv_second.t013_mm_ciudades,f013_id'],
+                'direccion' => [
+                    'nullable',
+                    'string',
+                    'max:100'
+                ],
+                'relacion' => [
+                    'required',
+                    Rule::in(['cliente', 'empleado', 'proveedor', 'otro'])
+                ],
+            ];
+        }
+
+        return $rules;
     }
 
     /**
@@ -175,8 +177,8 @@ class StorePQRSDRequest extends FormRequest
             'mensaje.regex' => 'El mensaje contiene caracteres no permitidos',
 
             // Archivos
-            'files.array' => 'Los archivos deben ser enviados en formato válido',      
-            'files.max' => 'Puede adjuntar máximo 5 archivos',      
+            'files.array' => 'Los archivos deben ser enviados en formato válido',
+            'files.max' => 'Puede adjuntar máximo 5 archivos',
             'files.*.file' => 'Uno o más archivos no son válidos',
             'files.*.mimes' => 'Solo se permiten archivos PDF y JPG',
             'files.*.max' => 'Cada archivo debe ser menor a 500KB',

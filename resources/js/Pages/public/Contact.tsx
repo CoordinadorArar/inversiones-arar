@@ -270,16 +270,16 @@ export default function Contact() {
                             <div className="lg:col-span-1 space-y-6">
                                 {/* Tarjetas de contacto mejoradas */}
                                 <Card className="group hover:shadow-lg transition-all duration-300 border-primary/20 hover:border-primary/40 overflow-hidden">
-                                    <CardContent className="relative p-6">
+                                    <CardContent className="relative p-4">
                                         <div className="flex items-start gap-4">
-                                            <div className="relative">
-                                                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center flex-shrink-0  transition-transform shadow-lg">
+                                            <div className="relative !mt-0">
+                                                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center flex-shrink-0  transition-transform shadow-lg">
                                                     <Mail className="h-6 w-6 text-white" />
                                                 </div>
                                                 <div className="absolute -bottom-1 -right-1 h-4 w-4 bg-green-500 rounded-full border-2 border-white"></div>
                                             </div>
                                             <div className="flex-1">
-                                                <h3 className="font-semibold text-lg mb-2 text-foreground">Correo Electrónico</h3>
+                                                <h3 className="font-semibold text-lg text-foreground">Correo Electrónico</h3>
                                                 <a
                                                     href="mailto:asistente@inversionesarar.com"
                                                     className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 group/link"
@@ -295,16 +295,16 @@ export default function Contact() {
                                 </Card>
 
                                 <Card className="group hover:shadow-lg transition-all duration-300 border-primary/20 hover:border-primary/40 overflow-hidden">
-                                    <CardContent className="relative p-6">
+                                    <CardContent className="relative p-4">
                                         <div className="flex items-start gap-4">
-                                            <div className="relative">
-                                                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center flex-shrink-0 transition-transform shadow-lg">
+                                            <div className="relative !mt-0">
+                                                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center flex-shrink-0 transition-transform shadow-lg">
                                                     <Phone className="h-6 w-6 text-white" />
                                                 </div>
                                                 <div className="absolute -bottom-1 -right-1 h-4 w-4 bg-green-500 rounded-full border-2 border-white"></div>
                                             </div>
                                             <div className="flex-1">
-                                                <h3 className="font-semibold text-lg mb-2 text-foreground">Teléfono</h3>
+                                                <h3 className="font-semibold text-lg text-foreground">Teléfono</h3>
                                                 <a
                                                     href="tel:6076985203"
                                                     className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 group/link"
@@ -320,21 +320,21 @@ export default function Contact() {
                                 </Card>
 
                                 <Card className="group hover:shadow-lg transition-all duration-300 border-primary/20 hover:border-primary/40 overflow-hidden">
-                                    <CardContent className="relative p-6">
+                                    <CardContent className="relative p-4">
                                         <div className="flex items-start gap-4">
-                                            <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center flex-shrink-0 transition-transform shadow-lg">
+                                            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center flex-shrink-0 transition-transform shadow-lg">
                                                 <MapPin className="h-6 w-6 text-white" />
                                             </div>
                                             <div className="flex-1">
-                                                <h3 className="font-semibold text-lg mb-2 text-foreground">Ubicación</h3>
+                                                <h3 className="font-semibold text-lg text-foreground mb-1">Ubicación</h3>
                                                 <a
                                                     href="https://maps.app.goo.gl/mm8MPxAzZs99BV1D8"
                                                     target='_blank'
                                                     rel="noopener noreferrer"
                                                     className="text-sm text-muted-foreground transition-colors hover:text-primary"
                                                 >
-                                                    <span className="block mb-1">Km 2 • Torre Uno • Oficina 206</span>
-                                                    <span className="block mb-1">Ecoparque Empresarial Natura</span>
+                                                    <span className="block">Km 2 • Torre Uno • Oficina 206</span>
+                                                    <span className="block">Ecoparque Empresarial Natura</span>
                                                     <span className="block font-medium">
                                                         Floridablanca, Santander - Colombia
                                                     </span>
@@ -406,11 +406,11 @@ export default function Contact() {
                                                             handleTextKeyDown(e);
                                                             handleLimit(e, data.subject, LIMITS.subject);
                                                         }}
-                                                        className={`h-11 ${errors.subject ? "border-destructive focus-visible:ring-destructive" : ""}`}
+                                                        className={`${errors.subject ? "border-destructive focus-visible:ring-destructive" : ""}`}
                                                         maxLength={LIMITS.subject}
                                                     />
-                                                    <div className="relative">
-                                                        <InputError className='absolute top-0 !-mt-2 pt-1' message={errors.subject} />
+                                                    <div className="relative !mt-0">
+                                                        <InputError message={errors.subject} />
                                                         <span className="text-xs text-muted-foreground absolute top-0 right-0">
                                                             {data.subject.length}/{LIMITS.subject}
                                                         </span>
@@ -432,11 +432,11 @@ export default function Contact() {
                                                             handleTextKeyDown(e);
                                                             handleLimit(e, data.name, LIMITS.name);
                                                         }}
-                                                        className={`h-11 ${errors.name ? "border-destructive focus-visible:ring-destructive" : ""}`}
+                                                        className={`${errors.name ? "border-destructive focus-visible:ring-destructive" : ""}`}
                                                         maxLength={LIMITS.name}
                                                     />
-                                                    <div className="relative">
-                                                        <InputError className='absolute top-0 !-mt-2 pt-1' message={errors.name} />
+                                                    <div className="relative !mt-0">
+                                                        <InputError message={errors.name} />
                                                         <span className="text-xs text-muted-foreground absolute top-0 right-0">
                                                             {data.name.length}/{LIMITS.name}
                                                         </span>
@@ -459,11 +459,11 @@ export default function Contact() {
                                                             handleEmailKeyDown(e);
                                                             handleLimit(e, data.email, LIMITS.email);
                                                         }}
-                                                        className={`h-11 ${errors.email ? "border-destructive focus-visible:ring-destructive" : ""}`}
+                                                        className={`${errors.email ? "border-destructive focus-visible:ring-destructive" : ""}`}
                                                         maxLength={LIMITS.email}
                                                     />
-                                                    <div className="relative">
-                                                        <InputError className='absolute top-0 !-mt-2 pt-1' message={errors.email} />
+                                                    <div className="relative !mt-0">
+                                                        <InputError message={errors.email} />
                                                         <span className="text-xs text-muted-foreground absolute top-0 right-0">
                                                             {data.email.length}/{LIMITS.email}
                                                         </span>
@@ -486,11 +486,11 @@ export default function Contact() {
                                                             handleNumberKeyDown(e);
                                                             handleLimit(e, data.phone, LIMITS.phone);
                                                         }}
-                                                        className={`h-11 ${errors.phone ? "border-destructive focus-visible:ring-destructive" : ""}`}
+                                                        className={`${errors.phone ? "border-destructive focus-visible:ring-destructive" : ""}`}
                                                         maxLength={LIMITS.phone}
                                                     />
-                                                    <div className="relative">
-                                                        <InputError className='absolute top-0 !-mt-2 pt-1' message={errors.phone} />
+                                                    <div className="relative !mt-0">
+                                                        <InputError message={errors.phone} />
                                                         <span className="text-xs text-muted-foreground absolute top-0 right-0">
                                                             {data.phone.length}/{LIMITS.phone}
                                                         </span>
@@ -512,11 +512,11 @@ export default function Contact() {
                                                             handleNumberTextKeyDown(e);
                                                             handleLimit(e, data.company, LIMITS.company);
                                                         }}
-                                                        className={`h-11 ${errors.company ? "border-destructive focus-visible:ring-destructive" : ""}`}
+                                                        className={`${errors.company ? "border-destructive focus-visible:ring-destructive" : ""}`}
                                                         maxLength={LIMITS.company}
                                                     />
-                                                    <div className="relative">
-                                                        <InputError className='absolute top-0 !-mt-2 pt-1' message={errors.company} />
+                                                    <div className="relative !mt-0">
+                                                        <InputError message={errors.company} />
                                                         <span className="text-xs text-muted-foreground absolute top-0 right-0">
                                                             {data.company.length}/{LIMITS.company}
                                                         </span>
@@ -543,8 +543,8 @@ export default function Contact() {
                                                     className={errors.message ? "border-destructive focus-visible:ring-destructive" : ""}
                                                     maxLength={LIMITS.message}
                                                 />
-                                                <div className="relative">
-                                                    <InputError className='absolute top-0 !-mt-2 pt-1' message={errors.message} />
+                                                <div className="relative !mt-0">
+                                                    <InputError message={errors.message} />
                                                     <span className="text-xs text-muted-foreground absolute top-0 right-0">
                                                         {data.message.length}/{LIMITS.message}
                                                     </span>
@@ -576,7 +576,7 @@ export default function Contact() {
                                                         {' '}y el tratamiento de mis datos personales
                                                     </label>
                                                     {errors.acceptsPolicy && (
-                                                        <InputError className='absolute top-0 !-mt-2 pt-1' message={errors.acceptsPolicy} />
+                                                        <InputError message={errors.acceptsPolicy} />
                                                     )}
                                                 </div>
                                             </div>
