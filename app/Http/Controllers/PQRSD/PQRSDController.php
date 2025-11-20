@@ -87,7 +87,7 @@ class PQRSDController extends Controller
 
             // Preparar datos para guardar en BD
             $pqrsdData = [
-                'empresa_id' => $validated['empresa'],
+                'empresa_id' => ($validated['tipoPqrs'] == 5) ? $validated['empresa'] :  6, // Si es denuncia, usar empresa seleccionada; si no, usar id 6 (Inversiones Arar)
                 'tipo_pqrs_id' => $validated['tipoPqrs'],
                 'anonimo' => $request->boolean('esAnonimo', false),
                 'nombre' => $validated['nombre'] ?? null,  // Cambiar a nullable
@@ -148,7 +148,7 @@ class PQRSDController extends Controller
             }
 
             // Preparar datos para emails (consulta modelos para nombres).
-            $empresa       = Empresa::find($validated['empresa'])->f010_razon_social;
+            $empresa       = Empresa::find($pqrsdData['empresa_id'])->f010_razon_social;
             $tipoPqrs      = TipoPqrs::find($validated['tipoPqrs']);
 
             // Si NO es anónimo, preparar datos completos del denunciante

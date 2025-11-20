@@ -815,7 +815,13 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                                 <SelectValue placeholder="Seleccione empresa..." />
                                                             </SelectTrigger>
                                                             <SelectContent>
-                                                                {empresas.map((emp) => (
+                                                                {empresas.filter((emp) => {
+                                                                    // Si no es denuncia, solo carga Inversiones Arar S.A.
+                                                                    if (!tipoDenuncia || data.tipoPqrs !== tipoDenuncia.id.toString()) {
+                                                                        return emp.id == 6; // Id de Inversiones Arar S.A.
+                                                                    }
+                                                                    return true; // Carga todas las empresas para denuncias.
+                                                                }).map((emp) => (
                                                                     <SelectItem key={emp.id} value={emp.id.toString()}>
                                                                         {emp.name}
                                                                     </SelectItem>
