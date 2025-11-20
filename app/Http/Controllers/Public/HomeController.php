@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Public;
+
+use App\Http\Controllers\Controller;
 
 /**
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Public;
 
 /**
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
@@ -8,6 +8,7 @@ namespace App\Http\Controllers;
  * @date 2025-11-11
  */
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreContactRequest;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ContactFormMail;
