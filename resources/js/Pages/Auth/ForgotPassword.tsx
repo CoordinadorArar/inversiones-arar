@@ -12,9 +12,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { AlertCircle, Mail, Shield } from 'lucide-react';
+import { AlertCircle, CircleCheck, Mail, Shield } from 'lucide-react';
 import { useState } from 'react'; // Agregado para estado local
-import { handleNumberKeyDown, handleLimit } from '@/lib/keydownValidations';
+import { handleNumberKeyDown } from '@/lib/keydownValidations';
 import { z } from 'zod';
 
 // Interfaz para los datos del formulario
@@ -37,14 +37,9 @@ const forgotSchema = z.object({
         .min(1, "El número de documento es obligatorio"),
 });
 
-interface ForgotPasswordProps {
-    status?: string;
-}
-
-export default function ForgotPassword({ status }: ForgotPasswordProps) {
-    // Estado local para validaciones frontend 
-    const [formData, setFormData] = useState<ForgotFormData>({
-        numero_documento: '',
+export default function ForgotPassword({ status }) {
+    const [formData, setFormData] = useState({
+        numero_documento: "",
     });
 
     const [frontendErrors, setFrontendErrors] = useState<Record<string, string>>({});
@@ -59,6 +54,7 @@ export default function ForgotPassword({ status }: ForgotPasswordProps) {
 
     // Manejar cambios en los inputs 
     const handleInputChange = (field: keyof ForgotFormData, value: string) => {
+
         // Actualizar estado local
         setFormData(prev => ({ ...prev, [field]: value }));
 
@@ -77,7 +73,7 @@ export default function ForgotPassword({ status }: ForgotPasswordProps) {
 
     // Validar formulario antes de enviar
     const validateForm = (): boolean => {
-        const result = forgotSchema.safeParse(formData);
+        const result = forgotSchema.safeParse(data);
 
         if (!result.success) {
             const newErrors: Record<string, string> = {};
@@ -159,11 +155,15 @@ export default function ForgotPassword({ status }: ForgotPasswordProps) {
 
             {/* Mensaje de status */}
             {status && (
-                <div className="mb-3 sm:mb-4 p-2.5 sm:p-4 py-2 text-xs sm:text-sm font-medium text-green-700 bg-green-50 border border-green-200 rounded-lg">
-                    {status}
+                <div className="mb-4 px-3 sm:px-4 py-2 sm:py-3 bg-green-50 border border-green-200 rounded-lg flex items-start gap-3">
+                    <div className="flex-shrink-0">
+                        <CircleCheck className="w-5 h-5 text-green-600 mt-0.5" />
+                    </div>
+                          <p className="text-xs sm:text-sm text-green-700 font-medium">
+                        {status}
+                    </p>              
                 </div>
             )}
-
             <form onSubmit={submit} className="space-y-3 sm:space-y-4" noValidate>
                 <div>
                     <label
@@ -182,10 +182,9 @@ export default function ForgotPassword({ status }: ForgotPasswordProps) {
                         onChange={(e) => handleInputChange('numero_documento', e.target.value)}
                         onKeyDown={(e) => {
                             handleNumberKeyDown(e);
-                            handleLimit(e, formData.numero_documento, LIMITS.numero_documento);
                         }}
                         maxLength={LIMITS.numero_documento}
-                        autoComplete="username"
+                        autoComplete="document-number"
                     />
                     <div className='relative'>
                         <InputError className='absolute top-0 left-0' message={errors.numero_documento} />

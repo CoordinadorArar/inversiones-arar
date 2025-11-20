@@ -12,7 +12,7 @@ import { Eye, EyeOff, InfoIcon } from 'lucide-react';
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '@/Components/ui/input-group';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { handlePasswordKeyDown, handleLimit } from '@/lib/keydownValidations';
+import { handlePasswordKeyDown } from '@/lib/keydownValidations';
 import { cn } from '@/lib/utils';
 
 interface PasswordInputProps {
@@ -89,7 +89,6 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
                     onChange={onChange}
                     onKeyDown={(e) => {
                         handlePasswordKeyDown(e);
-                        handleLimit(e, value, maxLength);
                     }}
                     className={cn(
                         hasError && "border-destructive focus-visible:ring-destructive",

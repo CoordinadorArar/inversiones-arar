@@ -23,7 +23,6 @@ import {
     handleNumberKeyDown,
     handleNumberTextKeyDown,
     handleTextKeyDown,
-    handleLimit
 } from '@/lib/keydownValidations';
 import { useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
@@ -402,10 +401,7 @@ export default function Contact() {
                                                         placeholder="¿De qué trata tu consulta?"
                                                         value={data.subject}
                                                         onChange={e => setData({ ...data, subject: e.target.value })}
-                                                        onKeyDown={(e) => {
-                                                            handleTextKeyDown(e);
-                                                            handleLimit(e, data.subject, LIMITS.subject);
-                                                        }}
+                                                        onKeyDown={handleTextKeyDown}
                                                         className={`${errors.subject ? "border-destructive focus-visible:ring-destructive" : ""}`}
                                                         maxLength={LIMITS.subject}
                                                     />
@@ -428,12 +424,10 @@ export default function Contact() {
                                                         placeholder="Tu nombre"
                                                         value={data.name}
                                                         onChange={e => setData({ ...data, name: e.target.value })}
-                                                        onKeyDown={(e) => {
-                                                            handleTextKeyDown(e);
-                                                            handleLimit(e, data.name, LIMITS.name);
-                                                        }}
+                                                        onKeyDown={handleTextKeyDown}
                                                         className={`${errors.name ? "border-destructive focus-visible:ring-destructive" : ""}`}
                                                         maxLength={LIMITS.name}
+                                                        autoComplete="name"
                                                     />
                                                     <div className="relative !mt-0">
                                                         <InputError message={errors.name} />
@@ -455,12 +449,10 @@ export default function Contact() {
                                                         placeholder="tu@email.com"
                                                         value={data.email}
                                                         onChange={e => setData({ ...data, email: e.target.value })}
-                                                        onKeyDown={(e) => {
-                                                            handleEmailKeyDown(e);
-                                                            handleLimit(e, data.email, LIMITS.email);
-                                                        }}
+                                                        onKeyDown={handleEmailKeyDown}
                                                         className={`${errors.email ? "border-destructive focus-visible:ring-destructive" : ""}`}
                                                         maxLength={LIMITS.email}
+                                                        autoComplete="email"
                                                     />
                                                     <div className="relative !mt-0">
                                                         <InputError message={errors.email} />
@@ -482,12 +474,10 @@ export default function Contact() {
                                                         placeholder="+573001234567"
                                                         value={data.phone}
                                                         onChange={e => setData({ ...data, phone: e.target.value })}
-                                                        onKeyDown={(e) => {
-                                                            handleNumberKeyDown(e);
-                                                            handleLimit(e, data.phone, LIMITS.phone);
-                                                        }}
+                                                        onKeyDown={handleNumberKeyDown}
                                                         className={`${errors.phone ? "border-destructive focus-visible:ring-destructive" : ""}`}
                                                         maxLength={LIMITS.phone}
+                                                        autoComplete="tel"
                                                     />
                                                     <div className="relative !mt-0">
                                                         <InputError message={errors.phone} />
@@ -508,10 +498,7 @@ export default function Contact() {
                                                         placeholder="Tu empresa"
                                                         value={data.company}
                                                         onChange={e => setData({ ...data, company: e.target.value })}
-                                                        onKeyDown={(e) => {
-                                                            handleNumberTextKeyDown(e);
-                                                            handleLimit(e, data.company, LIMITS.company);
-                                                        }}
+                                                        onKeyDown={handleNumberTextKeyDown}
                                                         className={`${errors.company ? "border-destructive focus-visible:ring-destructive" : ""}`}
                                                         maxLength={LIMITS.company}
                                                     />
@@ -536,10 +523,7 @@ export default function Contact() {
                                                     rows={6}
                                                     value={data.message}
                                                     onChange={e => setData({ ...data, message: e.target.value })}
-                                                    onKeyDown={(e) => {
-                                                        handleMessagesKeyDown(e);
-                                                        handleLimit(e, data.message, LIMITS.message);
-                                                    }}
+                                                    onKeyDown={handleMessagesKeyDown}
                                                     className={errors.message ? "border-destructive focus-visible:ring-destructive" : ""}
                                                     maxLength={LIMITS.message}
                                                 />

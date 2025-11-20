@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -18,7 +19,7 @@ class AuthenticatedSessionController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('Auth/Login', [            
+        return Inertia::render('Auth/Login', [
             'status' => session('status'),
         ]);
     }
@@ -28,11 +29,28 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        $request->authenticate();
 
-        $request->session()->regenerate();
+        try {
+            $request->authenticate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+            $request->session()->regenerate();
+
+            return redirect()->intended(route('dashboard', absolute: false));
+        } catch (ValidationException $e) {
+            $errors = $e->errors();
+
+            if (isset($errors['redirectRegister'])) {
+                return redirect()
+                    ->route('register', ['document' => $request->numero_documento])
+                    ->with('status', $errors['status'][0]);
+            }
+
+            if (isset($errors['statusMessage'])) {
+                return back()->with('status', $errors['statusMessage'][0]);
+            }
+
+            throw $e;
+        }
     }
 
     /**

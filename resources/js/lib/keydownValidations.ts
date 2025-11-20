@@ -9,30 +9,6 @@
 // allowedKeys: Teclas de control permitidas (navegación, borrado) en todas las funciones.
 const allowedKeys = ['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Delete', 'Home', 'End', 'Control', 'Alt', 'Shift'];
 
-// handleLimit: Previene escribir más caracteres cuando se alcanza el límite.
-// Uso: <input onKeyDown={(e) => handleLimit(e, e.currentTarget.value, 50)} />
-export const handleLimit = (
-    e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>,
-    currentValue: string,
-    maxLength: number
-) => {
-    // Permitir teclas de control y combinaciones con Ctrl (como Ctrl+A, Ctrl+C, etc.)
-    if (allowedKeys.includes(e.key) || e.ctrlKey || e.metaKey) {
-        return;
-    }
-    
-    // Si hay texto seleccionado, permitir escritura (se va a reemplazar)
-    const target = e.currentTarget;
-    if (target.selectionStart !== target.selectionEnd) {
-        return;
-    }
-    
-    // Prevenir si ya se alcanzó el límite
-    if (currentValue.length >= maxLength) {
-        e.preventDefault();
-    }
-};
-
 // handleTextKeyDown: Permite solo letras (incluyendo acentos y ñ) y espacios.
 // Uso: En inputs de nombre/apellido (ej. <input onKeyDown={handleTextKeyDown} />).
 // Bloquea números/símbolos para campos de texto puro.

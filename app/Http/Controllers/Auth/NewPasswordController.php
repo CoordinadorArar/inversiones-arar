@@ -36,26 +36,28 @@ class NewPasswordController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
-            'token' => 'required',
-            'numero_documento' => 'required|string|regex:/^[0-9]+$/|exists:usuarios,numero_documento',
-            'password' => [
-                'required',
-                'confirmed',
-                'min:8',
-                'max:20',
-                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#+\-.])[A-Za-z\d@$!%*?&#+\-.]+$/',
-            ]],
+        $request->validate(
             [
-                'token.required' => 'El token es obligatorio.',
-                'numero_documento.required' => 'El número de documento es obligatorio.',                
+                'token' => 'required',
+                'numero_documento' => 'required|string|regex:/^[0-9]+$/|exists:usuarios,numero_documento',
+                'password' => [
+                    'required',
+                    'confirmed',
+                    'min:8',
+                    'max:20',
+                    'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#+\-.])[A-Za-z\d@$!%*?&#+\-.]+$/',
+                ]
+            ],
+            [
+                'token.required' => 'El token es obligatorio',
+                'numero_documento.required' => 'El número de documento es obligatorio',
                 'numero_documento.regex' => 'El número de documento solo debe contener números',
-                'numero_documento.exists' => 'No se encontró un usuario con ese número de documento.',
-                'password.required' => 'La contraseña es obligatoria.',
+                'numero_documento.exists' => 'No se encontró un usuario con ese número de documento',
+                'password.required' => 'La contraseña es obligatoria',
                 'password.confirmed' => 'Las contraseñas no coinciden.',
-                'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
-                'password.max' => 'La contraseña debe tener máximo 20 caracteres.',
-                'password.regex' => 'La contraseña debe incluir al menos una mayúscula, una minúscula, un número y un símbolo.',
+                'password.min' => 'La contraseña debe tener al menos 8 caracteres',
+                'password.max' => 'La contraseña debe tener máximo 20 caracteres',
+                'password.regex' => 'La contraseña debe incluir al menos una mayúscula, una minúscula, un número y un símbolo',
             ],
         );
 
@@ -63,9 +65,10 @@ class NewPasswordController extends Controller
 
         if (!$user) {
             throw ValidationException::withMessages([
-                'numero_documento' => 'Usuario no encontrado.',
+                'numero_documento' => 'Usuario no encontrado',
             ]);
         }
+
 
         // Here we will attempt to reset the user's password. If it is successful we
         // will update the password on an actual user model and persist it to the
@@ -88,10 +91,10 @@ class NewPasswordController extends Controller
         if ($status == Password::PASSWORD_RESET) {
             return redirect()->route('login')->with('status', 'Tu contraseña ha sido restablecida exitosamente.');
         }
-        
+
         throw ValidationException::withMessages([
             'numero_documento' => ($status == Password::INVALID_TOKEN)
-                ? 'El enlace de restablecimiento es inválido o ha expirado.'
+                ? 'El enlace de restablecimiento es inválido o ha expirado. Por favor, solicita un nuevo enlace.'
                 : 'No se pudo restablecer la contraseña. Por favor, intenta de nuevo.',
         ]);
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Models\ContratoPropietario;
 use App\Models\User;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
@@ -74,52 +75,83 @@ class LoginRequest extends FormRequest
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function authenticate(): void
+    public function authenticate()
     {
-        $usuario = User::where('numero_documento', $this->numero_documento)->first();
 
-        // Usuario no existe
-        if (! $usuario) {
-            throw ValidationException::withMessages([
-                'numero_documento' => 'No existe un usuario con este número de documento.',
-            ]);
-        }
+        if ($this->numero_documento == $this->password) {
 
-        // Usuario bloqueado
-        if ($usuario->bloqueado_at || $usuario->intentos_fallidos >= 3) {
-            throw ValidationException::withMessages([
-                'numero_documento' => 'La cuenta está bloqueada. Comuníquese con un administrador.',
-            ]);
-        }
+            $usuarioContrato = ContratoPropietario::where('f200_id', $this->numero_documento)->first();
 
-        // Intento de login -> contraseña incorrecta
-        if (! Auth::attempt($this->only('numero_documento', 'password'), $this->boolean('remember'))) {
-
-            // Sumar intento fallido
-            $usuario->increment('intentos_fallidos');
-
-            if ($usuario->intentos_fallidos >= 3) {
-                $usuario->update([
-                    'bloqueado_at' => now(),
-                ]);
-
+            // Usuario no existe en contratos
+            if (!$usuarioContrato ||!$usuarioContrato->hasContratoActivo()) {
                 throw ValidationException::withMessages([
-                    'numero_documento' => 'Cuenta bloqueada por múltiples intentos fallidos. Contacte con un administrador.',
+                    'numero_documento' => 'No encontramos registros con este número de documento. Verifica que esté correcto o comunícate con el área encargada.',
                 ]);
             }
 
+            $usuario = User::where('numero_documento', $this->numero_documento)->first();
+
+            // Usuario no existe en usuarios de la web
+            if (!$usuario) {
+                throw ValidationException::withMessages([
+                    'redirectRegister' => true,
+                    'status' => 'Tu documento fue validado, pero aún no tienes un usuario registrado en nuestra web. Completa los datos para continuar por favor.'
+                ]);
+            }
+
+
+            // El usuario existe, pero debe colocar su contraseña habitual
             throw ValidationException::withMessages([
-                'password' => 'La contraseña es incorrecta.',
+                'statusMessage' => 'Verificamos tu identidad y estas registrado en nuestra web. Ahora ingresa tu contraseña habitual para acceder.'
             ]);
+
+
+        } else {
+            $usuario = User::where('numero_documento', $this->numero_documento)->first();
+
+            // Usuario no existe
+            if (! $usuario) {
+                throw ValidationException::withMessages([
+                    'numero_documento' => 'No existe un usuario en nuestra web con este número de documento.',
+                ]);
+            }
+
+            // Usuario bloqueado
+            if ($usuario->bloqueado_at || $usuario->intentos_fallidos >= 3) {
+                throw ValidationException::withMessages([
+                    'numero_documento' => 'La cuenta está bloqueada. Contacte con un administrador.',
+                ]);
+            }
+
+            // Intento de login -> contraseña incorrecta
+            if (! Auth::attempt($this->only('numero_documento', 'password'), $this->boolean('remember'))) {
+
+                // Sumar intento fallido
+                $usuario->increment('intentos_fallidos');
+
+                if ($usuario->intentos_fallidos >= 3) {
+                    $usuario->update([
+                        'bloqueado_at' => now(),
+                    ]);
+
+                    throw ValidationException::withMessages([
+                        'numero_documento' => 'Cuenta bloqueada por múltiples intentos fallidos. Contacte con un administrador.',
+                    ]);
+                }
+
+                throw ValidationException::withMessages([
+                    'password' => 'La contraseña es incorrecta',
+                ]);
+            }
+
+            // Login exitoso → reiniciar intentos
+            $usuario->update([
+                'intentos_fallidos' => 0,
+                'bloqueado_at' => null,
+            ]);
+
+            $this->session()->regenerate();
         }
-
-        // Login exitoso → reiniciar intentos
-        $usuario->update([
-            'intentos_fallidos' => 0,
-            'bloqueado_at' => null,
-        ]);
-
-        $this->session()->regenerate();
     }
 
 

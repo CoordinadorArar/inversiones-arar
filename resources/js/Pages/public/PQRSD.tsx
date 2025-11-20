@@ -26,7 +26,6 @@ import {
     handleEmailKeyDown,
     handleNumberKeyDown,
     handleMessagesKeyDown,
-    handleLimit
 } from '@/lib/keydownValidations';
 import { z } from 'zod';
 import {
@@ -868,12 +867,10 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                             placeholder="Ingrese sus nombres"
                                                             value={data.nombre}
                                                             onChange={(e) => setData({ ...data, nombre: e.target.value })}
-                                                            onKeyDown={(e) => {
-                                                                handleTextKeyDown(e);
-                                                                handleLimit(e, data.nombre, LIMITS.nombre);
-                                                            }}
+                                                            onKeyDown={handleTextKeyDown}
                                                             className={errors.nombre ? "border-destructive" : ""}
                                                             maxLength={LIMITS.nombre}
+                                                            autoComplete="given-name"
                                                         />
                                                         <div className="relative !mt-0">
                                                             <InputError message={errors.nombre} />
@@ -892,12 +889,10 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                             placeholder="Ingrese sus apellidos"
                                                             value={data.apellido}
                                                             onChange={(e) => setData({ ...data, apellido: e.target.value })}
-                                                            onKeyDown={(e) => {
-                                                                handleTextKeyDown(e);
-                                                                handleLimit(e, data.apellido, LIMITS.apellido);
-                                                            }}
+                                                            onKeyDown={handleTextKeyDown}
                                                             className={errors.apellido ? "border-destructive" : ""}
                                                             maxLength={LIMITS.apellido}
+                                                            autoComplete='family-name'
                                                         />
                                                         <div className="relative !mt-0">
                                                             <InputError message={errors.apellido} />
@@ -944,12 +939,10 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                             placeholder="Ingrese su número"
                                                             value={data.numId}
                                                             onChange={(e) => setData({ ...data, numId: e.target.value })}
-                                                            onKeyDown={(e) => {
-                                                                handleNumberKeyDown(e);
-                                                                handleLimit(e, data.numId, LIMITS.numId);
-                                                            }}
+                                                            onKeyDown={handleNumberKeyDown}
                                                             className={errors.numId ? "border-destructive" : ""}
                                                             maxLength={LIMITS.numId}
+                                                            autoComplete='document-number'
                                                         />
                                                         <div className="relative !mt-0">
                                                             <InputError message={errors.numId} />
@@ -976,12 +969,10 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                             placeholder="ejemplo@correo.com"
                                                             value={data.correo}
                                                             onChange={(e) => setData({ ...data, correo: e.target.value })}
-                                                            onKeyDown={(e) => {
-                                                                handleEmailKeyDown(e);
-                                                                handleLimit(e, data.correo, LIMITS.correo);
-                                                            }}
+                                                            onKeyDown={handleEmailKeyDown}
                                                             className={errors.correo ? "border-destructive" : ""}
                                                             maxLength={LIMITS.correo}
+                                                            autoComplete="email"
                                                         />
                                                         <div className="relative !mt-0">
                                                             <InputError message={errors.correo} />
@@ -1001,12 +992,10 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                             placeholder="Ingrese su teléfono"
                                                             value={data.telefono}
                                                             onChange={(e) => setData({ ...data, telefono: e.target.value })}
-                                                            onKeyDown={(e) => {
-                                                                handleNumberKeyDown(e);
-                                                                handleLimit(e, data.telefono, LIMITS.telefono);
-                                                            }}
+                                                            onKeyDown={handleNumberKeyDown}
                                                             className={errors.telefono ? "border-destructive" : ""}
                                                             maxLength={LIMITS.telefono}
+                                                            autoComplete="tel"
                                                         />
                                                         <div className="relative !mt-0">
                                                             <InputError message={errors.telefono} />
@@ -1079,10 +1068,10 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                             id="direccion"
                                                             placeholder="Ingrese su dirección"
                                                             value={data.direccion}
-                                                            onChange={(e) => setData({ ...data, direccion: e.target.value })}
-                                                            onKeyDown={(e) => handleLimit(e, data.direccion, LIMITS.direccion)}
+                                                            onChange={(e) => setData({ ...data, direccion: e.target.value })}                                                            
                                                             className={errors.direccion ? "border-destructive" : ""}
                                                             maxLength={LIMITS.direccion}
+                                                            autoComplete="street-address"
                                                         />
                                                         <div className="relative !mt-0">
                                                             <InputError message={errors.direccion} />
@@ -1132,10 +1121,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                         className={`min-h-[150px] ${errors.mensaje ? "border-destructive" : ""}`}
                                                         value={data.mensaje}
                                                         onChange={(e) => setData({ ...data, mensaje: e.target.value })}
-                                                        onKeyDown={(e) => {
-                                                            handleMessagesKeyDown(e);
-                                                            handleLimit(e, data.mensaje, LIMITS.mensaje);
-                                                        }}
+                                                        onKeyDown={handleMessagesKeyDown}
                                                         maxLength={LIMITS.mensaje}
                                                     />
                                                     <div className="relative !mt-0">

@@ -36,7 +36,7 @@ class PasswordResetLinkController extends Controller
             'numero_documento.required' => 'El número de documento es obligatorio',
             'numero_documento.max' => 'El número de documento debe tener máximo 15 caracteres',
             'numero_documento.regex' => 'El número de documento solo debe contener números',
-            'numero_documento.exists' => 'No se encontró un registro con este número de documento',
+            'numero_documento.exists' => 'No existe un usuario en nuestra web con este número de documento',
         ]);
 
         // Buscar usuario por su número de documento
@@ -44,14 +44,21 @@ class PasswordResetLinkController extends Controller
 
         if (!$usuario) {
             throw ValidationException::withMessages([
-                'numero_documento' => 'No existe un usuario con este número de documento.',
+                'numero_documento' => 'No existe un usuario en nuestra web con este número de documento',
+            ]);
+        }
+
+        // Usuario bloqueado
+        if ($usuario->bloqueado_at || $usuario->intentos_fallidos >= 3) {
+            throw ValidationException::withMessages([
+                'numero_documento' => 'La cuenta está bloqueada. Contacte con un administrador',
             ]);
         }
 
         // Verificar si tiene correo registrado
         if (!$usuario->email) {
             throw ValidationException::withMessages([
-                'numero_documento' => 'El usuario no tiene un correo electrónico registrado.',
+                'numero_documento' => 'El usuario no tiene un correo electrónico registrado',
             ]);
         }
 

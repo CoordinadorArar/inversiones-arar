@@ -48,12 +48,14 @@ const resetSchema = z.object({
     path: ["password_confirmation"], // Error en el campo de confirmación
 });
 
-interface ResetPasswordProps {
-    token: string;
-    numero_documento: string;
-}
+export default function ResetPassword({ token, numero_documento }) {
 
-export default function ResetPassword({ token, numero_documento }: ResetPasswordProps) {
+    const [formData, setFormData] = useState({
+        token: token,
+        numero_documento: numero_documento,
+        password: '',
+        password_confirmation: '',
+    });
 
     const [frontendErrors, setFrontendErrors] = useState<Record<string, string>>({});
 
@@ -70,6 +72,10 @@ export default function ResetPassword({ token, numero_documento }: ResetPassword
 
     // Manejar cambios en los inputs
     const handleInputChange = (field: keyof ResetFormData, value: string) => {
+
+        // Actualizar estado local
+        setFormData(prev => ({ ...prev, [field]: value }));
+
         // Actualizar campos
         setData(field, value as any);
 
@@ -117,7 +123,7 @@ export default function ResetPassword({ token, numero_documento }: ResetPassword
         if (!validateForm()) {
             return;
         }
-        console.log('Submitting data:', data);
+
         post(route('password.store'), {
             onFinish: () => reset('password', 'password_confirmation'),
         });
@@ -142,10 +148,9 @@ export default function ResetPassword({ token, numero_documento }: ResetPassword
                         type="text"
                         name="numero_documento"
                         disabled
-                        value={data.numero_documento}
+                        value={formData.numero_documento}
                         className="w-full bg-gray-100 !cursor-not-allowed text-sm sm:text-base"
-                        autoComplete="username"
-                        onChange={(e) => handleInputChange('numero_documento', e.target.value)}
+                        autoComplete="username"                        
                     />
                     <InputError message={errors.numero_documento} />
                 </div>
@@ -162,7 +167,7 @@ export default function ResetPassword({ token, numero_documento }: ResetPassword
                     <PasswordInput
                         id="password"
                         name="password"
-                        value={data.password}
+                        value={formData.password}
                         onChange={(e) => handleInputChange('password', e.target.value)}
                         placeholder="Ingresa tu nueva contraseña"
                         maxLength={LIMITS.password}
@@ -189,7 +194,7 @@ export default function ResetPassword({ token, numero_documento }: ResetPassword
                     <PasswordInput
                         id="password_confirmation"
                         name="password_confirmation"
-                        value={data.password_confirmation}
+                        value={formData.password_confirmation}
                         onChange={(e) => handleInputChange('password_confirmation', e.target.value)}
                         placeholder="Confirma tu nueva contraseña"
                         maxLength={LIMITS.password}
