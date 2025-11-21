@@ -229,6 +229,9 @@ protected $connection = 'sqlsrv_second';
 
 #### Autenticación y Seguridad
 - `usuarios` - Usuarios del sistema con control de intentos fallidos y bloqueos
+  - Incluye FK a tabla `roles`
+- `roles` - Roles de usuario (SuperAdmin y Estándar creados con los seeders)
+  - Campos: nombre, abreviatura
 - `password_reset_tokens` - Tokens para recuperación de contraseña
 - `sessions` - Sesiones activas de usuarios
 
