@@ -85,7 +85,7 @@ class LoginRequest extends FormRequest
             // Usuario no existe en contratos
             if (!$usuarioContrato ||!$usuarioContrato->hasContratoActivo()) {
                 throw ValidationException::withMessages([
-                    'numero_documento' => 'No encontramos registros con este número de documento. Verifica que esté correcto o comunícate con el área encargada.',
+                    'numero_documento' => 'No encontramos registros con este número de documento. Verifica que sea correcto o comunícate con el área encargada.',
                 ]);
             }
 
