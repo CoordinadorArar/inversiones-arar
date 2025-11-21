@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
+use App\Models\EmpresaWeb;
 use Illuminate\Http\Request;
 
 class PortfolioController extends Controller
@@ -14,6 +15,10 @@ class PortfolioController extends Controller
      */
     public function index()
     {
-        return inertia('Public/Portfolio');
+        return inertia('Public/Portfolio', [
+            'clientes' => EmpresaWeb::select('razon_social', 'tipo_empresa', 'logo_url')
+                ->where('mostrar_en_portafolio', true)   // solo las que deben mostrarse
+                ->get()
+        ]);
     }
 }

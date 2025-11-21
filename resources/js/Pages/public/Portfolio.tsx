@@ -22,15 +22,10 @@ import {
     Building2,
     Briefcase
 } from "lucide-react";
-import raycoLogo from "@/assets/logos-portfolio/rayco-logo.png";
-import rexLogo from "@/assets/logos-portfolio/rex-logo.png";
-import hecarseLogo from "@/assets/logos-portfolio/hecarse-logo.png";
-import arseLogo from "@/assets/logos-portfolio/arse-logo.png";
-import dataproLogo from "@/assets/logos-portfolio/datapro-logo.png";
 import { Badge } from "@/Components/ui/badge";
 import BadgeCustom from "@/Components/BadgeCustom";
 
-export default function Portafolio() {
+export default function Portafolio({ clientes }) {
     // Lista de servicios ofrecidos por la empresa.
     const servicios = [
         {
@@ -64,19 +59,6 @@ export default function Portafolio() {
             descripcion: "Asesoría legal integral, gestión de contratos y representación jurídica corporativa."
         }
     ];
-
-    // Lista de clientes destacados.
-    const clientes = [
-        { nombre: "Rayco", logo: raycoLogo, industry: "Distribuidores" },
-        { nombre: "Rex", logo: rexLogo, industry: "Distribuidores" },
-        { nombre: "Hecarse", logo: hecarseLogo, industry: "Agroindustrial" },
-        { nombre: "Prourbe", logo: null, industry: "Construcción" },
-        { nombre: "Compas", logo: null, industry: null },
-        { nombre: "Cornelia", logo: null, industry: null },
-        { nombre: "Arse", logo: arseLogo, industry: null },
-        { nombre: "Datapro Analítica", logo: dataproLogo, industry: "Tecnología" }
-    ];
-
 
     return (
 
@@ -131,7 +113,7 @@ export default function Portafolio() {
                                     const IconComponent = servicio.icono;
                                     return (
                                         <Card
-                                            key={servicio.nombre}
+                                            key={servicio.razon_social}
                                             className="group overflow-hidden hover:shadow-lg transition-all duration-500 hover:-translate-y-1 hover:border-primary/30 bg-card"
                                             style={{ animationDelay: `${index * 100}ms` }}
                                         >
@@ -141,7 +123,7 @@ export default function Portafolio() {
                                                         <IconComponent className="h-6 w-6" />
                                                     </div>
                                                     <h3 className="text-xl font-bold group-hover:text-primary transition-colors">
-                                                        {servicio.nombre}
+                                                        {servicio.razon_social}
                                                     </h3>
                                                 </div>
                                                 <p className="text-sm text-muted-foreground leading-relaxed">
@@ -159,7 +141,7 @@ export default function Portafolio() {
                                     {servicios.map((servicio, index) => {
                                         const IconComponent = servicio.icono;
                                         return (
-                                            <div key={servicio.nombre} className="snap-center shrink-0 w-[85vw] max-w-sm">
+                                            <div key={servicio.razon_social} className="snap-center shrink-0 w-[85vw] max-w-sm">
                                                 <Card className="group overflow-hidden hover:shadow-lg transition-all duration-500 bg-card h-full">
                                                     <CardContent className="p-6">
                                                         <div className="mb-5 flex gap-4 items-center">
@@ -167,7 +149,7 @@ export default function Portafolio() {
                                                                 <IconComponent className="h-6 w-6" />
                                                             </div>
                                                             <h3 className="text-xl font-bold">
-                                                                {servicio.nombre}
+                                                                {servicio.razon_social}
                                                             </h3>
                                                         </div>
                                                         <p className="text-sm text-muted-foreground leading-relaxed">
@@ -219,44 +201,13 @@ export default function Portafolio() {
                             {/* Desktop: Grid 4 columnas */}
                             <div className="hidden md:grid md:grid-cols-3 lg:grid-cols-4 gap-5">
                                 {clientes.map((cliente, index) => (
-                                    <Card
-                                        key={cliente.nombre}
-                                        className="group relative overflow-hidden hover:shadow-lg transition-all duration-500 hover:-translate-y-1 hover:border-primary/40 bg-card"
-                                        style={{ animationDelay: `${index * 50}ms` }}
-                                    >
-                                        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                                        <CardContent className="p-6 flex flex-col items-center justify-center min-h-[160px] relative">
-                                            {cliente.logo ? (
-                                                <div className="relative mb-4">
-                                                    <img
-                                                        src={cliente.logo}
-                                                        alt={`Logo de ${cliente.nombre}`}
-                                                        className="h-16 w-auto object-contain relative z-10 group-hover:scale-110 transition-transform duration-500"
-                                                    />
-                                                </div>
-                                            ) : (
-                                                <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-md">
-                                                    <span className="text-2xl font-bold text-primary-foreground">
-                                                        {cliente.nombre.charAt(0)}
-                                                    </span>
-                                                </div>
-                                            )}
-                                            <h3 className="text-base font-bold text-center mb-2 group-hover:text-primary transition-colors">
-                                                {cliente.nombre}
-                                            </h3>
-                                            {cliente.industry && (
-                                                <Badge variant="secondary" className="text-xs">
-                                                    {cliente.industry}
-                                                </Badge>
-                                            )}
-                                        </CardContent>
-                                    </Card>
+                                    <ClientCard key={index} cliente={cliente}/>
                                 ))}
                             </div>
 
                             {/* Mobile: Carrusel horizontal de 2 en 2 */}
                             <div className="md:hidden">
-                                <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-hide -mx-4 px-4">
+                                <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pt-2 pb-4 scrollbar-hide -mx-4 px-4">
                                     {/* Agrupar clientes de 2 en 2 */}
                                     {Array.from({ length: Math.ceil(clientes.length / 2) }).map((_, groupIndex) => {
                                         const startIndex = groupIndex * 2;
@@ -265,38 +216,8 @@ export default function Portafolio() {
                                         return (
                                             <div key={groupIndex} className="snap-center shrink-0 w-[85vw] max-w-sm">
                                                 <div className="grid grid-cols-2 gap-4">
-                                                    {clientesGrupo.map((cliente) => (
-                                                        <Card
-                                                            key={cliente.nombre}
-                                                            className="group relative overflow-hidden bg-card"
-                                                        >
-                                                            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-active:opacity-100 transition-opacity duration-300" />
-                                                            <CardContent className="p-4 flex flex-col items-center justify-center min-h-[140px] relative">
-                                                                {cliente.logo ? (
-                                                                    <div className="relative mb-3">
-                                                                        <img
-                                                                            src={cliente.logo}
-                                                                            alt={`Logo de ${cliente.nombre}`}
-                                                                            className="h-12 w-auto object-contain relative z-10"
-                                                                        />
-                                                                    </div>
-                                                                ) : (
-                                                                    <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center mb-3 shadow-md">
-                                                                        <span className="text-lg font-bold text-primary-foreground">
-                                                                            {cliente.nombre.charAt(0)}
-                                                                        </span>
-                                                                    </div>
-                                                                )}
-                                                                <h3 className="text-sm font-bold text-center mb-1.5">
-                                                                    {cliente.nombre}
-                                                                </h3>
-                                                                {cliente.industry && (
-                                                                    <Badge variant="secondary" className="text-xs">
-                                                                        {cliente.industry}
-                                                                    </Badge>
-                                                                )}
-                                                            </CardContent>
-                                                        </Card>
+                                                    {clientesGrupo.map((cliente, index) => (
+                                                        <ClientCard key={index} cliente={cliente} />
                                                     ))}
                                                 </div>
                                             </div>
@@ -351,3 +272,38 @@ export default function Portafolio() {
         </PublicLayout>
     );
 };
+
+function ClientCard({ cliente }) {
+    return (
+        <Card
+            className="group relative overflow-hidden hover:shadow-lg transition-all duration-500 hover:-translate-y-1 hover:border-primary/40 bg-card"
+        >
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <CardContent className="p-6 flex flex-col items-center justify-center min-h-[140px] md:min-h-[160px] relative">
+                {cliente.logo_url ? (
+                    <div className="relative mb-3 md:mb-4">
+                        <img
+                            src={cliente.logo_url}
+                            alt={`Logo de ${cliente.razon_social}`}
+                            className="h-12 md:h-16 w-auto object-contain relative z-10 group-hover:scale-110 transition-transform duration-500"
+                        />
+                    </div>
+                ) : (
+                    <div className="h-12 w-12 rounded-xl md:h-16 md:w-16 md:rounded-2xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center mb-3 md:mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-md">
+                        <span className="text-lg md:text-2xl font-bold text-primary-foreground">
+                            {cliente.razon_social.charAt(0)}
+                        </span>
+                    </div>
+                )}
+                <h3 className="text-sm md:text-base font-bold text-center mb-1.5 md:mb-2 group-hover:text-primary transition-colors capitalize">
+                    {cliente.razon_social.toLowerCase()}
+                </h3>
+                {cliente.tipo_empresa && (
+                    <Badge className="inline-block  text-xs bg-primary/10 text-primary text-center font-medium px-2 rounded-md capitalize tracking-wide">
+                        {cliente.tipo_empresa.toLowerCase()}
+                    </Badge>
+                )}
+            </CardContent>
+        </Card>
+    );
+}

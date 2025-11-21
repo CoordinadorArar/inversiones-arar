@@ -14,55 +14,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Briefcase, Globe, ExternalLink, Users } from "lucide-react";
 import { Button } from '@/components/ui/button';
 
-import asekuraLogo from "@/assets/logos/asekura-logo.png";
-import icbLogo from "@/assets/logos/icb-logo.png";
-import ararFinancieraLogo from "@/assets/logos/arar-financiera-logo.png";
-import promotoresLogo from "@/assets/logos/promotores-logo.png";
-import ararInversionesLogo from "@/assets/logos/arar-inversiones-logo.png";
-
-export default function Companies() {
-    const empresas = [
-        {
-            nombre: "Inversiones Arar",
-            sector: "Holding Empresarial",
-            logo: ararInversionesLogo,
-            descripcion: "Grupo empresarial que agrupa a diversas compañías de los sectores financiero, automotriz y de seguros, entre otros.",
-            url: "https://inversionesarar.com/",
-            id: 6
-        },
-        {
-            nombre: "Arar Financiera",
-            sector: "Servicios Financieros",
-            logo: ararFinancieraLogo,
-            descripcion: "Compañía que ofrece soluciones de crédito de libranza, especialmente diseñadas para pensionados, miembros de las Fuerzas Armadas y Policía.",
-            url: "https://ararfinanciera.com/",
-            id: 7
-        },
-        {
-            nombre: "Asekura",
-            sector: "Seguros",
-            logo: asekuraLogo,
-            descripcion: "Agencia de seguros que ofrece servicios de pólizas para hogar, salud, exequias, autos y más, brindando acompañamiento constante.",
-            url: "https://asekura.co/",
-            id: 8
-        },
-        {
-            nombre: "Italo Colombiano de Baterias",
-            sector: "Servicios Automotrices",
-            logo: icbLogo,
-            descripcion: "Especialistas en la venta y distribución de baterías automotrices (marca Faico), llantas, lubricantes y servicios de serviteca.",
-            url: "https://bateriasfaico.com.co/",
-            id: 1
-        },
-        {
-            nombre: "Promotores del Oriente",
-            sector: "Concesionario Automotriz",
-            logo: promotoresLogo,
-            descripcion: "Concesionario oficial del Grupo Volkswagen en los Santanderes, vendiendo marcas como VW, Audi, SEAT, CUPRA y Ducati, además de repuestos y taller.",
-            url: "https://promotores.com.co/",
-            id: 17
-        },
-    ];
+export default function Companies({empresas}) {
 
     return (
         <PublicLayout>
@@ -142,25 +94,25 @@ export default function Companies() {
 }
 
 // Componente de tarjeta de empresa
-function CompanyCard({ empresa }: { empresa: any }) {
+function CompanyCard({ empresa }) {
     return (
         <Card className="group w-full h-full overflow-hidden border border-primary/20 shadow-sm hover:shadow-xl hover:border-primary/40 transition-all duration-300 rounded-2xl bg-card">
             <CardContent className="p-6 flex flex-col h-full">
-                {/* Header con logo y nombre */}
+                {/* Header con logo y razon social */}
                 <div className="flex items-center gap-4 mb-6">
                     <div className="relative h-28 w-28 flex-shrink-0 rounded-xl bg-gradient-to-br from-primary/5 to-accent/5 p-2 flex items-center justify-center transition-all group-hover:scale-105 group-hover:shadow-md">
                         <img
-                            src={empresa.logo}
-                            alt={`Logo de ${empresa.nombre}`}
+                            src={empresa.logo_url}
+                            alt={`Logo de ${empresa.razon_social}`}
                             className="w-full h-full object-contain"
                         />
                     </div>
                     <div className="flex-1">
-                        <h3 className="text-xl font-bold mb-1 group-hover:text-primary transition-colors leading-tight">
-                            {empresa.nombre}
+                        <h3 className="capitalize text-xl font-bold mb-1 group-hover:text-primary transition-colors leading-tight">
+                            {empresa.razon_social.toLowerCase()}
                         </h3>
-                        <span className="inline-block text-xs bg-primary/10 text-primary text-center font-medium px-2.5 py-1 rounded-full uppercase tracking-wide">
-                            {empresa.sector}
+                        <span className="inline-block  text-xs bg-primary/10 text-primary text-center font-medium px-2.5 py-1 rounded-md capitalize tracking-wide">
+                            {empresa.tipo_empresa.toLowerCase()}
                         </span>
                     </div>
                 </div>
@@ -172,7 +124,7 @@ function CompanyCard({ empresa }: { empresa: any }) {
 
                 {/* Botones - Stack vertical en todas las pantallas */}
                 <div className="flex flex-col gap-2.5 w-full">
-                    <a href={empresa.url} target='_blank' rel="noopener noreferrer" className="w-full">
+                    <a href={empresa.sitio_web} target='_blank' rel="noopener noreferrer" className="w-full">
                         <Button
                             variant="default"
                             className="w-full flex items-center justify-center gap-2 shadow-sm hover:shadow-md transition-all group/btn"

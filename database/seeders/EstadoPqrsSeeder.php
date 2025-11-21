@@ -31,15 +31,15 @@ class EstadoPqrsSeeder extends Seeder
      */
     public function run(): void
     {
-        $tipos = [
+        $estados = [
             ['nombre' => 'Pendiente', 'abreviatura' => 'P'],
             ['nombre' => 'En Proceso', 'abreviatura' => 'EP'],
             ['nombre' => 'Resuelto', 'abreviatura' => 'R'],
             ['nombre' => 'Cancelado', 'abreviatura' => 'C'],            
         ];
 
-        foreach ($tipos as $tipo) {
-            EstadoPqrs::firstOrCreate(['nombre' => $tipo['nombre']], $tipo);
+        foreach ($estados as $estado) {
+            EstadoPqrs::firstOrCreate(['nombre' => $estado['nombre']], $estado);
         }
     }
 }

@@ -36,7 +36,7 @@ return new class extends Migration
         Schema::create('tipos_pqrs', function (Blueprint $table) {
             $table->id();
             $table->string('nombre')->unique();
-            $table->string('abreviatura', 10)->nullable()->unique();
+            $table->string('abreviatura', 10)->unique();
             
             $table->dateTime('fecha_creacion')->useCurrent();
             $table->dateTime('fecha_modificacion')->useCurrent()->useCurrentOnUpdate();

@@ -38,13 +38,16 @@ return new class extends Migration
             $table->id();
 
             // Información de la PQRSD
-            $table->unsignedBigInteger('empresa_id');
+            $table->foreignId('empresa_web_id')                
+                ->constrained('empresas_web');
+
             $table->foreignId('tipo_pqrs_id')                
                 ->constrained('tipos_pqrs');
 
             // Datos personales del solicitante
             $table->string('nombre', 50)->nullable();
             $table->string('apellido', 50)->nullable();
+
             $table->foreignId('tipo_identificacion_id')->nullable()                
                 ->constrained('tipos_identificaciones');
 
@@ -79,8 +82,7 @@ return new class extends Migration
             
             $table->softDeletes();
 
-            // Índices para búsquedas
-            $table->index('empresa_id');
+            // Índices para búsquedas            
             $table->index('tipo_pqrs_id');
             $table->index('estado_id');
             $table->index('fecha_creacion');

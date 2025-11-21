@@ -31,13 +31,13 @@ class RolSeeder extends Seeder
      */
     public function run(): void
     {
-        $tipos = [
+        $roles = [
             ['nombre' => 'SuperAdmin', 'abreviatura' => 'SA'],  // Rol de super administrador.
             ['nombre' => 'Estandar', 'abreviatura' => 'E'],     // Rol estándar para usuarios normales.
         ];
 
-        foreach ($tipos as $tipo) {
-            Rol::firstOrCreate(['nombre' => $tipo['nombre']], $tipo);  // Inserta si no existe.
+        foreach ($roles as $rol) {
+            Rol::firstOrCreate(['nombre' => $rol['nombre']], $rol);  // Inserta si no existe.
         }
     }
 }

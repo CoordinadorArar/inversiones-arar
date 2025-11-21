@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Auditorias;
-use App\Http\Requests\StoreAuditoriasRequest;
-use App\Http\Requests\UpdateAuditoriasRequest;
+use App\Models\EmpresaWeb;
+use App\Http\Requests\EmpresasWeb\StoreEmpresaWebRequest;
+use App\Http\Requests\EmpresasWeb\UpdateEmpresaWebRequest;
 
-class AuditoriasController extends Controller
+class EmpresaWebController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -27,7 +27,7 @@ class AuditoriasController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreAuditoriasRequest $request)
+    public function store(StoreEmpresaWebRequest $request)
     {
         //
     }
@@ -35,7 +35,7 @@ class AuditoriasController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Auditorias $auditorias)
+    public function show(EmpresaWeb $empresa)
     {
         //
     }
@@ -43,7 +43,7 @@ class AuditoriasController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Auditorias $auditorias)
+    public function edit(EmpresaWeb $empresa)
     {
         //
     }
@@ -51,7 +51,7 @@ class AuditoriasController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateAuditoriasRequest $request, Auditorias $auditorias)
+    public function update(UpdateEmpresaWebRequest $request, EmpresaWeb $empresa)
     {
         //
     }
@@ -59,7 +59,7 @@ class AuditoriasController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Auditorias $auditorias)
+    public function destroy(EmpresaWeb $empresa)
     {
         //
     }

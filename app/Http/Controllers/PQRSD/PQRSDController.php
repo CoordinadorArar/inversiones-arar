@@ -19,6 +19,7 @@ use App\Mail\PQRSDConfirmationMail;
 use App\Models\Ciudad;
 use App\Models\Departamento;
 use App\Models\Empresa;
+use App\Models\EmpresaWeb;
 use App\Models\PQRSD\PQRSD;
 use App\Models\PQRSD\TipoPqrs;
 use App\Models\TipoIdentificacion;
@@ -59,6 +60,12 @@ class PQRSDController extends Controller
             'ciudades' => $ciudades,
             'tiposPqrs' => $tiposPqrs,
             'tiposId' => $tiposId,
+            'empresas' => function () {
+                return EmpresaWeb::select('id_siesa as id', 'razon_social as name')
+                    ->where('permitir_pqrsd', true)   // solo las que deben mostrarse
+                    ->orderBy('razon_social')
+                    ->get();
+            },
         ]);
     }
 

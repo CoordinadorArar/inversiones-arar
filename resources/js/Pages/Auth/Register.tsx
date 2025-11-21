@@ -2,10 +2,11 @@
  * Componente de Registro de Usuario
  * Maneja el registro de nuevos usuarios con validaciones robustas en frontend y backend.
  * Incluye restricciones de entrada, validaciones con Zod, y manejo de errores combinados.
+ * Valida que el correo sea empresarial usando dominios permitidos.
  * 
  * @author Yariangel Aray
- * @version 1.0
- * @date 2025-11-19
+ * @version 1.1
+ * @date 2025-11-21
  */
 
 import InputError from '@/Components/InputError';
@@ -35,7 +36,7 @@ const LIMITS = {
 } as const;
 
 // Schema de validación con Zod para el formulario de registro
-const registerSchema = z.object({
+const registerSchemaBase = z.object({
     numero_documento: z.string()
         .trim()
         .regex(/^[0-9]+$/, "El número de documento solo debe contener números")
@@ -63,7 +64,7 @@ const registerSchema = z.object({
     path: ["password_confirmation"], // Asigna el error al campo de confirmación
 });
 
-export default function Register({ status, document }) {
+export default function Register({ status, document, dominios }) {
     const [formData, setFormData] = useState({
         numero_documento: document || '',
         email: '',
@@ -84,6 +85,23 @@ export default function Register({ status, document }) {
     // Combina errores del frontend y backend para mostrarlos unificados
     const errors = { ...frontendErrors, ...backendErrors };
 
+    // Refinamiento del schema: Valida que el dominio del email esté en la lista de dominios permitidos    
+    const registerSchema = registerSchemaBase
+        .refine(
+            (data) => {
+                // Extrae dominio: ej. "usuario@empresa.com" -> "empresa.com"
+                const domain = data.email.split('@')[1];
+                console.log(domain, dominios.includes(domain), dominios)
+                // Verifica si el dominio está en la lista autorizada
+                return dominios.includes(domain);
+            },
+            {
+                // Mensaje de error.
+                message: "El correo electrónico debe pertenecer a una empresa autorizada.",
+                path: ["email"],
+            }
+        )
+
     // Maneja cambios en los inputs: actualiza estado local, Inertia, y limpia errores específicos
     const handleInputChange = (field: keyof RegisterFormData, value: string) => {
 
@@ -103,12 +121,13 @@ export default function Register({ status, document }) {
         }
     };
 
-    // Valida el formulario usando Zod antes de enviar
+    // Valida el formulario usando Zod antes de enviar, incluyendo dominio
     const validateForm = (): boolean => {
-        const result = registerSchema.safeParse(data);
+        // Primero valida con Zod base
+        let result = registerSchema.safeParse(data);
 
         if (!result.success) {
-            // Extrae errores de Zod y los asigna a frontendErrors
+            // Extrae errores y los asigna a frontendErrors
             const newErrors: Record<string, string> = {};
             result.error.issues.forEach((err) => {
                 if (err.path[0]) {

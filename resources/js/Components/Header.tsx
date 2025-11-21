@@ -48,8 +48,8 @@ export default function Header() {
         },
     ];
 
-    const { empresas } = usePage().props as unknown as {
-        empresas: { id: number, name: string }[]
+    const { empresasHeader } = usePage().props as unknown as {
+        empresasHeader: { id: number, name: string }[]
     };
 
     // Obtener la ruta actual para resaltar el enlace activo
@@ -145,7 +145,7 @@ export default function Header() {
                                     <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">
                                         Selecciona tu empresa
                                     </div>
-                                    {empresas.map((empresa, index) => (
+                                    {empresasHeader.map((empresa, index) => (
                                         <DropdownMenuItem 
                                             key={index}
                                             onSelect={(e) => handleEmpresaClick(empresa, e)}
@@ -283,7 +283,7 @@ export default function Header() {
                                             </div>
 
                                             {/* Lista de empresas */}
-                                            {empresas.map((empresa, index) => (
+                                            {empresasHeader.map((empresa, index) => (
                                                 <DropdownMenuItem 
                                                     key={index}
                                                     onSelect={(e) => handleEmpresaClick(empresa, e)}

@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Models\Empresa;
+use App\Models\EmpresaWeb;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 
@@ -51,12 +51,11 @@ class AppServiceProvider extends ServiceProvider
          * - Se filtran las empresas por su ID según los valores requeridos.
          */
         Inertia::share([
-            'empresas' => function () {
-                // Retorna una colección con las empresas específicas
-                return Empresa::select('f010_id as id', 'f010_razon_social as name')
-                    ->whereIn('f010_id', [1, 6, 7, 8, 17, 19, 20])
-                    ->get();
-            },
+            'empresasHeader' => EmpresaWeb::select('id_siesa as id', 'razon_social as name')
+                ->where('mostrar_en_header', true)   // solo las que deben mostrarse
+                ->orderBy('razon_social')
+                ->get(),
+
         ]);
     }
 }

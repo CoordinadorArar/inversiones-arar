@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\ContratoPropietario;
+use App\Models\EmpresaWeb;
 use App\Models\User;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,9 +20,10 @@ use Inertia\Response;
  * 
  * Maneja vista de registro y creación de usuarios. Valida contratos antes de registrar.
  * Asigna rol 'Estandar' por defecto. Loguea al usuario después de registrar.
+ * Incluye validación de dominio empresarial para el email.
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
+ * @version 1.1
  * @date 2025-11-21
  */
 
@@ -31,7 +32,7 @@ class RegisteredUserController extends Controller
     /**
      * BLOQUE: create - Mostrar vista de registro.
      * 
-     * Renderiza 'Auth/Register' con status y documento (si viene de login).
+     * Renderiza 'Auth/Register' con status, documento y lista de dominios permitidos.
      * 
      * @param Request $request
      * @return Response
@@ -41,14 +42,16 @@ class RegisteredUserController extends Controller
         return Inertia::render('Auth/Register', [
             'status' => session('status'),  // Mensajes de sesión.
             'document' => $request->document,  // Documento pasado desde login.
+            'dominios' => EmpresaWeb::pluck('dominio')->filter()->values(),
         ]);
     }
 
     /**
      * BLOQUE: store - Manejar solicitud de registro (modificado).
      * 
-     * Valida datos. Verifica existencia/activo en contratos. Si ya existe usuario web, redirige a login.
-     * Crea usuario con rol 'Estandar', hashea password, loguea y redirige a dashboard.
+     * Valida datos incluyendo dominio empresarial. Verifica existencia/activo en contratos.
+     * Si ya existe usuario web, redirige a login. Crea usuario con rol 'Estandar',
+     * hashea password, loguea y redirige a dashboard.
      * 
      * @param Request $request
      * @return RedirectResponse
@@ -56,11 +59,26 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request)
     {
-        // Valida con reglas personalizadas (numero_documento, email, password).
+        // Obtiene dominios permitidos para validación.
+        $dominiosPermitidos = EmpresaWeb::pluck('dominio')->filter()->values()->toArray();
+
+        // Valida con reglas personalizadas incluyendo dominio empresarial.
         $request->validate(
             [
                 'numero_documento' => 'required|string|regex:/^[0-9]+$/',
-                'email' => 'required|string|lowercase|email',  // lowercase: Normaliza email.
+                'email' => [
+                    'required',
+                    'string',
+                    'lowercase',
+                    'email',
+                    function ($attribute, $value, $fail) use ($dominiosPermitidos) {
+                        // Extrae dominio del email.
+                        $domain = substr(strrchr($value, "@"), 1);
+                        if (!in_array($domain, $dominiosPermitidos)) {
+                            $fail('El correo electrónico debe pertenecer a una empresa autorizada.');
+                        }
+                    },
+                ],
                 'password' => [
                     'required',
                     'confirmed',  // Debe coincidir con password_confirmation.

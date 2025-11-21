@@ -4,7 +4,7 @@ namespace App\Http\Requests\PQRSD;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class Storeestado_pqrsRequest extends FormRequest
+class StoreEstadoPqrsRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

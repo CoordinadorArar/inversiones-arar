@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\PQRSD;
+namespace App\Http\Requests\EmpresasWeb;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateEstadoPqrsRequest extends FormRequest
+class StoreEmpresaWebRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

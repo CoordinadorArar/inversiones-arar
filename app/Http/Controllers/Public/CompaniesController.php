@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
 use App\Models\Empresa;
+use App\Models\EmpresaWeb;
 use Exception;
 use Illuminate\Support\Facades\DB;
 
@@ -22,6 +23,10 @@ class CompaniesController extends Controller
      */
     public function index()
     {
-        return inertia('Public/Companies');
+        return inertia('Public/Companies', [
+            'empresas' => EmpresaWeb::select('id_siesa as id', 'razon_social', 'tipo_empresa', 'descripcion', 'sitio_web', 'logo_url')
+                ->where('mostrar_en_empresas', true)   // solo las que deben mostrarse
+                ->get()
+        ]);
     }
 }

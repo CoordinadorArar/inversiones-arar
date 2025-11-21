@@ -2,8 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 /**
@@ -35,5 +33,6 @@ class DatabaseSeeder extends Seeder
         $this->call(TiposIdentificacionesSeeder::class);
         $this->call(EstadoPqrsSeeder::class);
         $this->call(RolSeeder::class);
+        $this->call(EmpresaWebSeeder::class);
     }
 }
