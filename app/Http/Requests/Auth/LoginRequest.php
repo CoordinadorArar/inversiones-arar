@@ -11,10 +11,26 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
+/**
+ * Request para login: Valida y autentica credenciales.
+ * 
+ * Lógica de authenticate() modificada:
+ * - Si documento == password: Valida contratos, redirige a registro si no existe usuario en web.
+ * - Si no: Login estándar con bloqueo por intentos fallidos.
+ * 
+ * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
+ * @version 1.0
+ * @date 2025-11-21
+ */
+
 class LoginRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * BLOQUE: authorize - Autorizar la request.
+     * 
+     * Siempre true (público).
+     * 
+     * @return bool
      */
     public function authorize(): bool
     {
@@ -22,25 +38,33 @@ class LoginRequest extends FormRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * BLOQUE: rules - Reglas de validación.
+     * 
+     * numero_documento: Obligatorio, string, max 15, solo números.
+     * password: Obligatorio, string, max 20, regex para caracteres permitidos.
+     * 
+     * @return array
      */
     public function rules(): array
     {
         return [
             'numero_documento' => [
-                'required',
-                'string',
-                'max:15',
-                'regex:/^[0-9]+$/'
+                'required',  // Obligatorio.
+                'string',    // Debe ser string.
+                'max:15',    // Máximo 15 caracteres.
+                'regex:/^[0-9]+$/'  // Solo números.
             ],
-            'password' => ['required', 'string', 'max:20', 'regex:/^[a-zA-Z0-9@$!%*?&#+\-.]+$/'],
+            'password' => [
+                'required',  // Obligatorio.
+                'string',    // Debe ser string.
+                'max:20',    // Máximo 20 caracteres.
+                'regex:/^[a-zA-Z0-9@$!%*?&#+\-.]+$/'  // Caracteres permitidos (letras, números, símbolos específicos).
+            ],
         ];
     }
 
     /**
-     * Define mensajes de error personalizados en español.
+     * BLOQUE: messages - Mensajes de error personalizados en español.
      * 
      * @return array
      */
@@ -58,80 +82,90 @@ class LoginRequest extends FormRequest
     }
 
     /**
-     * Configura los atributos personalizados para mensajes de error.
+     * BLOQUE: attributes - Atributos personalizados para mensajes.
      * 
      * @return array
      */
     public function attributes(): array
     {
         return [
-            'numero_documento' => 'número de documento',
+            'numero_documento' => 'número de documento',  // Para :attribute en mensajes.
             'password' => 'contraseña',
         ];
     }
 
     /**
-     * Attempt to authenticate the request's credentials.
-     *
-     * @throws \Illuminate\Validation\ValidationException
+     * BLOQUE: authenticate - Lógica de autenticación personalizada (modificada).
+     * 
+     * Si numero_documento == password: Modo "validación inicial" contra contratos.
+     * - Busca en ContratoPropietario; si no existe/activo, error.
+     * - Si no hay usuario web, lanza error para redirigir a registro.
+     * - Si existe, pide contraseña habitual.
+     * 
+     * Si no: Login estándar.
+     * - Busca usuario; si no existe, error.
+     * - Si bloqueado o >=3 intentos, error.
+     * - Intenta Auth::attempt; si falla, incrementa intentos, bloquea si >=3.
+     * - Si éxito, reinicia intentos y regenera sesión.
+     * 
+     * @throws ValidationException
      */
     public function authenticate()
     {
-
+        // Modo "validación inicial": Si documento == password (usuario no sabe contraseña web).
         if ($this->numero_documento == $this->password) {
-
+            // Busca en contratos por f200_id (numero_documento).
             $usuarioContrato = ContratoPropietario::where('f200_id', $this->numero_documento)->first();
 
-            // Usuario no existe en contratos
-            if (!$usuarioContrato ||!$usuarioContrato->hasContratoActivo()) {
+            // Si no existe en contratos o no tiene contrato activo, error.
+            if (!$usuarioContrato || !$usuarioContrato->hasContratoActivo()) {
                 throw ValidationException::withMessages([
                     'numero_documento' => 'No encontramos registros con este número de documento. Verifica que sea correcto o comunícate con el área encargada.',
                 ]);
             }
 
+            // Busca usuario en tabla usuarios web.
             $usuario = User::where('numero_documento', $this->numero_documento)->first();
 
-            // Usuario no existe en usuarios de la web
+            // Si no existe usuario web, lanza error para redirigir a registro.
             if (!$usuario) {
                 throw ValidationException::withMessages([
-                    'redirectRegister' => true,
+                    'redirectRegister' => true,  // Flag para redireccionar.
                     'status' => 'Tu documento fue validado, pero aún no tienes un usuario registrado en nuestra web. Completa los datos para continuar por favor.'
                 ]);
             }
 
-
-            // El usuario existe, pero debe colocar su contraseña habitual
+            // Si existe usuario web, pide contraseña habitual (no valida aquí).
             throw ValidationException::withMessages([
                 'statusMessage' => 'Verificamos tu identidad y estas registrado en nuestra web. Ahora ingresa tu contraseña habitual para acceder.'
             ]);
-
-
         } else {
+            // Modo login estándar: documento != password.
             $usuario = User::where('numero_documento', $this->numero_documento)->first();
 
-            // Usuario no existe
-            if (! $usuario) {
+            // Si no existe usuario, error.
+            if (!$usuario) {
                 throw ValidationException::withMessages([
                     'numero_documento' => 'No existe un usuario en nuestra web con este número de documento.',
                 ]);
             }
 
-            // Usuario bloqueado
+            // Si bloqueado o >=3 intentos, error.
             if ($usuario->bloqueado_at || $usuario->intentos_fallidos >= 3) {
                 throw ValidationException::withMessages([
                     'numero_documento' => 'La cuenta está bloqueada. Contacte con un administrador.',
                 ]);
             }
 
-            // Intento de login -> contraseña incorrecta
-            if (! Auth::attempt($this->only('numero_documento', 'password'), $this->boolean('remember'))) {
-
-                // Sumar intento fallido
+            // Intenta login con Auth::attempt (usa numero_documento como username).
+            if (!Auth::attempt($this->only('numero_documento', 'password'), $this->boolean('remember'))) {
+                // Falla: Incrementa intentos fallidos.
                 $usuario->increment('intentos_fallidos');
 
+                // Si llega a 3, bloquea cuenta.
                 if ($usuario->intentos_fallidos >= 3) {
                     $usuario->update([
-                        'bloqueado_at' => now(),
+                        'bloqueado_at' => now(),  // Marca bloqueo.
                     ]);
 
                     throw ValidationException::withMessages([
@@ -139,31 +173,32 @@ class LoginRequest extends FormRequest
                     ]);
                 }
 
+                // Error de contraseña.
                 throw ValidationException::withMessages([
                     'password' => 'La contraseña es incorrecta',
                 ]);
             }
 
-            // Login exitoso → reiniciar intentos
+            // Éxito: Reinicia intentos y bloqueo, regenera sesión.
             $usuario->update([
                 'intentos_fallidos' => 0,
                 'bloqueado_at' => null,
             ]);
 
-            $this->session()->regenerate();
+            $this->session()->regenerate();  // Regenera sesión.
         }
     }
 
-
-
     /**
-     * Ensure the login request is not rate limited.
-     *
-     * @throws \Illuminate\Validation\ValidationException
+     * BLOQUE: ensureIsNotRateLimited - Verificar rate limiting.
+     * 
+     * Si hay demasiados intentos, lanza Lockout y error.
+     * 
+     * @throws ValidationException
      */
     public function ensureIsNotRateLimited(): void
     {
-        if (! RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
+        if (!RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
             return;
         }
 
@@ -172,7 +207,7 @@ class LoginRequest extends FormRequest
         $seconds = RateLimiter::availableIn($this->throttleKey());
 
         throw ValidationException::withMessages([
-            'email' => trans('auth.throttle', [
+            'email' => trans('auth.throttle', [  // Usa throttleKey (basado en email, pero adaptado).
                 'seconds' => $seconds,
                 'minutes' => ceil($seconds / 60),
             ]),
@@ -180,7 +215,11 @@ class LoginRequest extends FormRequest
     }
 
     /**
-     * Get the rate limiting throttle key for the request.
+     * BLOQUE: throttleKey - Clave para rate limiting.
+     * 
+     * Basada en email (aunque usas numero_documento, mantiene compatibilidad).
+     * 
+     * @return string
      */
     public function throttleKey(): string
     {

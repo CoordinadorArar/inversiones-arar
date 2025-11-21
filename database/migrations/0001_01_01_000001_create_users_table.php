@@ -34,8 +34,13 @@ return new class extends Migration
         Schema::create('usuarios', function (Blueprint $table) {
             $table->id();  // Clave primaria auto-incremental.
             $table->string('numero_documento', 15)->unique();  // Número de documento (único, max 15 chars).
-            $table->string('email')->unique();  // Email único.
+            $table->string('email');  // Email único.
             $table->timestamp('email_verified_at')->nullable();  // Timestamp para verificación de email.
+
+            $table->foreignId('rol_id') //Rol del usuario 
+                ->default(2) //Rol estandar por defecto
+                ->constrained('roles');
+
             $table->string('password');  // Contraseña hasheada.
             $table->rememberToken();  // Token para "recordarme" (agrega columna remember_token).
             $table->unsignedTinyInteger('intentos_fallidos')->default(0);  // Contador de login fallidos (para bloqueo).
