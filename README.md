@@ -104,13 +104,35 @@ Sistema PQRSD (Peticiones, Quejas, Reclamos, Sugerencias y Denuncias) con formul
 
 ## 🔐 Sistema de Autenticación
 
-### Inicio de Sesión
-- **Credenciales:** Número de documento + Contraseña
+### Flujo para Usuarios Nuevos (Primer Acceso)
+
+El sistema implementa un proceso de registro para empleados que acceden por primera vez:
+
+1. **Validación inicial:** El usuario ingresa su **número de documento en ambos campos** (usuario y contraseña)
+2. **Verificación en SIESA:** El sistema busca el número de documento en la base de datos de SIESA (`UNOEEARAR` - segunda conexión)
+3. **Validación de contrato:** Se verifica que el usuario tenga un **contrato activo**
+4. **Formulario de registro:** Si la validación es exitosa, el sistema solicita:
+   - Correo electrónico corporativo
+   - Creación de contraseña personal
+5. **Creación de usuario:** Se registra el usuario en la tabla `usuarios` de la BD principal
+6. **Acceso completo:** El usuario ya puede iniciar sesión normalmente
+
+#### Validaciones del Registro
+- ✅ El número de documento debe existir en SIESA
+- ✅ El usuario debe tener contrato activo
+
+### Inicio de Sesión (Usuarios Registrados)
+
+Para usuarios que ya completaron el proceso de registro:
+
+- **Credenciales:** Número de documento + Contraseña (creada en el registro)
 - **Ruta:** `/login`
+- **Validación:** Búsqueda directa en tabla `usuarios` de la BD principal
 
 ### Recuperación de Contraseña
+
 1. Usuario ingresa número de documento
-2. Sistema busca correo asociado
+2. Sistema busca correo asociado en tabla `usuarios`
 3. Envío de correo con enlace de recuperación
 4. Usuario establece nueva contraseña
 5. Acceso restaurado
@@ -201,6 +223,8 @@ Se especifica explícitamente en los modelos que la requieren:
 protected $connection = 'sqlsrv_second';
 ```
 
+**Uso principal:** Validación de usuarios contra SIESA para verificar contratos activos durante el registro.
+
 ### Tablas Principales
 
 #### Autenticación y Seguridad
@@ -253,6 +277,7 @@ protected $connection = 'sqlsrv_second';
 - 🔍 **Auditoría obligatoria:** Todos los modelos deben incluir el trait de auditoría para registrar cambios automáticamente
 - 🗑️ **SoftDeletes activo:** Los registros no se eliminan físicamente, solo se marca `deleted_at`
 - 🔢 **SQL Server:** Algunas migraciones incluyen modificaciones específicas para datetime2
+- 👤 **Registro de usuarios:** Requiere validación contra SIESA (segunda BD) y contrato activo
 
 ---
 
