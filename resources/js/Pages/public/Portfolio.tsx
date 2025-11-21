@@ -20,7 +20,7 @@ import {
     Heart,
     Scale,
     Building2,
-    ArrowRight
+    Briefcase
 } from "lucide-react";
 import raycoLogo from "@/assets/logos-portfolio/rayco-logo.png";
 import rexLogo from "@/assets/logos-portfolio/rex-logo.png";
@@ -28,6 +28,7 @@ import hecarseLogo from "@/assets/logos-portfolio/hecarse-logo.png";
 import arseLogo from "@/assets/logos-portfolio/arse-logo.png";
 import dataproLogo from "@/assets/logos-portfolio/datapro-logo.png";
 import { Badge } from "@/Components/ui/badge";
+import BadgeCustom from "@/Components/BadgeCustom";
 
 export default function Portafolio() {
     // Lista de servicios ofrecidos por la empresa.
@@ -109,9 +110,11 @@ export default function Portafolio() {
                         <div className="max-w-6xl mx-auto">
                             {/* Header asimétrico */}
                             <div className="mb-10 max-w-2xl">
-                                <Badge className="mb-3 bg-primary/10 text-primary hover:bg-primary/20">
-                                    Servicios
-                                </Badge>
+                                <BadgeCustom
+                                    title="Servicios"
+                                    icon={Briefcase}
+                                    className='mb-4 sm:mb-6'
+                                />
                                 <h2 className="text-3xl md:text-4xl font-bold mb-3">
                                     Impulsamos tu éxito con{" "}
                                     <span className="text-primary">excelencia</span>
@@ -196,9 +199,13 @@ export default function Portafolio() {
                         <div className="max-w-6xl mx-auto">
                             {/* Header con diseño asimétrico */}
                             <div className="mb-10 max-w-2xl">
-                                <Badge className="mb-3 bg-primary/10 text-primary hover:bg-primary/20">
-                                    Clientes
-                                </Badge>
+
+                                <BadgeCustom
+                                    title="Clientes"
+                                    icon={Building2}
+                                    className='mb-4 sm:mb-6'
+                                />
+
                                 <h2 className="text-3xl md:text-4xl font-bold mb-4">
                                     Empresas que confían en{" "}
                                     <span className="text-primary">nosotros</span>

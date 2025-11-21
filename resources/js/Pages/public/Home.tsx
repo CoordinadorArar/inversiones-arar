@@ -18,11 +18,74 @@
 import PublicLayout from '@/Layouts/PublicLayout';
 import { Head, Link } from '@inertiajs/react';
 import { Card, CardContent } from "@/components/ui/card";
-import { Target, Users, Building2, ArrowRight, Lightbulb, TrendingUp, Eye, Sparkles } from "lucide-react";
+import { Target, Users, Building2, ArrowRight, Lightbulb, TrendingUp, Eye, Sparkles, BadgeAlert } from "lucide-react";
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { it } from 'node:test';
+import BadgeCustom from '@/Components/BadgeCustom';
 
 export default function Home() {
+
+    const caracteristicas = [
+        {
+            title: "Portafolio Diversificado",
+            description: "Gestionamos empresas en diversos sectores estratégicos, creando sinergias y oportunidades de crecimiento sostenible.",
+            icon: Building2,
+        },
+        {
+            title: "Gestión Estratégica",
+            description: "Implementamos las mejores prácticas de gobernanza corporativa y gestión empresarial en todas nuestras operaciones.",
+            icon: Target,
+        },
+        {
+            title: "Desarrollo de Talento",
+            description: "Invertimos en el desarrollo profesional de nuestros colaboradores, fomentando un ambiente de crecimiento continuo.",
+            icon: Users,
+        },
+    ];
+
+    const misionVision = [
+        {
+            title: "Misión",
+            description: (
+                <>
+                    Crear valor sostenible a través de la gestión eficiente de un portafolio diversificado,
+                    promoviendo la <span className="text-foreground font-medium">excelencia operativa</span>,
+                    la <span className="text-foreground font-medium">innovación</span> y el compromiso con nuestros colaboradores.
+                </>
+            ),
+            icon: Target,
+        },
+        {
+            title: "Visión",
+            description: (
+                <>
+                    Ser reconocidos como un <span className="text-foreground font-medium">holding empresarial líder</span> en Colombia,
+                    referente en gestión corporativa, <span className="text-foreground font-medium">desarrollo sostenible</span> y
+                    generación de oportunidades.
+                </>
+            ),
+            icon: Eye,
+        },
+    ];
+
+    const valores = [
+        {
+            title: "Innovación",
+            description: "Impulsamos la transformación digital y la mejora continua.",
+            icon: Lightbulb,
+        },
+        {
+            title: "Crecimiento",
+            description: "Desarrollo sostenible y expansión estratégica.",
+            icon: TrendingUp,
+        },
+        {
+            title: "Solidez",
+            description: "Más de 20 años de experiencia respaldan nuestra gestión.",
+            icon: Building2,
+        },
+    ]
 
     return (
         <PublicLayout>
@@ -79,62 +142,27 @@ export default function Home() {
                 <section className="py-10 border-y bg-secondary/30">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-                            {/* Card 1 */}
-                            <Card className="group hover:border-primary/30 shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-2 bg-card/80 backdrop-blur-sm">
-                                <CardContent className="p-6 sm:p-8">
-                                    <div className="flex flex-row items-center gap-3 sm:gap-4 mb-4">
-                                        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-lg">
-                                            <Building2 className="h-6 w-6 text-primary-foreground" />
-                                        </div>
-                                        <h3 className="text-lg sm:text-xl font-bold group-hover:text-primary transition-colors">
-                                            Portafolio Diversificado
-                                        </h3>
 
-                                    </div>
-                                    <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-                                        Gestionamos empresas en diversos sectores estratégicos, creando sinergias
-                                        y oportunidades de crecimiento sostenible.
-                                    </p>
-                                </CardContent>
-                            </Card>
+                            {
+                                caracteristicas.map((caracteristica, index) => (
+                                    <Card key={index} className="group hover:border-primary/30 shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-2 bg-card/80 backdrop-blur-sm">
+                                        <CardContent className="p-6 sm:p-8">
+                                            <div className="flex flex-row items-center gap-3 sm:gap-4 mb-4">
+                                                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-lg">
+                                                    <caracteristica.icon className="h-6 w-6 text-primary-foreground" />
+                                                </div>
+                                                <h3 className="text-lg sm:text-xl font-bold group-hover:text-primary transition-colors">
+                                                    {caracteristica.title}
+                                                </h3>
 
-                            {/* Card 2 */}
-                            <Card className="group hover:border-primary/30 shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-2 bg-card/80 backdrop-blur-sm">
-                                <CardContent className="p-6 sm:p-8">
-                                    <div className="flex flex-row items-center gap-3 sm:gap-4 mb-4">
-
-                                        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-lg">
-                                            <Target className="h-6 w-6 text-primary-foreground" />
-                                        </div>
-                                        <h3 className="text-lg sm:text-xl font-bold group-hover:text-primary transition-colors">
-                                            Gestión Estratégica
-                                        </h3>
-                                    </div>
-                                    <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-                                        Implementamos las mejores prácticas de gobernanza corporativa y gestión
-                                        empresarial en todas nuestras operaciones.
-                                    </p>
-                                </CardContent>
-                            </Card>
-
-                            {/* Card 3 */}
-                            <Card className="group hover:border-primary/30 shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-2 bg-card/80 backdrop-blur-sm sm:col-span-2 lg:col-span-1">
-                                <CardContent className="p-6 sm:p-8">
-                                    <div className="flex flex-row items-center gap-3 sm:gap-4 mb-4">
-                                        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-lg">
-                                            <Users className="h-6 w-6 text-primary-foreground" />
-                                        </div>
-                                        <h3 className="text-lg sm:text-xl font-bold group-hover:text-primary transition-colors">
-                                            Desarrollo de Talento
-                                        </h3>
-
-                                    </div>
-                                    <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-                                        Invertimos en el desarrollo profesional de nuestros colaboradores,
-                                        fomentando un ambiente de crecimiento continuo.
-                                    </p>
-                                </CardContent>
-                            </Card>
+                                            </div>
+                                            <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+                                                {caracteristica.description}
+                                            </p>
+                                        </CardContent>
+                                    </Card>
+                                ))
+                            }
                         </div>
                     </div>
                 </section>
@@ -145,11 +173,14 @@ export default function Home() {
                     <div className="container relative mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="max-w-6xl mx-auto">
                             {/* Header de sección */}
-                            <div className="text-center mb-10 sm:mb-12 md:mb-16">
-                                <Badge className="bg-primary/10 text-primary hover:bg-primary/20 border-primary/20 mb-4 sm:mb-6 inline-flex items-center gap-1.5">
-                                    <Building2 className="h-3 w-3" />
-                                    <span className="text-xs sm:text-sm">Nuestra Historia</span>
-                                </Badge>
+                            <div className="text-center mb-10 sm:mb-12">
+
+                                <BadgeCustom
+                                    title="Nuestra Historia"
+                                    icon={Building2}
+                                    className='mb-4 sm:mb-6'
+                                />
+
 
                                 <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6">
                                     <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
@@ -171,90 +202,49 @@ export default function Home() {
 
                             {/* Misión y Visión - Grid responsivo */}
                             <div className="grid md:grid-cols-2 gap-6 sm:gap-8 mb-10 sm:mb-12">
-                                {/* Misión */}
-                                <Card className="group border-2 border-primary/20 hover:border-primary/40 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 bg-gradient-to-br from-card to-card/80 relative overflow-hidden">
-                                    {/* Efecto de brillo */}
-                                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-                                    <CardContent className="p-6 sm:p-8 relative">
-                                        <div className="flex flex-row items-center gap-3 sm:gap-4 mb-4">
-                                            <div className="h-12 w-12 flex items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/60 text-primary-foreground group-hover:scale-110 transition-transform duration-500 shadow-lg">
-                                                <Target className="h-7 w-7" />
-                                            </div>
-                                            <h3 className="text-2xl sm:text-3xl font-bold text-primary group-hover:text-primary/80 transition-colors">
-                                                Misión
-                                            </h3>
-                                        </div>
-                                        <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-                                            Crear valor sostenible a través de la gestión eficiente de un portafolio
-                                            diversificado, promoviendo la <span className="text-foreground font-medium">excelencia operativa</span>,
-                                            la <span className="text-foreground font-medium">innovación</span> y el compromiso con nuestros colaboradores.
-                                        </p>
-                                    </CardContent>
-                                </Card>
+                                {
+                                    misionVision.map((item, index) => (
+                                        <Card key={index} className="group border-2 border-primary/20 hover:border-primary/40 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 bg-gradient-to-br from-card to-card/80 relative overflow-hidden">
+                                            {/* Efecto de brillo */}
+                                            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-                                {/* Visión */}
-                                <Card className="group border-2 border-primary/20 hover:border-primary/40 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 bg-gradient-to-br from-card to-card/80 relative overflow-hidden">
-                                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-                                    <CardContent className="p-6 sm:p-8 relative">
-                                        <div className="flex flex-row items-center gap-3 sm:gap-4 mb-4">
-                                            <div className="h-12 w-12 flex items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/60 text-primary-foreground group-hover:scale-110 transition-transform duration-500 shadow-lg">
-                                                <Eye className="h-7 w-7 sm:h-8 sm:w-8" />
-                                            </div>
-                                            <h3 className="text-2xl sm:text-3xl font-bold text-primary group-hover:text-primary/80 transition-colors">
-                                                Visión
-                                            </h3>
-                                        </div>
-                                        <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-                                            Ser reconocidos como un <span className="text-foreground font-medium">holding empresarial líder</span> en Colombia,
-                                            referente en gestión corporativa, <span className="text-foreground font-medium">desarrollo sostenible</span> y
-                                            generación de oportunidades.
-                                        </p>
-                                    </CardContent>
-                                </Card>
+                                            <CardContent className="p-6 sm:p-8 relative">
+                                                <div className="flex flex-row items-center gap-3 sm:gap-4 mb-4">
+                                                    <div className="h-12 w-12 flex items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/60 text-primary-foreground group-hover:scale-110 transition-transform duration-500 shadow-lg">
+                                                        <item.icon className="h-7 w-7" />
+                                                    </div>
+                                                    <h3 className="text-2xl sm:text-3xl font-bold text-primary group-hover:text-primary/80 transition-colors">
+                                                        {item.title}
+                                                    </h3>
+                                                </div>
+                                                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+                                                    {item.description}
+                                                </p>
+                                            </CardContent>
+                                        </Card>
+                                    ))
+                                }
                             </div>
 
                             {/* Valores - Grid responsivo de 3 columnas */}
                             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                                {/* Valor 1 */}
-                                <Card className="group hover:border-primary/30 transition-all duration-500 hover:shadow-lg hover:-translate-y-1">
-                                    <CardContent className="p-5 sm:p-6 text-center">
-                                        <div className="inline-flex p-3 rounded-full bg-gradient-to-br from-primary to-primary/60 text-primary-foreground group-hover:scale-110 transition-transform duration-500 mb-3 sm:mb-4 shadow-lg">
-                                            <Lightbulb className="h-5 w-5 sm:h-6 sm:w-6" />
-                                        </div>
-                                        <h4 className="font-bold text-base sm:text-lg mb-2 group-hover:text-primary transition-colors">Innovación</h4>
-                                        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                                            Impulsamos la transformación digital y la mejora continua.
-                                        </p>
-                                    </CardContent>
-                                </Card>
 
-                                {/* Valor 2 */}
-                                <Card className="group hover:border-primary/30 transition-all duration-500 hover:shadow-lg hover:-translate-y-1">
-                                    <CardContent className="p-5 sm:p-6 text-center">
-                                        <div className="inline-flex p-3 rounded-full bg-gradient-to-br from-primary to-primary/60 text-primary-foreground group-hover:scale-110 transition-transform duration-500 mb-3 sm:mb-4 shadow-lg">
-                                            <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6" />
-                                        </div>
-                                        <h4 className="font-bold text-base sm:text-lg mb-2 group-hover:text-primary transition-colors">Crecimiento</h4>
-                                        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                                            Desarrollo sostenible y expansión estratégica.
-                                        </p>
-                                    </CardContent>
-                                </Card>
-
-                                {/* Valor 3 */}
-                                <Card className="group hover:border-primary/30 transition-all duration-500 hover:shadow-lg hover:-translate-y-1 sm:col-span-2 lg:col-span-1">
-                                    <CardContent className="p-5 sm:p-6 text-center">
-                                        <div className="inline-flex p-3 rounded-full bg-gradient-to-br from-primary to-primary/60 text-primary-foreground group-hover:scale-110 transition-transform duration-500 mb-3 sm:mb-4 shadow-lg">
-                                            <Building2 className="h-5 w-5 sm:h-6 sm:w-6" />
-                                        </div>
-                                        <h4 className="font-bold text-base sm:text-lg mb-2 group-hover:text-primary transition-colors">Solidez</h4>
-                                        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                                            Más de 20 años de experiencia respaldan nuestra gestión.
-                                        </p>
-                                    </CardContent>
-                                </Card>
+                                {
+                                    valores.map((valor, index) => (
+                                        <Card className="group hover:border-primary/30 transition-all duration-500 hover:shadow-lg hover:-translate-y-1">
+                                            <CardContent className="p-5 sm:p-6 text-center">
+                                                <div className="inline-flex p-3 rounded-full bg-gradient-to-br from-primary to-primary/60 text-primary-foreground group-hover:scale-110 transition-transform duration-500 mb-3 sm:mb-4 shadow-lg">
+                                                    <valor.icon className="h-5 w-5 sm:h-6 sm:w-6" />
+                                                </div>
+                                                <h4 className="font-bold text-base sm:text-lg mb-2 group-hover:text-primary transition-colors">{valor.title}</h4>
+                                                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                                                    {valor.description}
+                                                </p>
+                                            </CardContent>
+                                        </Card>
+                                    ))
+                                }
                             </div>
                         </div>
                     </div>

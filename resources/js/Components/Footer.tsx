@@ -11,7 +11,35 @@ import Copyright from './Copyright';
 import { Button } from './ui/button';
 
 export default function Footer() {
-    const currentYear = new Date().getFullYear();
+
+    const rrss = [
+        {
+            name: 'LinkedIn de Inversiones Arar',
+            href: 'https://co.linkedin.com/company/inversiones-arar',
+            icon: Linkedin,
+        },
+    ]
+
+    const contacto = [
+        {
+            name: 'Email',
+            href: 'mailto:asistente@inversionesarar.com',
+            icon: Mail,
+            value: 'asistente@inversionesarar.com'
+        },
+        {
+            name: 'Teléfono',
+            href: 'tel:6076985203',
+            icon: Phone,
+            value: '607 698 5203'
+        },
+        {
+            name: 'Ubicación',
+            href: 'https://maps.app.goo.gl/mm8MPxAzZs99BV1D8',
+            icon: MapPin,
+            value: 'Ecoparque Natura · Floridablanca, Colombia'
+        },
+    ]
 
     return (
         <footer className="relative border-t bg-gradient-to-b from-secondary/20 to-secondary/40 mt-auto overflow-hidden">
@@ -35,15 +63,22 @@ export default function Footer() {
                         {/* Redes sociales más prominentes */}
                         <div className="flex items-center gap-3">
                             <span className="text-sm font-medium text-foreground">Síguenos:</span>
-                            <a
-                                href="https://co.linkedin.com/company/inversiones-arar"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center justify-center h-10 w-10 rounded-lg bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300 hover:scale-110 hover:shadow-lg group"
-                                aria-label="LinkedIn de Inversiones Arar"
-                            >
-                                <Linkedin className="h-5 w-5" />
-                            </a>
+
+                            {
+                                rrss.map((item, index) => (
+
+                                    <a
+                                        key={index}
+                                        href={item.href}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center justify-center h-10 w-10 rounded-lg bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300 hover:scale-105 hover:shadow-lg group"
+                                        aria-label={item.name}
+                                    >
+                                        <item.icon className="h-5 w-5" />
+                                    </a>
+                                ))
+                            }
                         </div>
                     </div>
 
@@ -54,50 +89,25 @@ export default function Footer() {
                             <div className="h-px flex-1 bg-gradient-to-r from-primary/20 to-transparent" />
                         </h3>
                         <ul className="space-y-4">
-                            <li>
-                                <a
-                                    href="mailto:asistente@inversionesarar.com"
-                                    className="group flex items-start gap-3 text-sm text-muted-foreground hover:text-primary transition-colors"
-                                >
-                                    <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300 mt-0.5">
-                                        <Mail className="h-4 w-4" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <div className="font-medium text-foreground mb-0.5">Email</div>
-                                        <div className="break-all">asistente@inversionesarar.com</div>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a
-                                    href="tel:6076985203"
-                                    className="group flex items-start gap-3 text-sm text-muted-foreground hover:text-primary transition-colors"
-                                >
-                                    <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300 mt-0.5">
-                                        <Phone className="h-4 w-4" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <div className="font-medium text-foreground mb-0.5">Teléfono</div>
-                                        <div>607 698 5203</div>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a
-                                    href="https://maps.app.goo.gl/mm8MPxAzZs99BV1D8"
-                                    target='_blank'
-                                    rel="noopener noreferrer"
-                                    className="group flex items-start gap-3 text-sm text-muted-foreground hover:text-primary transition-colors"
-                                >
-                                    <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300 mt-0.5">
-                                        <MapPin className="h-4 w-4" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <div className="font-medium text-foreground mb-0.5">Ubicación</div>
-                                        <div>Floridablanca, Colombia</div>
-                                    </div>
-                                </a>
-                            </li>
+
+                            {
+                                contacto.map((item, index) => (
+                                    <li key={index}>
+                                        <a
+                                            href={item.href}
+                                            className="group flex items-start gap-3 text-sm text-muted-foreground hover:text-primary transition-colors"
+                                        >
+                                            <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300 mt-0.5">
+                                                <item.icon className="h-4 w-4" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <div className="font-medium text-foreground mb-0.5">{item.name}</div>
+                                                <div className="break-all">{item.value}</div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                ))
+                            }                            
                         </ul>
                     </div>
 

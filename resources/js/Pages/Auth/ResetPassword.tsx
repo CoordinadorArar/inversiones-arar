@@ -136,7 +136,7 @@ export default function ResetPassword({ token, numero_documento }) {
             <form onSubmit={submit} className="space-y-3 sm:space-y-4" noValidate>
                 {/* Número de documento (disabled) */}
                 <div>
-                    <Label 
+                    <Label
                         htmlFor="numero_documento"
                         className="text-xs sm:text-sm"
                     >
@@ -150,15 +150,15 @@ export default function ResetPassword({ token, numero_documento }) {
                         disabled
                         value={formData.numero_documento}
                         className="w-full bg-gray-100 !cursor-not-allowed text-sm sm:text-base"
-                        autoComplete="username"                        
+                        autoComplete="username"
                     />
                     <InputError message={errors.numero_documento} />
                 </div>
 
                 {/* Nueva contraseña */}
                 <div>
-                    <Label 
-                        htmlFor="password" 
+                    <Label
+                        htmlFor="password"
                         className='text-xs sm:text-sm after:ml-0.5 after:text-red-500 after:content-["*"]'
                     >
                         Nueva Contraseña
@@ -179,13 +179,18 @@ export default function ResetPassword({ token, numero_documento }) {
                         className={`text-sm sm:text-base ${errors.password ? "border-destructive focus-visible:ring-destructive" : ""}`}
                     />
 
-                    <InputError message={errors.password}/>
+                    <div className="relative !mt-0">
+                        <InputError message={errors.password} />
+                        <span className="text-xs text-muted-foreground absolute top-0 right-0">
+                            {data.password.length}/{LIMITS.password}
+                        </span>
+                    </div>
                 </div>
 
                 {/* Confirmación de contraseña */}
                 <div>
-                    <Label 
-                        htmlFor="password_confirmation" 
+                    <Label
+                        htmlFor="password_confirmation"
                         className='text-xs sm:text-sm after:ml-0.5 after:text-red-500 after:content-["*"]'
                     >
                         Confirmar Contraseña
@@ -206,18 +211,23 @@ export default function ResetPassword({ token, numero_documento }) {
                         className={`text-sm sm:text-base ${errors.password_confirmation ? "border-destructive focus-visible:ring-destructive" : ""}`}
                     />
 
-                    <InputError message={errors.password_confirmation} />
+                    <div className="relative !mt-0">
+                        <InputError message={errors.password_confirmation} />
+                        <span className="text-xs text-muted-foreground absolute top-0 right-0">
+                            {data.password_confirmation.length}/{LIMITS.password}
+                        </span>
+                    </div>
                 </div>
 
                 {/* Botón submit */}
-                <div className="flex items-center justify-end pt-1 sm:pt-2">
-                    <Button 
-                        className="w-full text-sm sm:text-base" 
-                        disabled={processing}
-                    >
-                        {processing ? "Restableciendo..." : "Restablecer Contraseña"}
-                    </Button>
-                </div>
+
+                <Button
+                    className="w-full text-sm sm:text-base !mt-6"
+                    disabled={processing}
+                >
+                    {processing ? "Restableciendo..." : "Restablecer Contraseña"}
+                </Button>
+
             </form>
         </GuestLayout>
     );
