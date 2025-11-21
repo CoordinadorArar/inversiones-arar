@@ -18,7 +18,6 @@ use App\Mail\PQRSDFormMail;
 use App\Mail\PQRSDConfirmationMail;
 use App\Models\Ciudad;
 use App\Models\Departamento;
-use App\Models\Empresa;
 use App\Models\EmpresaWeb;
 use App\Models\PQRSD\PQRSD;
 use App\Models\PQRSD\TipoPqrs;
@@ -61,7 +60,7 @@ class PQRSDController extends Controller
             'tiposPqrs' => $tiposPqrs,
             'tiposId' => $tiposId,
             'empresas' => function () {
-                return EmpresaWeb::select('id_siesa as id', 'razon_social as name')
+                return EmpresaWeb::select('id', 'razon_social as name', 'siglas')
                     ->where('permitir_pqrsd', true)   // solo las que deben mostrarse
                     ->orderBy('razon_social')
                     ->get();
@@ -94,7 +93,7 @@ class PQRSDController extends Controller
 
             // Preparar datos para guardar en BD
             $pqrsdData = [
-                'empresa_id' => ($validated['tipoPqrs'] == 5) ? $validated['empresa'] :  6, // Si es denuncia, usar empresa seleccionada; si no, usar id 6 (Inversiones Arar)
+                'empresa_web_id' => ($validated['tipoPqrs'] == 5) ? $validated['empresa'] :  1, // Si es denuncia, usar empresa seleccionada; si no, usar id 1 (Inversiones Arar)
                 'tipo_pqrs_id' => $validated['tipoPqrs'],
                 'anonimo' => $request->boolean('esAnonimo', false),
                 'nombre' => $validated['nombre'] ?? null,  // Cambiar a nullable
@@ -155,7 +154,7 @@ class PQRSDController extends Controller
             }
 
             // Preparar datos para emails (consulta modelos para nombres).
-            $empresa       = Empresa::find($pqrsdData['empresa_id'])->f010_razon_social;
+            $empresa       = EmpresaWeb::find($pqrsdData['empresa_web_id'])->razon_social;
             $tipoPqrs      = TipoPqrs::find($validated['tipoPqrs']);
 
             // Si NO es anónimo, preparar datos completos del denunciante
@@ -267,6 +266,7 @@ class PQRSDController extends Controller
         return [
             // 'principal' => 'juridico01@inversionesarar.com',
             // 'copia' => ['controlinterno@inversionesarar.com'],
+            'copia' => [],
             'principal' => 'desarrollo01@inversionesarar.com',
         ];
     }

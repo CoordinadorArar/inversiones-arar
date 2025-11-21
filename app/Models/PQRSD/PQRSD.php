@@ -34,7 +34,7 @@ class PQRSD extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'empresa_id',
+        'empresa_web_id',
         'tipo_pqrs_id',
         'anonimo',
         'nombre',

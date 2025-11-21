@@ -52,7 +52,7 @@ class StorePQRSDRequest extends FormRequest
 
         // Reglas base (siempre requeridas)
         $rules = [
-            'empresa' => ['required', 'exists:sqlsrv_second.t010_mm_companias,f010_id'],
+            'empresa' => ['required', 'exists:empresas_web,id'],
             'tipoPqrs' => ['required', 'exists:tipos_pqrs,id'],
             'mensaje' => [
                 'required',

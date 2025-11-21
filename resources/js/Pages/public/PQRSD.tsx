@@ -65,7 +65,7 @@ interface FormData {
 }
 
 interface PQRSDProps {
-    empresas: Array<{ id: number; name: string }>;
+    empresas: Array<{ id: number; name: string; siglas: string}>;
     departamentos: Array<{ id: number; name: string }>;
     ciudades: Array<{ id: number; name: string; id_dpto: number }>;
     tiposPqrs: Array<{ id: number; nombre: string; abreviatura: string }>;
@@ -512,7 +512,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                 formData.append(`files[${index}]`, file);
             });
 
-            formData.append('esAnonimo', data.esAnonimo ? '1' : '0');
+            formData.append('esAnonimo', data.esAnonimo ? '1' : '0');            
 
             // Fetch POST a ruta pqrsd.store.
             const response = await fetch(route('pqrsd.store'), {
@@ -764,7 +764,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
 
                                                                 if (tipoDenuncia && value !== tipoDenuncia.id.toString()) {
                                                                     const inversionesArar = empresas.find(e =>
-                                                                        e.id == 6 // Id de Inversiones Arar S.A.
+                                                                        e.siglas == 'IA' // Siglas de Inversiones Arar S.A.
                                                                     );
                                                                     if (inversionesArar) {
                                                                         setData(prev => ({
@@ -817,7 +817,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                                 {empresas.filter((emp) => {
                                                                     // Si no es denuncia, solo carga Inversiones Arar S.A.
                                                                     if (!tipoDenuncia || data.tipoPqrs !== tipoDenuncia.id.toString()) {
-                                                                        return emp.id == 6; // Id de Inversiones Arar S.A.
+                                                                        return emp.siglas == 'IA'; // Id de Inversiones Arar S.A.
                                                                     }
                                                                     return true; // Carga todas las empresas para denuncias.
                                                                 }).map((emp) => (
