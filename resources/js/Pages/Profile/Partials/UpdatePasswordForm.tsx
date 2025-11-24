@@ -1,8 +1,7 @@
 import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
-import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
-import { Transition } from '@headlessui/react';
+import PasswordInput from '@/Components/PasswordInput';
+import { Button } from '@/Components/ui/button';
+import { Label } from '@/components/ui/label';
 import { useForm } from '@inertiajs/react';
 import { useRef } from 'react';
 
@@ -46,34 +45,27 @@ export default function UpdatePasswordForm({ className = '' }) {
 
     return (
         <section className={className}>
-            <header>
-                <h2 className="text-lg font-medium text-gray-900">
-                    Update Password
-                </h2>
 
-                <p className="mt-1 text-sm text-gray-600">
-                    Ensure your account is using a long, random password to stay
-                    secure.
-                </p>
-            </header>
-
-            <form onSubmit={updatePassword} className="mt-6 space-y-6">
+            <form onSubmit={updatePassword} className="space-y-4">
                 <div>
-                    <InputLabel
+                    <Label
                         htmlFor="current_password"
-                        value="Current Password"
-                    />
+                    >
+                        Contraseña Actual
+                    </Label>
 
-                    <TextInput
+                    <PasswordInput
                         id="current_password"
-                        ref={currentPasswordInput}
+                        name="current_password"
                         value={data.current_password}
-                        onChange={(e) =>
-                            setData('current_password', e.target.value)
-                        }
-                        type="password"
-                        className="mt-1 block w-full"
+                        onChange={(e) => setData('current_password', e.target.value)}
+                        placeholder="Ingresa tu contraseña actual"
                         autoComplete="current-password"
+                        hasError={!!errors.password}
+                        tooltipMessage="Necesitamos que confirmes tu contraseña actual para poder realizar el cambio."
+                        showTooltip={true}
+                        required
+                        className="text-sm sm:text-base"
                     />
 
                     <InputError
@@ -83,36 +75,46 @@ export default function UpdatePasswordForm({ className = '' }) {
                 </div>
 
                 <div>
-                    <InputLabel htmlFor="password" value="New Password" />
+                    <Label htmlFor="password" >
+                        Nueva Contraseña
+                    </Label>
 
-                    <TextInput
+                    <PasswordInput
                         id="password"
-                        ref={passwordInput}
+                        name="password"
                         value={data.password}
                         onChange={(e) => setData('password', e.target.value)}
-                        type="password"
-                        className="mt-1 block w-full"
+                        placeholder="Ingresa tu nueva contraseña"
                         autoComplete="new-password"
+                        hasError={!!errors.password}
+                        tooltipMessage="La contraseña debe tener al menos 8 caracteres e incluir una combinación de letras mayúsculas, minúsculas, números y símbolos."
+                        showTooltip={true}
+                        required
+                        className="text-sm sm:text-base"
                     />
 
                     <InputError message={errors.password} className="mt-2" />
                 </div>
 
                 <div>
-                    <InputLabel
+                    <Label
                         htmlFor="password_confirmation"
-                        value="Confirm Password"
-                    />
+                    >
+                        Confirmar Contraseña
+                    </Label>
 
-                    <TextInput
+                    <PasswordInput
                         id="password_confirmation"
+                        name="password_confirmation"
                         value={data.password_confirmation}
-                        onChange={(e) =>
-                            setData('password_confirmation', e.target.value)
-                        }
-                        type="password"
-                        className="mt-1 block w-full"
+                        onChange={(e) => setData('password_confirmation', e.target.value)}
+                        placeholder="Confirma tu nueva contraseña"
                         autoComplete="new-password"
+                        hasError={!!errors.password_confirmation}
+                        tooltipMessage="Repite la contraseña para confirmar."
+                        showTooltip={true}
+                        required
+                        className="text-sm sm:text-base"
                     />
 
                     <InputError
@@ -120,22 +122,13 @@ export default function UpdatePasswordForm({ className = '' }) {
                         className="mt-2"
                     />
                 </div>
-
-                <div className="flex items-center gap-4">
-                    <PrimaryButton disabled={processing}>Save</PrimaryButton>
-
-                    <Transition
-                        show={recentlySuccessful}
-                        enter="transition ease-in-out"
-                        enterFrom="opacity-0"
-                        leave="transition ease-in-out"
-                        leaveTo="opacity-0"
-                    >
-                        <p className="text-sm text-gray-600">
-                            Saved.
-                        </p>
-                    </Transition>
-                </div>
+                <Button
+                    type="submit"
+                    className="mt-2 float-right px-6"
+                    disabled={processing}
+                >
+                    {processing ? "Guardandoo..." : "Guardar"}
+                </Button>
             </form>
         </section>
     );

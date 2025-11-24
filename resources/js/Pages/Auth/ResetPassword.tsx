@@ -176,7 +176,7 @@ export default function ResetPassword({ token, numero_documento }) {
                         tooltipMessage="La contraseña debe tener al menos 8 caracteres e incluir una combinación de letras mayúsculas, minúsculas, números y símbolos."
                         showTooltip={true}
                         required
-                        className={`text-sm sm:text-base ${errors.password ? "border-destructive focus-visible:ring-destructive" : ""}`}
+                        className="text-sm sm:text-base"
                     />
 
                     <div className="relative !mt-0">
@@ -208,7 +208,7 @@ export default function ResetPassword({ token, numero_documento }) {
                         tooltipMessage="Repite la contraseña para confirmar."
                         showTooltip={true}
                         required
-                        className={`text-sm sm:text-base ${errors.password_confirmation ? "border-destructive focus-visible:ring-destructive" : ""}`}
+                        className="text-sm sm:text-base"
                     />
 
                     <div className="relative !mt-0">

@@ -229,6 +229,7 @@ export default function Register({ status, document, dominios }) {
                         tooltipMessage="La contraseña debe tener al menos 8 caracteres e incluir una combinación de letras mayúsculas, minúsculas, números y símbolos."
                         showTooltip={true}
                         required
+                        className="text-sm sm:text-base"
                     />
                     <div className="relative !mt-0">
                         <InputError message={errors.password} />
@@ -255,6 +256,7 @@ export default function Register({ status, document, dominios }) {
                         tooltipMessage="Repite la contraseña para confirmar."
                         showTooltip={true}
                         required
+                        className="text-sm sm:text-base"
                     />
                     <div className="relative !mt-0">
                         <InputError message={errors.password_confirmation} />

@@ -167,7 +167,7 @@ export default function Login({ status }) {
                 <div className="space-y-1.5 sm:space-y-2">
                     <Label
                         htmlFor="numero_documento"
-                        className='text-xs sm:text-sm after:ml-0.5 after:text-red-500 after:content-["*"]'
+                        className='text-xs sm:text-sm after:ml-0.5'
                     >
                         Número de Documento
                     </Label>
@@ -190,7 +190,7 @@ export default function Login({ status }) {
                 <div className="space-y-1.5 sm:space-y-2">
                     <Label
                         htmlFor="password"
-                        className='text-xs sm:text-sm after:ml-0.5 after:text-red-500 after:content-["*"]'
+                        className='text-xs sm:text-sm after:ml-0.5'
                     >
                         Contraseña
                     </Label>
