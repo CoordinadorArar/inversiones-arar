@@ -77,8 +77,7 @@ export default function IconPicker({ value, onChange }: IconPickerProps) {
     try {
       const allIconNames = Object.keys(Icons)           // ["Home", "HomeIcon", "LucideHome", ...]
         .filter(name => typeof name === "string")       // Solo strings válidos
-        .map(name => normalizeIconName(name))           // Normaliza: "home", "home", "home"
-        .filter(name => !/\d/.test(name))               // Elimina nombres con números
+        .map(name => normalizeIconName(name))           // Normaliza: "home", "home", "home"    
         .filter(name => name.length > 0);               // Elimina strings vacíos
 
       // Elimina duplicados usando Set (home, home, home → home)
@@ -196,11 +195,11 @@ export default function IconPicker({ value, onChange }: IconPickerProps) {
   FORMA DE USO
 
   const [data, setData] = useState({
-    icon: ""
+    icono: ""
   });
 
   <div>
     <label className="text-sm font-medium">Icono</label>
-    <IconPicker value={data.icono} onChange={(icon) => setData('icon', icon)} />
+    <IconPicker value={data.icono} onChange={(icono) => setData('icono', icono)} />
   </div>
  */

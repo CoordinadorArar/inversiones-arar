@@ -22,7 +22,11 @@ class Modulo extends Model
      * 
      * @var array<int, string>
      */
-    protected $fillable = ['nombre', 'icono', 'ruta', 'es_padre', 'modulo_padre_id'];
+    protected $fillable = ['nombre', 'icono', 'ruta', 'es_padre', 'modulo_padre_id', 'permisos_extra'];
+
+    protected $casts = [
+        'permisos_extra' => 'array',
+    ];
 
     // Deshabilitar timestamps automáticos (usa fecha_creacion/modificacion manuales).
     public $timestamps = false;

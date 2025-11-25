@@ -22,7 +22,11 @@ class Pestana extends Model
      * 
      * @var array<int, string>
      */
-    protected $fillable = ['modulo_id', 'nombre', 'ruta'];
+    protected $fillable = ['modulo_id', 'nombre', 'ruta', 'permisos_extra'];
+
+    protected $casts = [
+        'permisos_extra' => 'array',
+    ];
 
     // Deshabilitar timestamps automáticos (usa fecha_creacion/modificacion manuales).
     public $timestamps = false;

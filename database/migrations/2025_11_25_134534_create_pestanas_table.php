@@ -17,8 +17,14 @@ return new class extends Migration
                 ->nullable()
                 ->constrained('modulos');
 
-            $table->string('nombre', 50)->unique();            
-            $table->string('ruta', 255)->unique();            
+            $table->string('nombre', 50);
+            $table->string('ruta', 255);
+
+            // Únicos por módulo
+            $table->unique(['modulo_id', 'nombre']);
+            $table->unique(['modulo_id', 'ruta']);
+
+            $table->json('permisos_extra')->nullable();
 
             $table->dateTime('fecha_creacion')->useCurrent();         // Timestamp creación.
             $table->dateTime('fecha_modificacion')->useCurrent()->useCurrentOnUpdate(); // Timestamp modificación.

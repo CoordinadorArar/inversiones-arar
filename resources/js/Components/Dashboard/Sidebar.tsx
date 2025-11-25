@@ -19,6 +19,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
+import IconPicker from "../IconPicker";
 
 const menuItems = [
   {
@@ -50,6 +51,10 @@ const menuItems = [
 ];
 
 export function DashboardSidebar() {
+  const [data, setData] = useState({
+    icon: ""
+  });
+
   const { state } = useSidebar();
   const [openGroups, setOpenGroups] = useState<string[]>(["Finanzas"]);
   const collapsed = state === "collapsed";
@@ -166,6 +171,10 @@ export function DashboardSidebar() {
                   )}
                 </SidebarMenuItem>
               ))}
+              <div>
+                <label className="text-sm font-medium">Icono</label>
+                <IconPicker value={data.icon} onChange={(icon) => setData('icon', icon)} />
+              </div>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

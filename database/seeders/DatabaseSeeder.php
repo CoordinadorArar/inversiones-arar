@@ -34,5 +34,8 @@ class DatabaseSeeder extends Seeder
         $this->call(EstadoPqrsSeeder::class);
         $this->call(RolSeeder::class);
         $this->call(EmpresaWebSeeder::class);
+
+        $this->call(ModuloSeeder::class);
+        $this->call(PestanaSeeder::class);
     }
 }
