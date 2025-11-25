@@ -39,7 +39,7 @@ export default function Dashboard() {
   const visibleDocs = showAllDocs ? documentos : documentos.slice(0, 3);
 
   return (
-    <DashboardLayout header="Intranet Corporativa">
+    <>
       <Head title="Intranet" />
       <div className="space-y-6">
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -177,6 +177,10 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
-    </DashboardLayout>
+    </>
   );
 }
+
+Dashboard.layout = (page) => (
+  <DashboardLayout header="Intranet Corporativa" children={page} />
+);

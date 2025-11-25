@@ -587,7 +587,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
     };
 
     return (
-        <PublicLayout>
+        <>
             <Head title="PQRSD" />
             <main>
                 {/* Header con información en dos columnas */}
@@ -1273,6 +1273,10 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                     </div>
                 </section>
             </main>
-        </PublicLayout>
+        </>
     );
 }
+
+PQRSD.layout = (page) => (
+    <PublicLayout children={page}/>
+)

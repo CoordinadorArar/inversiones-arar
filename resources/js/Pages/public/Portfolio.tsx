@@ -61,9 +61,7 @@ export default function Portafolio({ clientes }) {
     ];
 
     return (
-
-        // PublicLayout: Layout público con header/footer.
-        <PublicLayout>
+        <>
             {/* Head: Establece título de la página en navegador. */}
             <Head title="Portafolio" />
             {/* Main: Contenedor principal del contenido. */}
@@ -269,7 +267,7 @@ export default function Portafolio({ clientes }) {
                     scrollbar-width: none;
                 }
             `}</style>
-        </PublicLayout>
+        </>
     );
 };
 
@@ -307,3 +305,8 @@ function ClientCard({ cliente }) {
         </Card>
     );
 }
+
+Portafolio.layout = (page) => (
+    // PublicLayout: Layout público con header/footer.
+    <PublicLayout children={page}/>
+)

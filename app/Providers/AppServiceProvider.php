@@ -40,22 +40,5 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Vite::prefetch(concurrency: 3);
-
-        /**
-         * 🔹 Datos compartidos globalmente a las vistas de Inertia.
-         * 
-         * En este caso compartimos la lista de empresas solo para las páginas públicas.
-         * 
-         * - Se usa 'Inertia::share()' para enviar datos accesibles desde React mediante `usePage().props`.
-         * - La consulta obtiene únicamente los campos necesarios, reduciendo carga innecesaria.
-         * - Se filtran las empresas por su ID según los valores requeridos.
-         */
-        Inertia::share([
-            'empresasHeader' => EmpresaWeb::select('id_siesa as id', 'razon_social as name')
-                ->where('mostrar_en_header', true)   // solo las que deben mostrarse
-                ->orderBy('razon_social')
-                ->get(),
-
-        ]);
     }
 }

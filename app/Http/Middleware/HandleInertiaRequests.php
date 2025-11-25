@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\GestionModulos\Modulo;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -29,12 +30,40 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $user = $request->user();
+
+        if ($user) {
+            $modulos = Modulo::all();
+
+            $padres = $modulos->filter(fn($modulo) => $modulo->es_padre == 1);
+            $hijos = $modulos->filter(fn($m) => $m->modulo_padre_id != null);
+
+            $menu = $padres->map(function ($padre) use ($hijos) {
+                $items = $hijos
+                    ->where('modulo_padre_id', $padre->id)
+                    ->map(fn($hijo) => [
+                        'title' => $hijo->nombre,
+                        'url'   => $hijo->ruta,
+                        'icon'  => $hijo->icono,
+                    ])
+                    ->values();
+
+
+                return [
+                    'title' => $padre->nombre,
+                    'icon'  => $padre->icono,
+                    'url'   => $padre->ruta,
+                    ...(count($items) > 0 ? ['items' => $items] : []),
+                ];
+            });
+        }
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user(),
+                'user' => $user,
             ],
-            'status' => fn () => session('status'),
+            'status' => fn() => session('status'),
+            'menu' => $menu ?? [],
         ];
     }
 }

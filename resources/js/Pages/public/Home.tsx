@@ -88,7 +88,7 @@ export default function Home() {
     ]
 
     return (
-        <PublicLayout>
+        <>
             <Head title="Inicio" />
             <main>
                 {/* Hero Section - Optimizado para mobile */}
@@ -232,7 +232,7 @@ export default function Home() {
 
                                 {
                                     valores.map((valor, index) => (
-                                        <Card className="group hover:border-primary/30 transition-all duration-500 hover:shadow-lg hover:-translate-y-1">
+                                        <Card key={index} className="group hover:border-primary/30 transition-all duration-500 hover:shadow-lg hover:-translate-y-1">
                                             <CardContent className="p-5 sm:p-6 text-center">
                                                 <div className="inline-flex p-3 rounded-full bg-gradient-to-br from-primary to-primary/60 text-primary-foreground group-hover:scale-110 transition-transform duration-500 mb-3 sm:mb-4 shadow-lg">
                                                     <valor.icon className="h-5 w-5 sm:h-6 sm:w-6" />
@@ -273,6 +273,10 @@ export default function Home() {
                 </section>
 
             </main>
-        </PublicLayout>
+        </>
     );
 }
+
+Home.layout = (page) => (
+    <PublicLayout children={page}/>
+)

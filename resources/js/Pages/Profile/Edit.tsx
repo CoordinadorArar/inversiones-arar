@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 
 export default function Edit({ mustVerifyEmail, status }) {
     return (
-        <DashboardLayout header='Perfil de Usuario'>
+        <>
             <Head title="Perfil" />
 
             <div className="space-y-6">
@@ -147,6 +147,10 @@ export default function Edit({ mustVerifyEmail, status }) {
 
 
             </div>
-        </DashboardLayout>
+        </>
     );
 }
+
+Edit.layout = (page) => (
+  <DashboardLayout header='Perfil de Usuario' children={page} />
+);

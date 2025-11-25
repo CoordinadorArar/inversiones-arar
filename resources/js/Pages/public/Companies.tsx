@@ -17,7 +17,7 @@ import { Button } from '@/components/ui/button';
 export default function Companies({empresas}) {
 
     return (
-        <PublicLayout>
+        <>
             <Head title="Compañías" />
             <main>
                 {/* Hero Section */}
@@ -89,7 +89,7 @@ export default function Companies({empresas}) {
                     scrollbar-width: none;
                 }
             `}</style>
-        </PublicLayout>
+        </>
     );
 }
 
@@ -152,3 +152,7 @@ function CompanyCard({ empresa }) {
         </Card>
     );
 }
+
+Companies.layout = (page) => (
+    <PublicLayout children={page}/>
+)

@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { ChevronDown, Home } from "lucide-react";
 import { DynamicIcon } from "lucide-react/dynamic";
-import { Link } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
+
 import {
   Sidebar,
   SidebarContent,
@@ -19,55 +20,23 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
-import IconPicker from "../IconPicker";
 
-const menuItems = [
-  {
-    title: "Finanzas",
-    icon: "dollar-sign",
-    items: [
-      { title: "Contabilidad", url: "/dashboard/contabilidad", icon: "file-text" },
-      { title: "Reportes", url: "/dashboard/reportes", icon: "bar-chart-3" },
-    ],
-  },
-  {
-    title: "Recursos",
-    icon: "package",
-    items: [
-      { title: "Inventario", url: "/dashboard/inventario", icon: "package" },
-      { title: "Compras", url: "/dashboard/compras", icon: "shopping-cart" },
-    ],
-  },
-  {
-    title: "Equipo",
-    url: "/dashboard/equipo",
-    icon: "users",
-  },
-  {
-    title: "Administración Web",
-    url: "/dashboard/configuracion",
-    icon: "user-cog",
-  },
-];
-
-export function DashboardSidebar() {
-  const [data, setData] = useState({
-    icon: ""
-  });
+export function DashboardSidebar({ menu, openGroups, setOpenGroups }) {
 
   const { state } = useSidebar();
-  const [openGroups, setOpenGroups] = useState<string[]>(["Finanzas"]);
   const collapsed = state === "collapsed";
 
   const toggleGroup = (title: string) => {
     setOpenGroups((prev) =>
-      prev.includes(title) ? prev.filter((t) => t !== title) : [...prev, title]
+      prev.includes(title)
+        ? prev.filter((t) => t !== title)
+        : [...prev, title]
     );
   };
 
   const currentRoute = route().current() || "";
-
   const isActive = (url: string) => currentRoute === url;
+
 
   return (
     <Sidebar collapsible="icon">
@@ -108,7 +77,7 @@ export function DashboardSidebar() {
                 </Link>
               </SidebarMenuButton>
 
-              {menuItems.map((item) => (
+              {menu.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   {item.items ? (
                     <Collapsible
@@ -137,10 +106,10 @@ export function DashboardSidebar() {
                           {item.items.map((subItem) => (
                             <SidebarMenuButton key={subItem.url} asChild>
                               <Link
-                                href={subItem.url}
+                                href={`${item.url}${subItem.url}`}
                                 className={cn(
                                   "flex items-center gap-2 w-full transition-all duration-300 rounded-md",
-                                  isActive(subItem.url)
+                                  isActive(`${item.url}${subItem.url}`)
                                     ? "bg-primary/10 text-primary font-medium hover:!text-primary hover:!bg-primary/15 border-r-2 border-primary pl-3"
                                     : "hover:bg-muted pl-4"
                                 )}
@@ -171,10 +140,6 @@ export function DashboardSidebar() {
                   )}
                 </SidebarMenuItem>
               ))}
-              <div>
-                <label className="text-sm font-medium">Icono</label>
-                <IconPicker value={data.icon} onChange={(icon) => setData('icon', icon)} />
-              </div>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

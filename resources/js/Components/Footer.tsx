@@ -8,7 +8,6 @@
 
 import { Mail, Phone, FileText, Shield, Linkedin, ArrowUpRight, MapPin } from 'lucide-react';
 import Copyright from './Copyright';
-import { Button } from './ui/button';
 
 export default function Footer() {
 

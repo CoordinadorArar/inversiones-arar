@@ -243,7 +243,7 @@ export default function Contact() {
     };
 
     return (
-        <PublicLayout>
+        <>
             <Head title="Contacto" />
             <main className="flex-1">
                 {/* Hero Section - RESPONSIVE */}
@@ -592,6 +592,10 @@ export default function Contact() {
                     </div>
                 </section>
             </main>
-        </PublicLayout>
+        </>
     );
 }
+
+Contact.layout = (page) => (
+    <PublicLayout children={page}/>
+)

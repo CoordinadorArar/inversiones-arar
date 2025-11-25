@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->string('nombre', 50)->unique();
             $table->string('icono', 50);
-            $table->string('ruta', 255)->nullable(); //unico pero se crea indice aparte para q no de errores
+            $table->string('ruta', 255)->unique();
             $table->boolean('es_padre')->default(false);
             $table->unsignedBigInteger('modulo_padre_id')->nullable();
 
@@ -27,12 +27,6 @@ return new class extends Migration
 
             $table->softDeletes(); // Soft deletes.
         });
-
-        DB::statement("
-                CREATE UNIQUE INDEX ruta_unique
-                ON modulos(ruta)
-                WHERE ruta IS NOT NULL;
-            ");
     }
 
     /**

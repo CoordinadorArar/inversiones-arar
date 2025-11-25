@@ -10,6 +10,7 @@
  * @version 1.0
  * @date 2025-11-18 
  */
+
 use App\Http\Controllers\Public\ContactController;
 use App\Http\Controllers\Public\CompaniesController;
 use App\Http\Controllers\Public\HomeController;
@@ -20,69 +21,72 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+
+
 /**
  * BLOQUE 1: Rutas Públicas - Páginas accesibles sin login.
  * 
- * Estas rutas corresponden a las páginas principales del sitio web, visibles para cualquier visitante.
- * Cada ruta llama a un método en un controlador específico, que renderiza un componente React vía Inertia.
- * No requieren middleware de autenticación, por lo que son públicas y accesibles desde el frontend.
+ * Agrupadas en middleware 'public' para compartir 'empresasHeader' globalmente via SharePublicData.
+ * Cada ruta renderiza componente React vía Inertia. No requieren auth.
+ * 
+ * Por qué middleware 'public':
+ * - Comparte datos (empresas para header) sin repetir queries en controladores.
+ * - Optimiza rendimiento y mantiene código DRY.
  */
+Route::middleware('public')->group(function () {
+    // Ruta para la página de inicio (home).
+    // - Método HTTP: GET (solo lectura, no modifica datos).
+    // - URL: '/' (raíz del sitio).
+    // - Controlador: HomeController@index (renderiza componente Home con info de la empresa).
+    // - Nombre de ruta: 'home' (usado en helpers como route('home') para navegación SPA).
+    Route::get('/', [HomeController::class, 'index'])->name('home');
 
-// Ruta para la página de inicio (home).
-// - Método HTTP: GET (solo lectura, no modifica datos).
-// - URL: '/' (raíz del sitio).
-// - Controlador: HomeController@index (renderiza componente Home con info de la empresa).
-// - Nombre de ruta: 'home' (usado en helpers como route('home') para navegación SPA).
-Route::get('/', [HomeController::class, 'index'])->name('home');
+    // Rutas para la página de contacto.
+    // - Primera ruta: Muestra el formulario de contacto.
+    //   - Método: GET.
+    //   - URL: '/contacto'.
+    //   - Controlador: ContactController@index (renderiza form de contacto).
+    //   - Nombre: 'contact'.
+    Route::get('/contacto', [ContactController::class, 'index'])->name('contact');
 
-// Rutas para la página de contacto.
-// - Primera ruta: Muestra el formulario de contacto.
-//   - Método: GET.
-//   - URL: '/contacto'.
-//   - Controlador: ContactController@index (renderiza form de contacto).
-//   - Nombre: 'contact'.
-Route::get('/contacto', [ContactController::class, 'index'])->name('contact');
+    // - Segunda ruta: Procesa el envío del formulario de contacto.
+    //   - Método: POST (envía datos del form).
+    //   - URL: '/contacto' (misma que GET, pero método diferente).
+    //   - Controlador: ContactController@store (valida datos, envía email, retorna JSON con éxito o errores).
+    //   - Propósito: Backend para submit del form; usa validación Zod/frontend y Laravel/backend.
+    //   - Nombre: 'contact.store'.
+    Route::post('/contacto', [ContactController::class, 'store'])->name('contact.store');
 
-// - Segunda ruta: Procesa el envío del formulario de contacto.
-//   - Método: POST (envía datos del form).
-//   - URL: '/contacto' (misma que GET, pero método diferente).
-//   - Controlador: ContactController@store (valida datos, envía email, retorna JSON con éxito o errores).
-//   - Propósito: Backend para submit del form; usa validación Zod/frontend y Laravel/backend.
-//   - Nombre: 'contact.store'.
-Route::post('/contacto', [ContactController::class, 'store'])->name('contact.store');
+    // Ruta para la página de portafolio.
+    // - Método: GET.
+    // - URL: '/portafolio'.
+    // - Controlador: PortfolioController@index (renderiza servicios y clientes destacados).
+    // - Nombre: 'portfolio'.
+    Route::get('/portafolio', [PortfolioController::class, 'index'])->name('portfolio');
 
-// Ruta para la página de portafolio.
-// - Método: GET.
-// - URL: '/portafolio'.
-// - Controlador: PortfolioController@index (renderiza servicios y clientes destacados).
-// - Nombre: 'portfolio'.
-Route::get('/portafolio', [PortfolioController::class, 'index'])->name('portfolio');
+    // Ruta para la página de empresas.
+    // - Método: GET.
+    // - URL: '/empresas'.
+    // - Controlador: CompaniesController@index (renderiza lista de empresas asociadas).
+    // - Nombre: 'companies'.
+    Route::get('/empresas', [CompaniesController::class, 'index'])->name('companies');
 
-// Ruta para la página de empresas.
-// - Método: GET.
-// - URL: '/empresas'.
-// - Controlador: CompaniesController@index (renderiza lista de empresas asociadas).
-// - Nombre: 'companies'.
-Route::get('/empresas', [CompaniesController::class, 'index'])->name('companies');
+    // Rutas para PQRSD (Peticiones, Quejas, Reclamos, Sugerencias, Denuncias).
+    // - Primera ruta: Muestra el formulario multi-paso de PQRSD.
+    //   - Método: GET.
+    //   - URL: '/pqrsd'.
+    //   - Controlador: PQRSDController@index (renderiza form con pasos).
+    //   - Nombre: 'pqrsd'.
+    Route::get('/pqrsd', [PQRSDController::class, 'index'])->name('pqrsd');
 
-// Rutas para PQRSD (Peticiones, Quejas, Reclamos, Sugerencias, Denuncias).
-// - Primera ruta: Muestra el formulario multi-paso de PQRSD.
-//   - Método: GET.
-//   - URL: '/pqrsd'.
-//   - Controlador: PQRSDController@index (renderiza form con validaciones y drag-and-drop).
-//   - Nombre: 'pqrsd'.
-Route::get('/pqrsd', [PQRSDController::class, 'index'])->name('pqrsd');
-
-// - Segunda ruta: Procesa el envío del formulario de PQRsD.
-//   - Método: POST.
-//   - URL: '/pqrsd'.
-//   - Controlador: PQRSDController@store (valida, guarda en DB, envía emails, maneja archivos).
-//   - Propósito: Backend para submit; incluye transacciones DB y manejo de adjuntos.
-//   - Nombre: 'pqrsd.store'.
-Route::post('/pqrsd', [PQRSDController::class, 'store'])->name('pqrsd.store');
-
-
-
+    // - Segunda ruta: Procesa el envío del formulario de PQRsD.
+    //   - Método: POST.
+    //   - URL: '/pqrsd'.
+    //   - Controlador: PQRSDController@store (valida, guarda en DB, envía emails, maneja archivos).
+    //   - Propósito: Backend para submit; incluye transacciones DB y manejo de adjuntos.
+    //   - Nombre: 'pqrsd.store'.
+    Route::post('/pqrsd', [PQRSDController::class, 'store'])->name('pqrsd.store');
+});
 
 
 

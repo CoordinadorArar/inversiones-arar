@@ -11,12 +11,32 @@ import Footer from "@/Components/Footer";
 import Header from "@/Components/Header";
 import ScrollToTop from "@/Components/ScrollToTop";
 import { Toaster } from "@/components/ui/toaster"
+import { PageProps } from '@inertiajs/core';
+import { usePage } from "@inertiajs/react";
+
+// Definir interfaz para el tipo Empresa
+interface Empresa {
+    id: number;     // ID de la empresa (id_siesa).
+    name: string;   // Nombre de la empresa (razon_social).
+}
+
+// Definir interfaz para las props que vienen de la página (de Inertia.js)
+interface PagePropsHeader extends PageProps {
+    empresasHeader: Empresa[];
+    [key: string]: any;
+}
 
 export default function PublicLayout({ children }) {
+
+    // Extraer 'empresasHeader' de props compartidas via middleware SharePublicData.
+    // - Viene de Inertia::share() en Laravel, accesible via usePage().props.
+    // - Array de empresas visibles en header, usado para dropdown/select.
+    const empresas: Empresa[] = usePage<PagePropsHeader>().props.empresasHeader;
+
     return (
         <div className="min-h-screen bg-background">
             {/* Header: Navegación superior común a todas las páginas públicas. */}
-            <Header />
+            <Header empresas= {empresas} />
             {/* children: Contenido dinámico de la página (ej. secciones de Home). */}
             {children}
             <ScrollToTop />

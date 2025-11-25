@@ -12,15 +12,30 @@ import { CircleUserRound, House, Mail, Building2, Users, NotebookText, CircleAle
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useState, useRef, useEffect } from 'react';
+// Definir interfaz para el tipo Empresa
+interface Empresa {
+    id: number;     // ID de la empresa (id_siesa).
+    name: string;   // Nombre de la empresa (razon_social).
+}
+// Definir interfaz para el estado de la empresa seleccionada
+type SelectedEmpresa = Empresa | null;
+// Definir tipo para los elementos del array 'pages' 
+type PageItem = {
+    name: string;   // Nombre del enlace.
+    ref: string;    // Nombre de ruta (para route()).
+    icon: React.ComponentType<{ className?: string }>; // Tipo para iconos de Lucide
+};
 
-export default function Header() {
+export default function Header({empresas}) {
+    // Estados para modales y selección.
     const [showAutogestion, setShowAutogestion] = useState(false);
     const [showVideoModal, setShowVideoModal] = useState(false);
-    const [selectedEmpresa, setSelectedEmpresa] = useState<{ id: number, name: string } | null>(null);
+
+    const [selectedEmpresa, setSelectedEmpresa] = useState<SelectedEmpresa>(null); // Empresa seleccionada en dropdown.
     const videoRef = useRef<HTMLVideoElement>(null);
 
     // Enlaces principales en el nav 
-    const pages = [
+    const pages: PageItem[] = [
         {
             name: 'Inicio',
             ref: 'home',
@@ -48,18 +63,14 @@ export default function Header() {
         },
     ];
 
-    const { empresasHeader } = usePage().props as unknown as {
-        empresasHeader: { id: number, name: string }[]
-    };
-
     // Obtener la ruta actual para resaltar el enlace activo
     const currentRoute = route().current() || '';
 
     // Manejar el click en una empresa
-    const handleEmpresaClick = (empresa: { id: number, name: string }, e: Event) => {
+    const handleEmpresaClick = (empresa: Empresa, e: Event) => {
         e.preventDefault();
         setSelectedEmpresa(empresa);
-        setShowVideoModal(true);        
+        setShowVideoModal(true);
     };
 
     // Redirigir a Gestión Humana
@@ -71,14 +82,14 @@ export default function Header() {
                 'noopener,noreferrer'
             );
             setShowVideoModal(false);
-            setSelectedEmpresa(null);            
+            setSelectedEmpresa(null);
         }
     };
 
     // Cerrar modal
     const handleCloseModal = () => {
         setShowVideoModal(false);
-        setSelectedEmpresa(null);        
+        setSelectedEmpresa(null);
         if (videoRef.current) {
             videoRef.current.pause();
             videoRef.current.currentTime = 0;
@@ -89,7 +100,7 @@ export default function Header() {
         <>
             <header className='fixed top-0 left-1/2 -translate-x-1/2 z-50 w-full'>
                 <div className='container mx-auto mt-4 px-4 '>
-                    <div className='bg-background/90 backdrop-blur-sm rounded-2xl border border-primary/10 shadow-md transition-shadow px-4 sm:px-6 py-1 flex items-center justify-between'>
+                    <div className='bg-background/95 backdrop-blur-sm rounded-2xl border border-primary/10 shadow-md transition-shadow px-4 sm:px-6 py-1 flex items-center justify-between'>
                         {/* Logo */}
                         <Link
                             href={route('home')}
@@ -145,8 +156,8 @@ export default function Header() {
                                     <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">
                                         Selecciona tu empresa
                                     </div>
-                                    {empresasHeader.map((empresa, index) => (
-                                        <DropdownMenuItem 
+                                    {empresas.map((empresa, index) => (
+                                        <DropdownMenuItem
                                             key={index}
                                             onSelect={(e) => handleEmpresaClick(empresa, e)}
                                         >
@@ -283,8 +294,8 @@ export default function Header() {
                                             </div>
 
                                             {/* Lista de empresas */}
-                                            {empresasHeader.map((empresa, index) => (
-                                                <DropdownMenuItem 
+                                            {empresas.map((empresa, index) => (
+                                                <DropdownMenuItem
                                                     key={index}
                                                     onSelect={(e) => handleEmpresaClick(empresa, e)}
                                                 >
@@ -334,7 +345,7 @@ export default function Header() {
 
                     <div className="aspect-video bg-black rounded-lg overflow-hidden">
                         <video
-                            ref={videoRef}                            
+                            ref={videoRef}
                             autoPlay
                             muted
                             className="w-full h-full"
@@ -354,7 +365,7 @@ export default function Header() {
                             Cancelar
                         </Button>
                         <Button
-                            onClick={handleContinuar}                            
+                            onClick={handleContinuar}
                             className="w-full sm:w-auto"
                         >
                             Continuar a Gestión Humana
