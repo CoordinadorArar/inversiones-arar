@@ -1,15 +1,6 @@
 import { useState } from "react";
-import {
-  Home,
-  FileText,
-  Users,
-  ChevronDown,
-  BarChart3,
-  DollarSign,
-  Package,
-  ShoppingCart,
-  UserCog,
-} from "lucide-react";
+import { ChevronDown, Home } from "lucide-react";
+import { DynamicIcon } from "lucide-react/dynamic";
 import { Link } from "@inertiajs/react";
 import {
   Sidebar,
@@ -32,29 +23,29 @@ import { cn } from "@/lib/utils";
 const menuItems = [
   {
     title: "Finanzas",
-    icon: DollarSign,
+    icon: "dollar-sign",
     items: [
-      { title: "Contabilidad", url: "/dashboard/contabilidad", icon: FileText },
-      { title: "Reportes", url: "/dashboard/reportes", icon: BarChart3 },
+      { title: "Contabilidad", url: "/dashboard/contabilidad", icon: "file-text" },
+      { title: "Reportes", url: "/dashboard/reportes", icon: "bar-chart-3" },
     ],
   },
   {
     title: "Recursos",
-    icon: Package,
+    icon: "package",
     items: [
-      { title: "Inventario", url: "/dashboard/inventario", icon: Package },
-      { title: "Compras", url: "/dashboard/compras", icon: ShoppingCart },
+      { title: "Inventario", url: "/dashboard/inventario", icon: "package" },
+      { title: "Compras", url: "/dashboard/compras", icon: "shopping-cart" },
     ],
   },
   {
     title: "Equipo",
     url: "/dashboard/equipo",
-    icon: Users,
+    icon: "users",
   },
   {
     title: "Administración Web",
     url: "/dashboard/configuracion",
-    icon: UserCog,
+    icon: "user-cog",
   },
 ];
 
@@ -121,7 +112,7 @@ export function DashboardSidebar() {
                     >
                       <CollapsibleTrigger asChild>
                         <SidebarMenuButton className="w-full transition-all duration-300 hover:bg-primary/10 data-[state=open]:bg-primary/5">
-                          <item.icon className="h-4 w-4" />
+                          <DynamicIcon name={item.icon} className="h-4 w-4" />
                           {!collapsed && (
                             <>
                               <span className="flex-1 font-medium">{item.title}</span>
@@ -149,7 +140,7 @@ export function DashboardSidebar() {
                                     : "hover:bg-muted pl-4"
                                 )}
                               >
-                                <subItem.icon className="h-4 w-4" />
+                                <DynamicIcon name={subItem.icon} className="h-4 w-4" />
                                 <span>{subItem.title}</span>
                               </Link>
                             </SidebarMenuButton>
@@ -168,7 +159,7 @@ export function DashboardSidebar() {
                             : "hover:bg-muted"
                         )}
                       >
-                        <item.icon className="h-4 w-4" />
+                        <DynamicIcon name={item.icon} className="h-4 w-4" />
                         {!collapsed && <span className="font-medium">{item.title}</span>}
                       </Link>
                     </SidebarMenuButton>
@@ -178,6 +169,7 @@ export function DashboardSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
       </SidebarContent>
     </Sidebar>
   );

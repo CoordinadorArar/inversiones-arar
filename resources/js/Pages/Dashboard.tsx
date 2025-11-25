@@ -1,23 +1,20 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/Components/ui/badge";
 import { Button } from "@/Components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DashboardLayout } from "@/Layouts/DashboardLayout";
 import { Head } from "@inertiajs/react";
-import { BarChart3, Users, DollarSign, TrendingUp, Calendar, ChevronUp, ChevronDown, FileText, CalendarIcon, Cake } from "lucide-react";
+import {  DollarSign, ChevronUp, ChevronDown, FileText, CalendarIcon, Cake } from "lucide-react";
 import { useState } from "react";
 
 export default function Dashboard() {
 
   const [showAllDocs, setShowAllDocs] = useState(false);
-  const [date, setDate] = useState<Date | undefined>(new Date());
 
   const documentos = [
     { nombre: "Reglamento interno", tipo: "PDF", fecha: "reatens" },
