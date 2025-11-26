@@ -3,10 +3,10 @@ import UpdatePasswordForm from './Partials/UpdatePasswordForm';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm';
 import { DashboardLayout } from '@/Layouts/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { User, Mail, Briefcase, Calendar, Phone, MapPin, Building2, Shield } from 'lucide-react';
+import { User, Mail, Briefcase, Calendar, Phone, MapPin, Building2, Shield, Award } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { formatPhoneNumberCO, formatToSpanishDate } from '@/lib/formatUtils';
+import { calcularAntiguedadExacta, formatPhoneNumberCO, formatToSpanishDate } from '@/lib/formatUtils';
 
 export default function Edit({ auth: { user: { datos_completos, numero_documento } } }) {
 
@@ -22,31 +22,49 @@ export default function Edit({ auth: { user: { datos_completos, numero_documento
             <div className="space-y-6">
                 {/* Header del Perfil */}
                 <Card>
-                    <CardContent className="py-6">
-                        <div className="flex flex-col sm:flex-row items-center gap-6">
-                            {/* Avatar */}
-                            <Avatar className="h-24 w-24 border-4 border-primary/10">
-                                <AvatarFallback className="bg-primary/10 text-primary text-3xl font-bold">
-                                    {(nombreCorto.split(" ")[0].charAt(0) + nombreCorto.split(" ")[1].charAt(0)).toUpperCase()}
-                                </AvatarFallback>
-                            </Avatar>
+                    <CardContent className="py-5">
+                        <div>
 
-                            {/* Info Principal */}
-                            <div className="flex-1 text-center sm:text-left">
-                                <h2 className="text-2xl font-bold text-foreground capitalize">{nombreCorto}</h2>
-                                <p className="text-muted-foreground mt-1 capitalize">{datos_completos.cargo.toLowerCase()}</p>
-                                <div className="flex flex-wrap gap-2 mt-3 justify-center sm:justify-start">
-                                    <Badge variant="secondary">
-                                        <Building2 className="h-3 w-3 mr-1" />
-                                        Inversiones Arar
-                                    </Badge>
-                                    <Badge variant="outline">
-                                        <Shield className="h-3 w-3 mr-1" />
-                                        Activo
+                            <div className="flex flex-col sm:flex-row items-center gap-6">
+                                {/* Avatar */}
+                                <Avatar className="h-16 w-16 border-4 border-primary/10">
+                                    <AvatarFallback className="bg-primary/10 text-primary text-3xl font-bold">
+                                        {(nombreCorto.split(" ")[0].charAt(0) + nombreCorto.split(" ")[1].charAt(0)).toUpperCase()}
+                                    </AvatarFallback>
+                                </Avatar>
+
+                                {/* Info Principal */}
+                                <div className="flex-1 flex justify-between items-center">
+                                    <div>
+                                        <h2 className="text-2xl font-bold text-foreground capitalize">{nombreCorto}</h2>
+                                        <p className="text-muted-foreground text-sm capitalize">{datos_completos.cargo.toLowerCase()}</p>
+                                    </div>
+
+                                    <Badge variant={'secondary'} className='bg-green-500/20 text-green-700 h-min mt-3 ' >
+                                        <Shield className="h-3 w-3" />
+                                        Cuenta Activa
                                     </Badge>
                                 </div>
                             </div>
+                            <div className='flex justify-between border-t mt-4 pt-3 px-4'>
+                                <div className="text-left">
+                                    <p className="text-xs text-gray-500 mb-1">Ingreso</p>
+                                    <div className="flex items-center gap-1.5 justify-end">
+                                        <Calendar className="h-4 w-4 text-orange-500" />
+                                        <p className="font-medium text-sm text-gray-900">{formatToSpanishDate(datos_completos.fecha_ingreso)}</p>
+                                    </div>
+                                </div>
+
+                                <div className="text-left">
+                                    <p className="text-xs text-gray-500 mb-1">Antigüedad</p>
+                                    <div className="flex items-center gap-1.5 justify-end">
+                                        <Award className="h-4 w-4 text-orange-500" />
+                                        <p className="font-medium text-sm text-gray-900">{calcularAntiguedadExacta(datos_completos.fecha_ingreso)}</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+
                     </CardContent>
                 </Card>
 

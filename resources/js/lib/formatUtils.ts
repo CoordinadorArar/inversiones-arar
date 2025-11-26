@@ -1,7 +1,7 @@
 export function formatToSpanishDate(dateString) {
     // 1. Crear un objeto Date a partir del string ISO "YYYY-MM-DD".
     // JavaScript interpreta correctamente este formato estándar.
-    const dateObj = new Date(dateString);
+    const dateObj = new Date(dateString.split(' ')[0] + 'T00:00:00');
 
     // 2. Usar Intl.DateTimeFormat para formatear la fecha.
     // Especificamos 'es' (español).
@@ -9,7 +9,8 @@ export function formatToSpanishDate(dateString) {
     const options = {
         day: '2-digit',
         month: 'long',
-        year: 'numeric'
+        year: 'numeric',
+        timeZone: 'UTC'
     };
 
     let formattedDate = new Intl.DateTimeFormat('es', options).format(dateObj);
@@ -83,3 +84,46 @@ export function formatLandlinePhoneNumberCO(phoneNumberString) {
   // Si no coincide con ninguno de los formatos esperados, devuelve el original
   return phoneNumberString;
 }
+
+export const calcularAntiguedadExacta = (fechaIngresoString) => {
+    // Convertimos la fecha de ingreso a objeto Date.
+    // Ignoramos la parte de la hora "00:00:00.000" para calcular días completos.
+    const ingreso = new Date(fechaIngresoString.split(' ')[0]);
+    const hoy = new Date();
+
+    let años = hoy.getFullYear() - ingreso.getFullYear();
+    let meses = hoy.getMonth() - ingreso.getMonth();
+    let dias = hoy.getDate() - ingreso.getDate();
+
+    // Ajustar si los días son negativos (la fecha de hoy es anterior al día de ingreso en este mes)
+    if (dias < 0) {
+        meses--;
+        // Calcular los días del mes anterior para añadirlos
+        const mesAnterior = new Date(hoy.getFullYear(), hoy.getMonth() - 1, ingreso.getDate());
+        dias = Math.floor((hoy - mesAnterior) / (1000 * 60 * 60 * 24));
+    }
+
+    // Ajustar si los meses son negativos
+    if (meses < 0) {
+        años--;
+        meses = 12 + meses;
+    }
+
+    // Formatear el resultado en una cadena legible
+    const añosStr = años > 0 ? `${años} año${años !== 1 ? 's' : ''}` : '';
+    const mesesStr = meses > 0 ? `${meses} mes${meses !== 1 ? 'es' : ''}` : '';
+    const diasStr = dias > 0 ? `${dias} día${dias !== 1 ? 's' : ''}` : '';
+
+    const partes = [añosStr, mesesStr, diasStr].filter(Boolean);
+    
+    if (partes.length === 0) return "Menos de 1 día";
+
+    // Unir las partes con comas, o "y" para la última parte si hay más de dos
+    if (partes.length === 3) {
+        return `${partes[0]}, ${partes[1]} y ${partes[2]}`;
+    } else if (partes.length === 2) {
+        return `${partes[0]} y ${partes[1]}`;
+    } else {
+        return partes[0];
+    }
+};
