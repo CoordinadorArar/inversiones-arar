@@ -6,20 +6,37 @@ use App\Models\GestionModulos\Modulo;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
+/**
+ * Seeder para la tabla 'modulos'.
+ * 
+ * Propósito: Poblar módulos iniciales con jerarquía (padres e hijos).
+ * Padres: Categorías principales (ej. "Administración Web"). Hijos: Submódulos (ej. "Empresas").
+ * Asigna `modulo_padre_id` dinámicamente buscando por nombre del padre.
+ * 
+ * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
+ * @version 1.0
+ * @date 2025-11-26
+ */
+
 class ModuloSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * BLOQUE: run - Insertar módulos iniciales.
+     * 
+     * Array $modulos: Padres (sin 'padre') e hijos (con 'padre' para asignar FK).
+     * Busca padre por nombre, asigna ID, usa firstOrCreate para idempotencia.
+     * 
+     * @return void
      */
     public function run(): void
     {
         $modulos = [
-            // Padres
+            // Padres: Módulos principales sin padre.
             [
                 'nombre' => 'Administración Web',
-                'icono' => 'user-cog',
+                'icono' => 'user-cog',  // Ícono para UI.
                 'ruta' => '/administracion-web',
-                'es_padre' => true,
+                'es_padre' => true,  // Marca como padre.
             ],
 
             [
@@ -50,12 +67,12 @@ class ModuloSeeder extends Seeder
                 'es_padre' => true,
             ],
 
-            // Hijos
+            // Hijos: Submódulos con referencia a padre por nombre.
             [
                 'nombre' => 'Empresas',
                 'icono' => 'building-2',
                 'ruta' => '/empresas',
-                'padre' => 'Administración Web',
+                'padre' => 'Administración Web',  // Nombre del padre para asignar FK.
             ],
             [
                 'nombre' => 'Configuración General',
@@ -120,19 +137,20 @@ class ModuloSeeder extends Seeder
             ],
         ];
 
+        // Loop: Procesar cada módulo.
         foreach ($modulos as $item) {
+            $data = $item;  // Copia datos.
 
-            $data = $item;
-
-            // Si tiene padre, lo buscamos por nombre
+            // Si tiene 'padre', buscar módulo padre por nombre y asignar ID.
             if (isset($item['padre'])) {
                 $padre = Modulo::where('nombre', $item['padre'])->first();
-                if (!$padre) continue;
+                if (!$padre) continue;  // Saltar si padre no existe.
 
-                $data['modulo_padre_id'] = $padre->id;
-                unset($data['padre']);
+                $data['modulo_padre_id'] = $padre->id;  // Asignar FK.
+                unset($data['padre']);  // Remover 'padre' del array.
             }
 
+            // Insertar o actualizar si existe (por nombre único).
             Modulo::firstOrCreate(
                 ['nombre' => $item['nombre']],
                 $data

@@ -7,6 +7,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * Modelo Pestana.
+ * 
+ * Propósito: Representar pestañas/subpáginas dentro de módulos (ej. "Crear" en módulo "PQRSD").
+ * Usado para control de acceso a secciones específicas dentro de módulos.
+ * 
+ * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
+ * @version 1.0
+ * @date 2025-11-26
+ */
+
 class Pestana extends Model
 {
     /** @use HasFactory<\Database\Factories\PestanaFactory> */
@@ -14,27 +25,30 @@ class Pestana extends Model
     use HasAuditoria;  // Trait para registrar cambios en auditoría automáticamente.
     use SoftDeletes;   // Soft deletes: marca deleted_at en lugar de eliminar.
 
-    // Tabla específica.
+    // Tabla específica (no usa convención plural).
     protected $table = 'pestanas';
 
     /**
      * Campos mass assignable.
      * 
+     * Incluye FK a módulo, nombre/ruta, permisos_extra JSON.
+     * 
      * @var array<int, string>
      */
     protected $fillable = ['modulo_id', 'nombre', 'ruta', 'permisos_extra'];
 
+    // Casts: Convierte permisos_extra de JSON a array automáticamente.
     protected $casts = [
-        'permisos_extra' => 'array',
+        'permisos_extra' => 'array',  // Facilita manipulación como array en PHP.
     ];
 
     // Deshabilitar timestamps automáticos (usa fecha_creacion/modificacion manuales).
     public $timestamps = false;
 
-    // Campos tratados como fechas.
+    // Campos tratados como fechas (para Carbon).
     protected $dates = [
-        'fecha_creacion',
-        'fecha_modificacion',
-        'deleted_at'
+        'fecha_creacion',     // Fecha de creación.
+        'fecha_modificacion', // Fecha de modificación.
+        'deleted_at'          // Fecha de eliminación suave.
     ];
 }

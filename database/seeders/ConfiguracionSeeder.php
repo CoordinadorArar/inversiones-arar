@@ -10,10 +10,16 @@ class ConfiguracionSeeder extends Seeder
 {
     /**
      * Run the database seeds.
+     * 
+     * Inserta configs predeterminadas para contacto, RRSS e imágenes.
+     * Usa firstOrCreate para evitar duplicados por 'nombre'.
+     * 
+     * @return void
      */
     public function run(): void
     {
-        $estados = [
+        $configs = [
+            // Configs de contacto (email, teléfono, ubicación).
             [
                 'nombre' => 'contact.email',
                 'valor' => 'asistente@inversionesarar.com'
@@ -34,34 +40,37 @@ class ConfiguracionSeeder extends Seeder
                 'nombre' => 'contact.ubicacion.url',
                 'valor' => 'https://maps.app.goo.gl/mm8MPxAzZs99BV1D8'
             ],
+            // Configs de RRSS (algunas null para placeholders).
             [
                 'nombre' => 'rrss.instagram',
-                'valor' => null
+                'valor' => null  
             ],
             [
                 'nombre' => 'rrss.facebook',
-                'valor' => null
+                'valor' => null 
             ],
             [
-                'nombre' => 'rrss.x',
-                'valor' => null
+                'nombre' => 'rrss.x',  // X (anteriormente Twitter).
+                'valor' => null 
             ],
             [
                 'nombre' => 'rrss.linkedin',
                 'valor' => 'https://co.linkedin.com/company/inversiones-arar'
             ],
+            // Configs de imágenes (logos/iconos).
             [
                 'nombre' => 'image.icono',
-                'valor' => 'storage/identidad/logo-arar.png'
+                'valor' => 'storage/identidad/logo-arar.png'  // Ícono pequeño.
             ],
             [
                 'nombre' => 'image.logo',
-                'valor' => 'storage/identidad/logo-arar.png'
+                'valor' => 'storage/identidad/logo-arar.png'  // Logo completo.
             ],
         ];
 
-        foreach ($estados as $estado) {
-            Configuracion::firstOrCreate(['nombre' => $estado['nombre']], $estado);
+        // Inserta cada config, evitando duplicados.
+        foreach ($configs as $config) {
+            Configuracion::firstOrCreate(['nombre' => $config['nombre']], $config);
         }
     }
 }

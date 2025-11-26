@@ -5,32 +5,58 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * Migración para crear la tabla 'modulos'.
+ * 
+ * Define módulos del sistema (ej. "Usuarios", "PQRSD") con permisos básicos CRUD implícitos
+ * y permisos_extra específicos (JSON, ej. ["aprobar", "asignar"]). Soporta jerarquía (padre/hijo).
+ * Incluye soft deletes y timestamps manuales.
+ * 
+ * Propósito: Base para sistema de permisos por módulo, asignables a roles/usuarios.
+ * 
+ * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
+ * @version 1.0
+ * @date 2025-11-26
+ */
+
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * BLOQUE: up - Crear tabla 'modulos'.
+     * 
+     * Campos para estructura modular: nombre único, icono, ruta, jerarquía, permisos_extra JSON.
+     * Permisos básicos (ver, editar, actualizar, eliminar) se asumen implícitos para cada módulo.
+     * 
+     * @return void
      */
     public function up(): void
     {
         Schema::create('modulos', function (Blueprint $table) {
-            $table->id();
-            $table->string('nombre', 50)->unique();
-            $table->string('icono', 50);
-            $table->string('ruta', 255)->unique();
-            $table->boolean('es_padre')->default(false);
-            $table->unsignedBigInteger('modulo_padre_id')->nullable();
+            $table->id();  // Clave primaria.
+            
+            $table->string('nombre', 50)->unique();  // Nombre del módulo (único, ej. "PQRSD").
+            $table->string('icono', 50);             // Ícono para UI (ej. "shield").
+            $table->string('ruta', 255)->unique();   // Ruta base del módulo (única, ej. "/pqrsd").
+            
+            $table->boolean('es_padre')->default(false);  // Si es módulo padre (para jerarquía).
+            $table->unsignedBigInteger('modulo_padre_id')->nullable();  // FK a módulo padre (nullable).
 
+            // JSON para permisos específicos del módulo (ej. ["aprobar", "asignar"]).
+            // - Nullable: Módulos sin extras usan solo CRUD básico.
+            // - Propósito: Flexibilidad para acciones custom sin hardcodear en código.
             $table->json('permisos_extra')->nullable();
 
-            $table->dateTime('fecha_creacion')->useCurrent();         // Timestamp creación.
-            $table->dateTime('fecha_modificacion')->useCurrent()->useCurrentOnUpdate(); // Timestamp modificación.
+            $table->dateTime('fecha_creacion')->useCurrent();  // Timestamp creación.
+            $table->dateTime('fecha_modificacion')->useCurrent()->useCurrentOnUpdate();  // Timestamp modificación.
 
-            $table->softDeletes(); // Soft deletes.
+            $table->softDeletes();  // Soft deletes.
         });
     }
 
     /**
-     * Reverse the migrations.
+     * BLOQUE: down - Eliminar tabla 'modulos'.
+     * 
+     * @return void
      */
     public function down(): void
     {

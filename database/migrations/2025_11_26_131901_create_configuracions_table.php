@@ -4,25 +4,46 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * Migración para crear la tabla 'configuraciones'.
+ * 
+ * Almacena configuraciones globales clave-valor (ej. "max_usuarios" -> "100").
+ * Sin FK externas, enfocada en settings simples.
+ * Incluye timestamps manuales para creación/modificación.
+ * 
+ * Propósito: Configuraciones dinámicas para la app, editables desde admin.
+ * 
+ * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
+ * @version 1.0
+ * @date 2025-11-26
+ */
+
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * BLOQUE: up - Crear tabla 'configuraciones'.
+     * 
+     * Campos para configuraciones: nombre único, valor opcional, timestamps.
+     * 
+     * @return void
      */
     public function up(): void
     {
         Schema::create('configuraciones', function (Blueprint $table) {
-            $table->id();
-            $table->string('nombre', 50)->unique();
-            $table->string('valor', 255)->nullable();
+            $table->id();  // Clave primaria auto-incremental.
+            
+            $table->string('nombre', 50)->unique();  // Nombre único de la config (ej. "sitio_activo"). Longitud limitada para evitar nombres largos.
+            $table->string('valor', 255)->nullable(); // Valor de la config (ej. "true"). Nullable para configs sin valor inicial.
 
-            $table->dateTime('fecha_creacion')->useCurrent();         // Timestamp creación.
-            $table->dateTime('fecha_modificacion')->useCurrent()->useCurrentOnUpdate(); // Timestamp modificación.
+            $table->dateTime('fecha_creacion')->useCurrent();         // Timestamp creación (se setea automáticamente al insertar).
+            $table->dateTime('fecha_modificacion')->useCurrent()->useCurrentOnUpdate(); // Timestamp modificación (se actualiza en cada update).
         });
     }
 
     /**
-     * Reverse the migrations.
+     * BLOQUE: down - Eliminar tabla 'configuraciones'.
+     * 
+     * @return void
      */
     public function down(): void
     {
