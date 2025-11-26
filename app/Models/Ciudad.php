@@ -13,4 +13,13 @@ class Ciudad extends Model
     protected $table = 't013_mm_ciudades'; 
 
     protected $primaryKey = 'f013_id';
+
+    public function departamento()
+    {
+        return $this->belongsTo(
+            Departamento::class, 
+            'f013_id_depto', 
+            'f012_id'
+        );
+    }
 }

@@ -34,9 +34,9 @@ interface MenuItem {
 
 interface MenuParent {
   title: string;
-  url?: string; // Opcional si no tiene link directo
+  url: string;
   icon: string;
-  items?: MenuItem[]; // Opcional, para items sin subitems
+  items?: MenuItem[]; 
 }
 
 // Props del componente con tipado

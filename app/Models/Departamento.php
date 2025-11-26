@@ -13,4 +13,13 @@ class Departamento extends Model
     protected $table = 't012_mm_deptos'; 
 
     protected $primaryKey = 'f012_id';
+
+    public function ciudades()
+    {
+        return $this->hasMany(
+            Ciudad::class, 
+            'f013_id_depto',   
+            'f012_id'
+        );
+    }
 }

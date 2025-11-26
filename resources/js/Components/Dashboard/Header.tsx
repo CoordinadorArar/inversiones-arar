@@ -21,7 +21,10 @@ import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
 // Componente funcional DashboardHeader.
-export function DashboardHeader({ title }) {
+export function DashboardHeader({ title, user:{email, datos_completos} }) {
+
+  const nombre = (datos_completos.nombres.split(" ")[0] + " " + datos_completos.apellidos.split(" ")[0]).toLowerCase();
+
   // Render: Header sticky con border bottom, bg con backdrop blur.
   return (
     <header className="h-14 border-b bg-background backdrop-blur supports-[backdrop-filter]:bg-background/60 flex-shrink-0 sticky top-0 z-50">
@@ -69,13 +72,13 @@ export function DashboardHeader({ title }) {
             </DropdownMenuTrigger>
 
             {/* Contenido del dropdown: Align end, bg con backdrop. */}
-            <DropdownMenuContent className="w-56 p-2 bg-background/95 backdrop-blur-sm" align="end">
+            <DropdownMenuContent className="w-min p-2 bg-background/95 backdrop-blur-sm" align="end">
               {/* Label con info de usuario. */}
               <DropdownMenuLabel>
                 <div className="flex flex-col py-1 px-2">
-                  <p className="text-sm font-semibold">Usuario Demo</p>
+                  <p className="text-sm font-semibold capitalize">{nombre}</p>
                   <p className="text-xs text-muted-foreground">
-                    usuario@empresa.com
+                    {email}
                   </p>
                 </div>
                 <DropdownMenuSeparator />  {/* Separador. */}
@@ -83,7 +86,7 @@ export function DashboardHeader({ title }) {
 
               {/* Item: Mi Perfil - Link a profile.edit. */}
               <DropdownMenuItem asChild>
-                <Link href={route('profile.edit')} className="flex items-center cursor-pointer py-2 hover:bg-primary/5 transition-colors">
+                <Link href={route('profile.edit')} className="flex items-center cursor-pointer py-2 px-4 hover:bg-primary/5 transition-colors">
                   <User className="mr-3 h-4 w-4 text-primary" />  {/* Ícono User. */}
                   <span>Mi Perfil</span>
                 </Link>
@@ -93,7 +96,7 @@ export function DashboardHeader({ title }) {
               <DropdownMenuItem asChild className="hover:!bg-destructive/10">
                 <Link
                   href={route("logout")}
-                  className="flex items-center cursor-pointer text-destructive focus:text-destructive py-2 transition-colors"
+                  className="flex items-center cursor-pointer text-destructive focus:text-destructive py-2 px-4 transition-colors"
                 >
                   <LogOut className="mr-3 h-4 w-4 text-destructive" />  {/* Ícono LogOut. */}
                   <span className="font-medium">Cerrar Sesión</span>

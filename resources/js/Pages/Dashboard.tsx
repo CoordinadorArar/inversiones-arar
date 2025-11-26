@@ -12,9 +12,11 @@ import { Head } from "@inertiajs/react";
 import {  DollarSign, ChevronUp, ChevronDown, FileText, CalendarIcon, Cake } from "lucide-react";
 import { useState } from "react";
 
-export default function Dashboard() {
+export default function Dashboard({auth: { user: { datos_completos }}}) {
 
   const [showAllDocs, setShowAllDocs] = useState(false);
+
+  const nombreCorto = (datos_completos.nombres.split(" ")[0] + " " + datos_completos.apellidos.split(" ")[0]).toLowerCase();
 
   const documentos = [
     { nombre: "Reglamento interno", tipo: "PDF", fecha: "reatens" },
@@ -54,15 +56,15 @@ export default function Dashboard() {
                     <Avatar className="h-14 w-14">
                       <AvatarImage src="" alt="Usuario" />
                       <AvatarFallback className="bg-primary/10 text-primary text-2xl font-bold">
-                        U
+                        {(nombreCorto.split(" ")[0].charAt(0) + nombreCorto.split(" ")[1].charAt(0)).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <div className="absolute bottom-0 right-0 h-4 w-4 bg-green-500 rounded-full border-2 border-white"></div>
                   </div>
 
                   <div className="flex-1">
-                    <h2 className="text-3xl font-bold">Bienvenido, Usuario</h2>
-                    <p className="text-muted-foreground">Cargo del Usuario</p>
+                    <h2 className="text-3xl font-bold capitalize">Bienvenid@, {nombreCorto.split(" ")[0]}</h2>
+                    <p className="text-muted-foreground capitalize">{datos_completos.cargo.toLowerCase()}</p>
                     <p className="text-sm mt-2">
                       <span className="text-muted-foreground">Próximo evento:</span>{" "}
                       <span className="font-medium">Reunión de equipo</span> el 15 de abril

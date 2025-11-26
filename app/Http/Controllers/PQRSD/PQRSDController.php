@@ -64,7 +64,7 @@ class PQRSDController extends Controller
                     ->where('permitir_pqrsd', true)   // solo las que deben mostrarse
                     ->orderBy('razon_social')
                     ->get();
-            },
+            },        
         ]);
     }
 
@@ -166,10 +166,7 @@ class PQRSDController extends Controller
             if (!$esAnonimo) {
                 $tipoId = TipoIdentificacion::find($validated['tipoId'])->abreviatura;
                 $departamento = Departamento::find($validated['dpto'])->f012_descripcion;
-                $ciudad = Ciudad::where('f013_id_depto', $validated['dpto'])
-                    ->where('f013_id', $validated['ciudad'])
-                    ->first()
-                    ->f013_descripcion;
+                $ciudad = Departamento::find($validated['dpto'])->ciudades()->find($validated['ciudad'])->f013_descripcion;
                 $nombreCompleto = trim($validated['nombre'] . ' ' . $validated['apellido']);
             }
 

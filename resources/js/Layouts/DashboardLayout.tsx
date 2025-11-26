@@ -37,24 +37,26 @@ interface MenuItem {
 // Interface para padres del menu (con subitems).
 interface MenuParent {
   title: string;  // Título del grupo padre.
-  url: string | null;  // URL del padre (nullable).
+  url: string;  // URL del padre.
   icon: string;  // Ícono del padre.
-  items: MenuItem[];  // Array de subitems.
+  items?: MenuItem[];  // Array de subitems.
 }
 
-// Extiende PageProps para incluir menu compartido desde Laravel.
-interface PagePropsSidebar extends PageProps {
+// Extiende PageProps.
+interface PagePropsDashboard extends PageProps {
   menu: MenuParent[];  // Menu dinámico desde HandleInertiaRequests.
 }
 
 // Componente funcional DashboardLayout.
 export function DashboardLayout({ children, header }: DashboardLayoutProps) {
   // Extraer menu de props compartidas via Inertia (ej. desde middleware).
-  const menu: MenuParent[] = usePage<PagePropsSidebar>().props.menu;
+  const menu: MenuParent[] = usePage<PagePropsDashboard>().props.menu;
 
+  const user = usePage().props.auth.user;
+  
   // Estado para grupos abiertos en sidebar (inicia con primer grupo que tenga items).
   const [openGroups, setOpenGroups] = useState<string[]>([
-    menu.find(item => item.items?.length > 0)?.title ?? ''  // Abre primer grupo con subitems.
+    menu.find(item => (item.items ?? []).length > 0)?.title ?? ''  // Abre primer grupo con subitems.
   ]);
 
   // Render: SidebarProvider envuelve todo para estado global.
@@ -72,10 +74,10 @@ export function DashboardLayout({ children, header }: DashboardLayoutProps) {
         {/* Contenedor principal: flex col. */}
         <div className="flex flex-col">
           {/* Header: Pasa título. */}
-          <DashboardHeader title={header} />
+          <DashboardHeader title={header} user={user}/>
 
           {/* Main: Contenido principal con padding, bg muted, shadow inset. */}
-          <main className="flex-1 p-6 bg-muted/40 shadow-[inset_2px_2px_4px_0_rgb(0_0_0_/_0.05)]">
+          <main className="flex-1 p-6 bg-muted/60 shadow-[inset_2px_2px_4px_0_rgb(0_0_0_/_0.05)]">
             {/* Contenedor max-width centrado. */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               {children}  {/* Renderiza children (páginas del dashboard). */}

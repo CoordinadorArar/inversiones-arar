@@ -150,6 +150,15 @@ class LoginRequest extends FormRequest
                 ]);
             }
 
+            $usuarioContrato = ContratoPropietario::where('f200_id', $this->numero_documento)->first();
+
+            // Si no tiene contrato activo, error.
+            if (!$usuarioContrato->hasContratoActivo()) {
+                throw ValidationException::withMessages([
+                    'numero_documento' => 'Lo sentimos, pero ya no formas parte de nuestro equipo.',
+                ]);
+            }
+
             // Si bloqueado o >=3 intentos, error.
             if ($usuario->bloqueado_at || $usuario->intentos_fallidos >= 3) {
                 throw ValidationException::withMessages([

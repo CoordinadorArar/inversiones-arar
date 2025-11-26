@@ -6,8 +6,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { User, Mail, Briefcase, Calendar, Phone, MapPin, Building2, Shield } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { formatPhoneNumberCO, formatToSpanishDate } from '@/lib/formatUtils';
 
-export default function Edit({ mustVerifyEmail, status }) {
+export default function Edit({ auth: { user: { datos_completos, numero_documento } } }) {
+
+    const nombreCorto = (datos_completos.nombres.split(" ")[0] + " " + datos_completos.apellidos.split(" ")[0]).toLowerCase();
+    const nombreCompleto = (datos_completos.nombres + " " + datos_completos.apellidos).toLowerCase();
+
+    const formatter = new Intl.NumberFormat('es-ES');
+
     return (
         <>
             <Head title="Perfil" />
@@ -19,15 +26,15 @@ export default function Edit({ mustVerifyEmail, status }) {
                         <div className="flex flex-col sm:flex-row items-center gap-6">
                             {/* Avatar */}
                             <Avatar className="h-24 w-24 border-4 border-primary/10">
-                                <AvatarFallback className="bg-primary/10 text-primary text-2xl font-bold">
-                                    NA
+                                <AvatarFallback className="bg-primary/10 text-primary text-3xl font-bold">
+                                    {(nombreCorto.split(" ")[0].charAt(0) + nombreCorto.split(" ")[1].charAt(0)).toUpperCase()}
                                 </AvatarFallback>
                             </Avatar>
 
                             {/* Info Principal */}
                             <div className="flex-1 text-center sm:text-left">
-                                <h2 className="text-2xl font-bold text-foreground">Nombre Apellido</h2>
-                                <p className="text-muted-foreground mt-1">Nombre del Cargo</p>
+                                <h2 className="text-2xl font-bold text-foreground capitalize">{nombreCorto}</h2>
+                                <p className="text-muted-foreground mt-1 capitalize">{datos_completos.cargo.toLowerCase()}</p>
                                 <div className="flex flex-wrap gap-2 mt-3 justify-center sm:justify-start">
                                     <Badge variant="secondary">
                                         <Building2 className="h-3 w-3 mr-1" />
@@ -60,19 +67,19 @@ export default function Edit({ mustVerifyEmail, status }) {
                         <CardContent className="space-y-4">
                             <div className="space-y-1">
                                 <p className="text-sm font-medium text-muted-foreground">Nombre Completo</p>
-                                <p className="text-base">Usuario Nomre Completo</p>
+                                <p className="text-base capitalize">{nombreCompleto}</p>
                             </div>
 
                             <div className="space-y-1">
                                 <p className="text-sm font-medium text-muted-foreground">Documento de Identidad</p>
-                                <p className="text-base">CC 1.098.765.432</p>
+                                <p className="text-base">{formatter.format(numero_documento)}</p>
                             </div>
 
                             <div className="space-y-1">
                                 <p className="text-sm font-medium text-muted-foreground">Fecha de Nacimiento</p>
                                 <div className="flex items-center gap-2">
                                     <Calendar className="h-4 w-4 text-primary" />
-                                    <p className="text-base">15 de Marzo, 1992</p>
+                                    <p className="text-base">{formatToSpanishDate(datos_completos.fecha_nacimiento)}</p>
                                 </div>
                             </div>
                         </CardContent>
@@ -91,10 +98,10 @@ export default function Edit({ mustVerifyEmail, status }) {
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-1">
-                                <p className="text-sm font-medium text-muted-foreground">Correo Electrónico</p>
+                                <p className="text-sm font-medium text-muted-foreground">Correo Electrónico Personal</p>
                                 <div className="flex items-center gap-2">
                                     <Mail className="h-4 w-4 text-primary" />
-                                    <p className="text-base">usuario@inversionesarar.com</p>
+                                    <p className="text-base">{datos_completos.email_personal}</p>
                                 </div>
                             </div>
 
@@ -102,15 +109,20 @@ export default function Edit({ mustVerifyEmail, status }) {
                                 <p className="text-sm font-medium text-muted-foreground">Teléfono</p>
                                 <div className="flex items-center gap-2">
                                     <Phone className="h-4 w-4 text-primary" />
-                                    <p className="text-base">+57 312 456 789</p>
+                                    <p className="text-base">{formatPhoneNumberCO(datos_completos.telefono)}</p>
                                 </div>
                             </div>
 
                             <div className="space-y-1">
                                 <p className="text-sm font-medium text-muted-foreground">Dirección</p>
-                                <div className="flex items-center gap-2">
-                                    <MapPin className="h-4 w-4 text-primary" />
-                                    <p className="text-base">Bucaramanga, Santander</p>
+                                <div className="flex items-start gap-2">
+                                    <MapPin className="h-4 w-4 text-primary mt-2" />
+                                    <p className="text-base leading-tight">
+                                        {datos_completos.direccion} <br />
+                                        <strong className='text-muted-foreground font-semibold'>
+                                            {datos_completos.ciudad}, {datos_completos.departamento}
+                                        </strong>
+                                    </p>
                                 </div>
                             </div>
                         </CardContent>
@@ -125,10 +137,7 @@ export default function Edit({ mustVerifyEmail, status }) {
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <UpdateProfileInformationForm
-                                mustVerifyEmail={mustVerifyEmail}
-                                status={status}
-                            />
+                            <UpdateProfileInformationForm />
                         </CardContent>
                     </Card>
                     {/* Cambiar Contraseña */}
@@ -152,5 +161,5 @@ export default function Edit({ mustVerifyEmail, status }) {
 }
 
 Edit.layout = (page) => (
-  <DashboardLayout header='Perfil de Usuario' children={page} />
+    <DashboardLayout header='Perfil de Usuario' children={page} />
 );
