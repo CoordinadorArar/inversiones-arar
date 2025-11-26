@@ -63,6 +63,12 @@ class ModuloSeeder extends Seeder
                 'ruta' => '/configuracion-general',
                 'padre' => 'Administración Web',
             ],
+            [
+                'nombre' => 'Tablas Maestras',
+                'icono' => 'layout-list',
+                'ruta' => '/tablas-maestras',
+                'padre' => 'Administración Web',
+            ],
 
             [
                 'nombre' => 'Usuarios',

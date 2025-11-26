@@ -37,5 +37,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call(ModuloSeeder::class);
         $this->call(PestanaSeeder::class);
+                
+        $this->call(ConfiguracionSeeder::class);
     }
 }

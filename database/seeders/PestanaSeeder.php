@@ -40,6 +40,23 @@ class PestanaSeeder extends Seeder
             'ruta'   => '/redes-sociales'
         ],
 
+        // Administración Web → Catálogos
+        [
+            'modulo' => 'Catálogos',
+            'nombre' => 'Tipos de Identificaciones',
+            'ruta'   => '/tipos-identificaciones'
+        ],
+        [
+            'modulo' => 'Catálogos',
+            'nombre' => 'Tipos de PQRSD',
+            'ruta'   => '/tipos-pqrsd'
+        ],
+        [
+            'modulo' => 'Catálogos',
+            'nombre' => 'Estados de PQRSD',
+            'ruta'   => '/estados-pqrsd'
+        ],
+
 
         // Seguridad y Acceso → Usuarios
         [
