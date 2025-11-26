@@ -28,6 +28,19 @@ class PestanaSeeder extends Seeder
             'ruta'   => '/gestion'
         ],
 
+        // Administración Web → Configuración General
+        [
+            'modulo' => 'Configuración General',
+            'nombre' => 'Información Corporativa',
+            'ruta'   => '/informacin-corporativa'
+        ],
+        [
+            'modulo' => 'Configuración General',
+            'nombre' => 'Redes Sociales',
+            'ruta'   => '/redes-sociales'
+        ],
+
+
         // Seguridad y Acceso → Usuarios
         [
             'modulo' => 'Usuarios',

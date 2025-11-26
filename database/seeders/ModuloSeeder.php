@@ -57,6 +57,12 @@ class ModuloSeeder extends Seeder
                 'ruta' => '/empresas',
                 'padre' => 'Administración Web',
             ],
+            [
+                'nombre' => 'Configuración General',
+                'icono' => 'settings',
+                'ruta' => '/configuracion-general',
+                'padre' => 'Administración Web',
+            ],
 
             [
                 'nombre' => 'Usuarios',

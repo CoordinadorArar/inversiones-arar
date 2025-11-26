@@ -91,21 +91,27 @@ class PQRSDController extends Controller
         try {
             DB::beginTransaction();
 
+            $esAnonimo = $request->boolean('esAnonimo', false);
+
             // Preparar datos para guardar en BD
             $pqrsdData = [
                 'empresa_web_id' => ($validated['tipoPqrs'] == 5) ? $validated['empresa'] :  1, // Si es denuncia, usar empresa seleccionada; si no, usar id 1 (Inversiones Arar)
                 'tipo_pqrs_id' => $validated['tipoPqrs'],
-                'anonimo' => $request->boolean('esAnonimo', false),
-                'nombre' => $validated['nombre'] ?? null,  // Cambiar a nullable
-                'apellido' => $validated['apellido'] ?? null,
-                'tipo_identificacion_id' => $validated['tipoId'] ?? null,
-                'numero_identificacion' => $validated['numId'] ?? null,
-                'correo' => $validated['correo'] ?? null,
-                'telefono' => $validated['telefono'] ?? null,
-                'departamento_codigo' => $validated['dpto'] ?? null,
-                'ciudad_codigo' => $validated['ciudad'] ?? null,
-                'direccion' => $validated['direccion'] ?? null,
-                'relacion' => $validated['relacion'] ?? null,
+                'anonimo' => $esAnonimo,
+                // Si no es anonimo, se agrega la información personal del usuario
+                ...(!$esAnonimo ? [
+                    'nombre' => $validated['nombre'],
+                    'apellido' => $validated['apellido'],
+                    'tipo_identificacion_id' => $validated['tipoId'],
+                    'numero_identificacion' => $validated['numId'],
+                    'correo' => $validated['correo'],
+                    'telefono' => $validated['telefono'],
+                    'departamento_codigo' => $validated['dpto'],
+                    'ciudad_codigo' => $validated['ciudad'],
+                    'direccion' => $validated['direccion'],
+                    'relacion' => $validated['relacion'],
+
+                ] : []),
                 'descripcion' => $validated['mensaje'],
                 'estado_id' => 1,
             ];
@@ -115,7 +121,6 @@ class PQRSDController extends Controller
 
             // Generar radicado (ID con padding).
             $radicado = str_pad($pqrsd->id, 6, '0', STR_PAD_LEFT);
-            $esAnonimo = $request->boolean('esAnonimo', false);
 
             $attachments = [];
 
@@ -146,7 +151,7 @@ class PQRSDController extends Controller
                     ];
                 }
 
-                // Actualizar PQR con adjuntos y directorio.
+                // Actualizar PQRS con adjuntos y directorio.
                 $pqrsd->update([
                     'adjuntos' => json_encode($attachments),
                     'directorio' => $directoryPath,

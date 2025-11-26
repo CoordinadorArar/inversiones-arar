@@ -91,14 +91,36 @@ Route::middleware('public')->group(function () {
 
 
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
 Route::middleware('auth')->group(function () {
+
+    Route::get('/dashboard', fn() => Inertia::render('Dashboard'))->name('dashboard');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // EJEMPLO
+
+    // Route::prefix('gh')->name('gh.')->group(function () {  // MODULO NIVEL PADRE
+
+    //     Route::prefix('contratos')->name('contratos.')->group(function () { // MODULO NIVEL 2
+
+    //         Route::prefix('tipos')->name('tipos.')->group(function () { // PESTAÑA 
+
+    //             Route::get('/', fn() => Inertia::render('GH/Contratos/Tipos/Index'))
+    //                 ->name('index');
+
+    //             Route::get('/crear', fn() => Inertia::render('GH/Contratos/Tipos/Create'))
+    //                 ->name('crear'); // Nivel 4
+
+    //             Route::get(
+    //                 '/{id}/editar',
+    //                 fn($id) =>
+    //                 Inertia::render('GH/Contratos/Tipos/Edit', ['id' => $id])
+    //             )->name('editar'); // Nivel 4
+    //         });
+    //     });
+    // });
 });
+
 
 require __DIR__ . '/auth.php';

@@ -38,17 +38,20 @@ return new class extends Migration
             $table->id();
 
             // Información de la PQRSD
-            $table->foreignId('empresa_web_id')                
+            $table->foreignId('empresa_web_id')
                 ->constrained('empresas_web');
 
-            $table->foreignId('tipo_pqrs_id')                
+            $table->foreignId('tipo_pqrs_id')
                 ->constrained('tipos_pqrs');
+
+            // Define si es anonimo
+            $table->boolean('anonimo')->default(false);
 
             // Datos personales del solicitante
             $table->string('nombre', 50)->nullable();
             $table->string('apellido', 50)->nullable();
 
-            $table->foreignId('tipo_identificacion_id')->nullable()                
+            $table->foreignId('tipo_identificacion_id')->nullable()
                 ->constrained('tipos_identificaciones');
 
             $table->string('numero_identificacion', 15)->nullable();
@@ -61,15 +64,13 @@ return new class extends Migration
             $table->string('direccion', 100)->nullable();
             $table->string('relacion', 50)->nullable();
 
-            $table->boolean('anonimo')->default(false);
-
             // Descripción y archivos
             $table->text('descripcion');
             $table->json('adjuntos')->nullable();
             $table->string('directorio', 255)->nullable();
 
             // Estado y seguimiento            
-            $table->foreignId('estado_id')                
+            $table->foreignId('estado_id')
                 ->constrained('estados_pqrs');
 
             $table->foreignId('usuario_asignado_id')
@@ -79,7 +80,7 @@ return new class extends Migration
             $table->dateTime('fecha_creacion')->useCurrent();
             $table->dateTime('fecha_modificacion')->useCurrent()->useCurrentOnUpdate();
             $table->dateTime('fecha_finalizacion')->nullable();
-            
+
             $table->softDeletes();
 
             // Índices para búsquedas            
