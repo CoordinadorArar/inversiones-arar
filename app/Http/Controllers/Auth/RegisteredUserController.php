@@ -71,6 +71,7 @@ class RegisteredUserController extends Controller
                     'string',
                     'lowercase',
                     'email',
+                    'max:255',
                     function ($attribute, $value, $fail) use ($dominiosPermitidos) {
                         // Extrae dominio del email.
                         $domain = substr(strrchr($value, "@"), 1);
@@ -92,6 +93,7 @@ class RegisteredUserController extends Controller
                 'numero_documento.regex' => 'El número de documento solo debe contener números',
                 'email.required' => 'El correo electrónico es obligatorio.',
                 'email.email' => 'Debe ingresar un correo electrónico válido.',
+                'email.max' => 'El correo debe tener máximo 255 caracteres.',
                 'password.required' => 'La contraseña es obligatoria.',
                 'password.confirmed' => 'Las contraseñas no coinciden.',
                 'password.min' => 'La contraseña debe tener al menos 8 caracteres.',

@@ -12,7 +12,7 @@
  * 
  * @author Yariangel Aray - Documentado y mejorado para colapsado.
  * @version 1.0
- * @date 2024-10-02
+ * @date 2025-11-25
  */
 
 import { ChevronDown, ChevronLeft, ChevronRight, Home } from "lucide-react"; // Agregado ChevronRight para indicador
@@ -68,6 +68,12 @@ export function DashboardSidebar({ menu, openGroups, setOpenGroups }: DashboardS
   const currentRoute = route().current() || "";
   const isActive = (url: string) => currentRoute === url;
 
+  // Helper: Verifica si algún hijo del item padre está activo
+  const hasActiveChild = (item: MenuParent): boolean => {
+    if (!item.items) return false;
+    return item.items.some(subItem => isActive(`${item.url}${subItem.url}`));
+  };
+
   // Render: Sidebar con collapsible="icon".
   return (
     <Sidebar collapsible="icon">
@@ -101,7 +107,7 @@ export function DashboardSidebar({ menu, openGroups, setOpenGroups }: DashboardS
                   className={cn(
                     "flex items-center gap-2 transition-all duration-300 rounded-md",
                     isActive('dashboard')
-                      ? `bg-primary/10 text-primary font-medium hover:!text-primary ${!collapsed && "hover:!bg-primary/15 border-r-4 border-primary"}`
+                      ? `bg-primary/10 text-primary font-medium hover:!text-primary hover:!bg-primary/15 ${!collapsed && "border-r-4 border-primary"}`
                       : "hover:bg-muted"
                   )}
                 >
@@ -116,13 +122,20 @@ export function DashboardSidebar({ menu, openGroups, setOpenGroups }: DashboardS
                   {item.items ? (
                     // Si tiene subitems: Comportamiento diferente según colapsado.
                     collapsed ? (
-                      // Colapsado: Usa Popover para mostrar subitems flotantes, con indicador visual.
+                      // Colapsado: Usa Popover (hover trigger) para mostrar subitems flotantes.
                       <Popover
                         open={openPopover === item.title}
                         onOpenChange={(open) => setOpenPopover(open ? item.title : null)}
                       >
                         <PopoverTrigger asChild>
-                          <SidebarMenuButton className="w-full transition-all duration-300 hover:bg-primary/10 rounded-md relative">
+                          {/* Trigger con hover: onMouseEnter abre, onMouseLeave cierra */}
+                          <SidebarMenuButton 
+                            className={cn(
+                              "w-full transition-all duration-300 rounded-md relative",
+                              // Resalta si tiene un hijo activo
+                              hasActiveChild(item) && "bg-primary/5"
+                            )}
+                          >
                             <DynamicIcon name={item.icon} className="h-4 w-4" />                        
                             {/* Indicador visual: ChevronRight que rota cuando el popover está abierto */}
                             <ChevronRight
@@ -139,6 +152,7 @@ export function DashboardSidebar({ menu, openGroups, setOpenGroups }: DashboardS
                           align="start"
                           sideOffset={8}
                           className="w-64 p-2 bg-background/95 backdrop-blur-sm border shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
+                          onMouseLeave={() => setOpenPopover(null)}
                         >
                           <div className="space-y-1">
                             {item.items.map((subItem) => (
@@ -148,7 +162,7 @@ export function DashboardSidebar({ menu, openGroups, setOpenGroups }: DashboardS
                                 className={cn(
                                   "flex items-center gap-2 w-full px-3 py-2 text-sm rounded-md transition-all duration-200",
                                   isActive(`${item.url}${subItem.url}`)
-                                    ? "bg-primary/10 text-primary font-medium"
+                                    ? "bg-primary/10 text-primary font-medium hover:!text-primary hover:!bg-primary/15 border-r-2 border-primary"
                                     : "hover:bg-muted"
                                 )}
                               >
@@ -166,7 +180,13 @@ export function DashboardSidebar({ menu, openGroups, setOpenGroups }: DashboardS
                         onOpenChange={() => toggleGroup(item.title)}
                       >
                         <CollapsibleTrigger asChild>
-                          <SidebarMenuButton className="w-full transition-all duration-300 hover:bg-primary/5 rounded-md">
+                          <SidebarMenuButton 
+                            className={cn(
+                              "w-full transition-all duration-300 rounded-md",
+                              // Resalta si tiene un hijo activo
+                              hasActiveChild(item) && "bg-primary/5"
+                            )}
+                          >
                             <DynamicIcon name={item.icon} className="h-4 w-4" />
                             <span className="flex-1 font-medium whitespace-nowrap">{item.title}</span>
                             <ChevronDown
@@ -212,7 +232,7 @@ export function DashboardSidebar({ menu, openGroups, setOpenGroups }: DashboardS
                         className={cn(
                           "flex items-center gap-2 transition-all duration-300 rounded-md",
                           isActive(item.url!)
-                            ? `bg-primary/10 text-primary font-medium hover:!text-primary ${!collapsed && "hover:!bg-primary/15 border-r-4 border-primary"}`
+                            ? `bg-primary/10 text-primary font-medium hover:!text-primary hover:!bg-primary/15 ${!collapsed && "border-r-4 border-primary"}`
                             : "hover:bg-muted"
                         )}
                       >

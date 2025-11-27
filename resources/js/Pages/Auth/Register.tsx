@@ -226,7 +226,7 @@ export default function Register({ status, document, dominios }) {
                         maxLength={LIMITS.password}
                         autoComplete="new-password"
                         hasError={!!errors.password}
-                        tooltipMessage="La contraseña debe tener al menos 8 caracteres e incluir una combinación de letras mayúsculas, minúsculas, números y símbolos."
+                        tooltipMessage="Mínimo 8 caracteres: mayúscula, minúscula, número y símbolo."
                         showTooltip={true}
                         required
                         className="text-sm sm:text-base"

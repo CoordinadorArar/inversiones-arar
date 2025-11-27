@@ -84,9 +84,9 @@ export function DashboardHeader({ title, user:{email, datos_completos} }) {
                 <DropdownMenuSeparator />  {/* Separador. */}
               </DropdownMenuLabel>
 
-              {/* Item: Mi Perfil - Link a profile.edit. */}
+              {/* Item: Mi Perfil - Link a profile. */}
               <DropdownMenuItem asChild>
-                <Link href={route('profile.edit')} className="flex items-center cursor-pointer py-2 px-4 hover:bg-primary/5 transition-colors">
+                <Link href={route('profile')} className="flex items-center cursor-pointer py-2 px-4 hover:bg-primary/5 transition-colors">
                   <User className="mr-3 h-4 w-4 text-primary" />  {/* Ícono User. */}
                   <span>Mi Perfil</span>
                 </Link>

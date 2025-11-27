@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm';
 import { DashboardLayout } from '@/Layouts/DashboardLayout';
@@ -8,8 +8,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { calcularAntiguedadExacta, formatPhoneNumberCO, formatToSpanishDate } from '@/lib/formatUtils';
 
-export default function Edit({ auth: { user: { datos_completos, numero_documento } } }) {
-
+export default function Profile({ auth: { user: { datos_completos, numero_documento, email } }, dominios, status }) {
     const nombreCorto = (datos_completos.nombres.split(" ")[0] + " " + datos_completos.apellidos.split(" ")[0]).toLowerCase();
     const nombreCompleto = (datos_completos.nombres + " " + datos_completos.apellidos).toLowerCase();
 
@@ -155,7 +154,7 @@ export default function Edit({ auth: { user: { datos_completos, numero_documento
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <UpdateProfileInformationForm />
+                            <UpdateProfileInformationForm email={email} dominios={dominios} status={status} />
                         </CardContent>
                     </Card>
                     {/* Cambiar Contraseña */}
@@ -167,7 +166,7 @@ export default function Edit({ auth: { user: { datos_completos, numero_documento
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <UpdatePasswordForm />
+                            <UpdatePasswordForm status={status} />
                         </CardContent>
                     </Card>
                 </div>
@@ -178,6 +177,6 @@ export default function Edit({ auth: { user: { datos_completos, numero_documento
     );
 }
 
-Edit.layout = (page) => (
+Profile.layout = (page) => (
     <DashboardLayout header='Perfil de Usuario' children={page} />
 );
