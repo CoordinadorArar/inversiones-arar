@@ -38,7 +38,7 @@ class EmpresaWebSeeder extends Seeder
                 'descripcion' => 'Grupo empresarial que agrupa a diversas compañías de los sectores financiero, automotriz y de seguros, entre otros.',
                 'sitio_web' => 'https://inversionesarar.com/',
                 'dominio' => 'inversionesarar.com',
-                'logo_url' => 'storage/logos_empresas/inversiones_arar.png',
+                'logo_url' => '/storage/logos_empresas/inversiones_arar.png',
                 'mostrar_en_empresas' => true,  // Visible en página empresas.
                 'mostrar_en_header' => true,    // Visible en header.
                 'permitir_pqrsd' => true,       // Permite PQRSD.
@@ -51,7 +51,7 @@ class EmpresaWebSeeder extends Seeder
                 'descripcion' => 'Compañía que ofrece soluciones de crédito de libranza, especialmente diseñadas para pensionados, miembros de las Fuerzas Armadas y Policía.',
                 'sitio_web' => 'https://ararfinanciera.com/',                
                 'dominio' => 'ararfinanciera.com',                
-                'logo_url' => 'storage/logos_empresas/arar_financiera.png',
+                'logo_url' => '/storage/logos_empresas/arar_financiera.png',
                 'mostrar_en_empresas' => true,
                 'mostrar_en_header' => true,
                 'permitir_pqrsd' => true,
@@ -64,7 +64,7 @@ class EmpresaWebSeeder extends Seeder
                 'descripcion' => 'Agencia de seguros que ofrece servicios de pólizas para hogar, salud, exequias, autos y más, brindando acompañamiento constante.',
                 'sitio_web' => 'https://asekura.co/',                
                 'dominio' => 'asekura.co',                
-                'logo_url' => 'storage/logos_empresas/asekura.png',
+                'logo_url' => '/storage/logos_empresas/asekura.png',
                 'mostrar_en_empresas' => true,
                 'mostrar_en_header' => true,
                 'permitir_pqrsd' => true,
@@ -77,7 +77,7 @@ class EmpresaWebSeeder extends Seeder
                 'descripcion' => 'Especialistas en la venta y distribución de baterías automotrices (marca Faico), llantas, lubricantes y servicios de serviteca.',
                 'sitio_web' => 'https://bateriasfaico.com.co/',                
                 'dominio' => 'bateriasfaico.com.co',  // Nota: Hay duplicado 'sitio_web', corregido a dominio.
-                'logo_url' => 'storage/logos_empresas/icb.png',
+                'logo_url' => '/storage/logos_empresas/icb.png',
                 'mostrar_en_empresas' => true,
                 'mostrar_en_header' => true,
                 'permitir_pqrsd' => true,
@@ -90,7 +90,7 @@ class EmpresaWebSeeder extends Seeder
                 'descripcion' => 'Concesionario oficial del Grupo Volkswagen en los Santanderes, vendiendo marcas como VW, Audi, SEAT, CUPRA y Ducati, además de repuestos y taller.',
                 'sitio_web' => 'https://promotores.com.co/',                
                 'dominio' => 'promotores.com.co',                
-                'logo_url' => 'storage/logos_empresas/promotores.png',
+                'logo_url' => '/storage/logos_empresas/promotores.png',
                 'mostrar_en_empresas' => true,
                 'mostrar_en_header' => true,
                 'permitir_pqrsd' => true,
@@ -102,7 +102,7 @@ class EmpresaWebSeeder extends Seeder
                 'tipo_empresa' => 'Distribuidores',                
                 'sitio_web' => "https://www.almacenesrayco.com/",                
                 'dominio' => "disrayco.com",  // Nota: 'sitio_web' duplicado, corregido.
-                'logo_url' => 'storage/logos_empresas/rayco.png',
+                'logo_url' => '/storage/logos_empresas/rayco.png',
                 'mostrar_en_header' => true,
                 'mostrar_en_portafolio' => true,  // Visible en portafolio.
                 'permitir_pqrsd' => true,
@@ -112,7 +112,7 @@ class EmpresaWebSeeder extends Seeder
                 'razon_social' => 'Distribuciones Rex S.A.S.',
                 'siglas' => 'REX',
                 'tipo_empresa' => 'Distribuidores',
-                'logo_url' => 'storage/logos_empresas/rex.png',
+                'logo_url' => '/storage/logos_empresas/rex.png',
                 'mostrar_en_header' => true,
                 'mostrar_en_portafolio' => true,
                 'permitir_pqrsd' => true,
@@ -120,7 +120,7 @@ class EmpresaWebSeeder extends Seeder
             [
                 'razon_social' => 'Hecarse',                
                 'tipo_empresa' => 'Agroindustrial',
-                'logo_url' => 'storage/logos_empresas/hecarse.png',                
+                'logo_url' => '/storage/logos_empresas/hecarse.png',                
                 'mostrar_en_portafolio' => true,
             ],
             [
@@ -138,7 +138,7 @@ class EmpresaWebSeeder extends Seeder
             ],
             [
                 'razon_social' => 'Arse',
-                'logo_url' => 'storage/logos_empresas/arse.png',
+                'logo_url' => '/storage/logos_empresas/arse.png',
                 'mostrar_en_portafolio' => true,
             ],
             [
@@ -147,7 +147,7 @@ class EmpresaWebSeeder extends Seeder
                 'tipo_empresa' => 'Tecnología',
                 'sitio_web' => 'https://datapro.com.co',
                 'dominio' => 'datapro.com.co',            
-                'logo_url' => 'storage/logos_empresas/datapro.png',
+                'logo_url' => '/storage/logos_empresas/datapro.png',
                 'mostrar_en_empresas' => false,  // No visible en empresas.
                 'mostrar_en_portafolio' => true,
             ],

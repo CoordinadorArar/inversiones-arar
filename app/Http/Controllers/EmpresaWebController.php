@@ -37,6 +37,7 @@ class EmpresaWebController extends Controller
             'tabs' => $tabs,
             'empresas' => $empresas,
             'permisos' => $permisos, // Pasar permisos al frontend
+            'moduloNombre' => Modulo::find($moduloId)->nombre,
         ]);
     }
 

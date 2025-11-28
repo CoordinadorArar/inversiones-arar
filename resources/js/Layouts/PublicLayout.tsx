@@ -8,7 +8,6 @@
  */
 
 import Footer from "@/Components/Footer";
-import Header from "@/Components/Header";
 import { Empresa } from "@/Components/Header/header.types";
 import { PublicHeader } from "@/Components/Header/Public/PublicHeader";
 import ScrollToTop from "@/Components/ScrollToTop";

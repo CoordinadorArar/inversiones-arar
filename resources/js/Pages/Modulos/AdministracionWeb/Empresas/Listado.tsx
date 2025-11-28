@@ -1,5 +1,8 @@
+import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { ModuleLayout } from "@/Layouts/ModuleLayout";
-
+import { DashboardLayout } from "@/Layouts/DashboardLayout";
+import { DataTable } from "@/Components/ui/data-table";
+import { EmpresaColumns } from "./empresaColumns";
 
 interface EmpresasListadoProps {
   tabs: Array<{
@@ -8,24 +11,34 @@ interface EmpresasListadoProps {
     ruta: string;
   }>;
   empresas: any[];
+  moduloNombre: string;
 }
 
-export default function EmpresasListado({ empresas }: EmpresasListadoProps) {
+export default function EmpresasListado({ empresas, tabs, moduloNombre }: EmpresasListadoProps) {
   return (
-    <div className="space-y-4">
-      <h2>Listado de Empresas</h2>
-      {/* Tu tabla o contenido aquí */}
-    </div>
+    <ModuleLayout
+      moduloNombre={moduloNombre}
+      tabs={tabs}
+      activeTab={window.location.pathname}
+    >
+
+      <Card className="py-6 h-full flex flex-col shadow border-none gap-4">
+        <CardHeader className="flex-shrink-0">
+          <CardTitle>Listado de Empresas</CardTitle>
+        </CardHeader>
+        
+        <CardContent className="flex-1 min-h-0 flex flex-col">
+          <DataTable 
+            columns={EmpresaColumns} 
+            data={empresas}
+            searchPlaceholder="Buscar empresas..."
+          />
+        </CardContent>
+      </Card>
+    </ModuleLayout>
   );
 }
 
-
 EmpresasListado.layout = (page) => (
-    <ModuleLayout
-        moduloNombre="Empresas"
-        tabs={page.props.tabs}
-        activeTab={window.location.pathname}
-    >
-        {page}
-    </ModuleLayout>
+  <DashboardLayout header={page.props.moduloNombre} children={page} />
 );

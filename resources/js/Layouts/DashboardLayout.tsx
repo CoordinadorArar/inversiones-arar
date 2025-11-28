@@ -14,10 +14,10 @@
  * @date 2025-11-25
  */
 
-import { SidebarProvider, useSidebar } from "@/components/ui/sidebar";  
-import { usePage } from "@inertiajs/react";  
-import { PageProps } from '@inertiajs/core'; 
-import { useState } from "react";  
+import { SidebarProvider, useSidebar } from "@/components/ui/sidebar";
+import { usePage } from "@inertiajs/react";
+import { PageProps } from '@inertiajs/core';
+import { useEffect, useState } from "react";
 import { DashboardSidebar } from "@/Components/Sidebar/DashboardSidebar";
 import { MenuParent } from "@/Components/Sidebar/menu.types";
 import { DashboardHeader } from "@/Components/Header/Dashboard/DashboardHeader";
@@ -39,11 +39,18 @@ export function DashboardLayout({ children, header }: DashboardLayoutProps) {
   const menu: MenuParent[] = usePage<PagePropsDashboard>().props.menu;
 
   const user = usePage().props.auth.user;
-  
-  // Estado para grupos abiertos en sidebar (inicia con primer grupo que tenga items).
-  const [openGroups, setOpenGroups] = useState<string[]>([
-    menu.find(item => (item.items ?? []).length > 0)?.title ?? ''  // Abre primer grupo con subitems.
-  ]);
+
+  // Estado para grupos abiertos: Persistido en localStorage para evitar "saltos" al navegar.
+  const [openGroups, setOpenGroups] = useState<string[]>(() => {
+    // Cargar desde localStorage al inicializar.
+    const stored = localStorage.getItem('sidebar-open-groups');
+    return stored ? JSON.parse(stored) : [menu.find(item => (item.items ?? []).length > 0)?.title ?? ''];
+  });
+
+  // Guardar en localStorage cada vez que openGroups cambie.
+  useEffect(() => {
+    localStorage.setItem('sidebar-open-groups', JSON.stringify(openGroups));
+  }, [openGroups]);
 
   // Render: SidebarProvider envuelve todo para estado global.
   return (
@@ -60,12 +67,12 @@ export function DashboardLayout({ children, header }: DashboardLayoutProps) {
         {/* Contenedor principal: flex col. */}
         <div className="flex flex-col">
           {/* Header: Pasa título. */}
-          <DashboardHeader title={header} user={user}/>
+          <DashboardHeader title={header} user={user} />
 
           {/* Main: Contenido principal con padding, bg muted, shadow inset. */}
           <main className="flex-1 p-6 bg-muted/60 shadow-[inset_2px_2px_4px_0_rgb(0_0_0_/_0.05)]">
             {/* Contenedor max-width centrado. */}
-            <div className="max-w-7xl mx-auto">
+            <div className="max-w-7xl mx-auto h-full">
               {children}  {/* Renderiza children (páginas del dashboard). */}
             </div>
           </main>

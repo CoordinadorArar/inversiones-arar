@@ -111,7 +111,7 @@ export default function Portafolio({ clientes }) {
                                     const IconComponent = servicio.icono;
                                     return (
                                         <Card
-                                            key={servicio.razon_social}
+                                            key={servicio.nombre}
                                             className="group overflow-hidden hover:shadow-lg transition-all duration-500 hover:-translate-y-1 hover:border-primary/30 bg-card"
                                             style={{ animationDelay: `${index * 100}ms` }}
                                         >
@@ -121,7 +121,7 @@ export default function Portafolio({ clientes }) {
                                                         <IconComponent className="h-6 w-6" />
                                                     </div>
                                                     <h3 className="text-xl font-bold group-hover:text-primary transition-colors">
-                                                        {servicio.razon_social}
+                                                        {servicio.nombre}
                                                     </h3>
                                                 </div>
                                                 <p className="text-sm text-muted-foreground leading-relaxed">
@@ -139,7 +139,7 @@ export default function Portafolio({ clientes }) {
                                     {servicios.map((servicio, index) => {
                                         const IconComponent = servicio.icono;
                                         return (
-                                            <div key={servicio.razon_social} className="snap-center shrink-0 w-[85vw] max-w-sm">
+                                            <div key={servicio.nombre} className="snap-center shrink-0 w-[85vw] max-w-sm">
                                                 <Card className="group overflow-hidden hover:shadow-lg transition-all duration-500 bg-card h-full">
                                                     <CardContent className="p-6">
                                                         <div className="mb-5 flex gap-4 items-center">
@@ -147,7 +147,7 @@ export default function Portafolio({ clientes }) {
                                                                 <IconComponent className="h-6 w-6" />
                                                             </div>
                                                             <h3 className="text-xl font-bold">
-                                                                {servicio.razon_social}
+                                                                {servicio.nombre}
                                                             </h3>
                                                         </div>
                                                         <p className="text-sm text-muted-foreground leading-relaxed">
