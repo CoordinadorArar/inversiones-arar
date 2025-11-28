@@ -2,6 +2,7 @@
 
 namespace App\Models\GestionModulos;
 
+use App\Models\Rol;
 use App\Traits\HasAuditoria;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -51,4 +52,30 @@ class Pestana extends Model
         'fecha_modificacion', // Fecha de modificación.
         'deleted_at'          // Fecha de eliminación suave.
     ];
+
+    /**
+     * Relación: Módulo
+     * Una pestaña pertenece a un módulo.
+     */
+    public function modulo()
+    {
+        return $this->belongsTo(Modulo::class, 'modulo_id');
+    }
+
+    /**
+     * Relación: Roles (muchos a muchos)
+     * Una pestaña puede estar asignada a muchos roles.
+     * Tabla pivote: pestana_rol (con columna 'permisos' JSON)
+     */
+    public function roles()
+    {
+        return $this->belongsToMany(
+            Rol::class,
+            'pestana_rol',
+            'pestana_id',
+            'rol_id'
+        )
+        ->withPivot('permisos') // Agregar columna JSON de permisos
+        ->withTimestamps();
+    }
 }

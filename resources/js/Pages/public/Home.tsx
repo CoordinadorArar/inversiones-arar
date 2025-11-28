@@ -128,7 +128,7 @@ export default function Home() {
                             <div className="flex items-center justify-center order-first md:order-last">
                                 <div className="relative w-full max-w-xs sm:max-w-sm md:max-w-md">
                                     <img
-                                        src="images/logo-arar.png"
+                                        src="/images/logo-arar.png"
                                         alt="Inversiones Arar"
                                         className="relative w-full h-auto"
                                     />

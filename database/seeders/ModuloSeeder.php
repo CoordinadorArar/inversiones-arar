@@ -61,10 +61,9 @@ class ModuloSeeder extends Seeder
             ],
 
             [
-                'nombre' => 'Sistema',
-                'icono' => 'monitor-cog',
-                'ruta' => '/sistema',
-                'es_padre' => true,
+                'nombre' => 'Auditorías', // No es padre, es módulo nivel 1 (módulo con enlace directo)
+                'icono' => 'scroll-text',
+                'ruta' => '/auditorias',
             ],
 
             // Hijos: Submódulos con referencia a padre por nombre.
@@ -127,13 +126,6 @@ class ModuloSeeder extends Seeder
                 'icono' => 'calendar-cog',
                 'ruta' => '/calendario',
                 'padre' => 'Recursos Humanos',
-            ],
-
-            [
-                'nombre' => 'Auditoría',
-                'icono' => 'scroll-text',
-                'ruta' => '/auditoria',
-                'padre' => 'Sistema',
             ],
         ];
 

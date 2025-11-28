@@ -35,27 +35,38 @@ class HandleInertiaRequests extends Middleware
         if ($user) {
             $modulos = Modulo::all();
 
-            $padres = $modulos->filter(fn($modulo) => $modulo->es_padre == 1);
-            $hijos = $modulos->filter(fn($m) => $m->modulo_padre_id != null);
+            $menu = $modulos
+                ->whereNull('modulo_padre_id') // solo módulos raíz (padres y los independientes)
+                ->map(function ($modulo) use ($modulos) {
 
-            $menu = $padres->map(function ($padre) use ($hijos) {
-                $items = $hijos
-                    ->where('modulo_padre_id', $padre->id)
-                    ->map(fn($hijo) => [
-                        'title' => $hijo->nombre,
-                        'url'   => $hijo->ruta,
-                        'icon'  => $hijo->icono,
-                    ])
-                    ->values();
+                    // hijos del módulo
+                    $hijos = $modulos
+                        ->where('modulo_padre_id', $modulo->id)
+                        ->map(fn($hijo) => [
+                            'title' => $hijo->nombre,
+                            'url'   => $hijo->ruta,
+                            'icon'  => $hijo->icono,
+                        ])
+                        ->values();
 
+                    // si tiene hijos → menú desplegable
+                    if ($hijos->isNotEmpty()) {
+                        return [
+                            'title' => $modulo->nombre,
+                            'icon'  => $modulo->icono,
+                            'url'   => $modulo->ruta,
+                            'items' => $hijos,
+                        ];
+                    }
 
-                return [
-                    'title' => $padre->nombre,
-                    'icon'  => $padre->icono,
-                    'url'   => $padre->ruta,
-                    ...(count($items) > 0 ? ['items' => $items] : []),
-                ];
-            });
+                    // si no tiene → item normal
+                    return [
+                        'title' => $modulo->nombre,
+                        'url'   => $modulo->ruta,
+                        'icon'  => $modulo->icono,
+                    ];
+                })
+                ->values();
         }
         return [
             ...parent::share($request),

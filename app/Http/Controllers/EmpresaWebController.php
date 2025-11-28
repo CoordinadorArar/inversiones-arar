@@ -5,6 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\EmpresaWeb;
 use App\Http\Requests\EmpresasWeb\StoreEmpresaWebRequest;
 use App\Http\Requests\EmpresasWeb\UpdateEmpresaWebRequest;
+use App\Models\GestionModulos\Modulo;
+use App\Models\GestionModulos\Pestana;
+use App\Models\Rol;
+use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class EmpresaWebController extends Controller
 {
@@ -13,7 +18,26 @@ class EmpresaWebController extends Controller
      */
     public function index()
     {
-        //
+        $rol = Auth::user()->rol;
+
+        // IDs del módulo y pestaña
+        $moduloId = 6;
+        $pestanaId = 1;
+
+        // Obtener pestañas del módulo para el layout
+        $tabs = $rol->getPestanasModulo($moduloId);
+
+        // Obtener permisos específicos de esta pestaña
+        $permisos = $rol->getPermisosPestana($pestanaId);
+
+        // Obtener datos
+        $empresas = EmpresaWeb::all();
+
+        return Inertia::render('Modulos/AdministracionWeb/Empresas/Listado', [
+            'tabs' => $tabs,
+            'empresas' => $empresas,
+            'permisos' => $permisos, // Pasar permisos al frontend
+        ]);
     }
 
     /**

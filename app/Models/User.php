@@ -98,4 +98,9 @@ class User extends Authenticatable
 
         return $datosCompletos;
     }
+
+    public function rol()
+    {
+        return $this->belongsTo(Rol::class, 'rol_id');
+    }
 }

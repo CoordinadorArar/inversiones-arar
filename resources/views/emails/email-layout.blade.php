@@ -204,7 +204,7 @@
     <div class="email-wrapper">
         <!-- Header -->
         <div class="email-header">
-            <img src="{{ asset('images/logo-arar.png') }}" alt="Inversiones Arar" class="email-logo">
+            <img src="/images/logo-arar.png" alt="Inversiones Arar" class="email-logo">
             @yield('header')
         </div>
         

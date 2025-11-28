@@ -39,5 +39,8 @@ class DatabaseSeeder extends Seeder
         $this->call(PestanaSeeder::class);
                 
         $this->call(ConfiguracionSeeder::class);
+
+        $this->call(ModuloRolSeeder::class);
+        $this->call(PestanaRolSeeder::class);
     }
 }

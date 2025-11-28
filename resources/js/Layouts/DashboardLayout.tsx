@@ -14,32 +14,18 @@
  * @date 2025-11-25
  */
 
-import { DashboardHeader } from "@/Components/Dashboard/Header";  
-import { DashboardSidebar } from "@/Components/Dashboard/Sidebar";  
 import { SidebarProvider, useSidebar } from "@/components/ui/sidebar";  
 import { usePage } from "@inertiajs/react";  
 import { PageProps } from '@inertiajs/core'; 
 import { useState } from "react";  
+import { DashboardSidebar } from "@/Components/Sidebar/DashboardSidebar";
+import { MenuParent } from "@/Components/Sidebar/menu.types";
+import { DashboardHeader } from "@/Components/Header/Dashboard/DashboardHeader";
 
 // Interface para props del componente.
 interface DashboardLayoutProps {
   children: React.ReactNode;  // Contenido JSX a renderizar.
   header: string;  // Título opcional para el header.
-}
-
-// Interface para items del menu (subitems).
-interface MenuItem {
-  title: string;  // Título del item.
-  url: string;  // URL.
-  icon: string;  // Ícono (string para DynamicIcon).
-}
-
-// Interface para padres del menu (con subitems).
-interface MenuParent {
-  title: string;  // Título del grupo padre.
-  url: string;  // URL del padre.
-  icon: string;  // Ícono del padre.
-  items?: MenuItem[];  // Array de subitems.
 }
 
 // Extiende PageProps.
@@ -79,7 +65,7 @@ export function DashboardLayout({ children, header }: DashboardLayoutProps) {
           {/* Main: Contenido principal con padding, bg muted, shadow inset. */}
           <main className="flex-1 p-6 bg-muted/60 shadow-[inset_2px_2px_4px_0_rgb(0_0_0_/_0.05)]">
             {/* Contenedor max-width centrado. */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto">
               {children}  {/* Renderiza children (páginas del dashboard). */}
             </div>
           </main>

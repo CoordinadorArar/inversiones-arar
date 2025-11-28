@@ -37,7 +37,7 @@ export default function GuestLayout({
                         {/* Logo */}
                         <Link href={route('home')} className="">
                             <img
-                                src={`${route('home')}/images/logo-arar.png`}
+                                src="/images/logo-arar.png"
                                 alt="Arar Logo"
                                 className='w-44 md:w-52 transition-all'
                             />

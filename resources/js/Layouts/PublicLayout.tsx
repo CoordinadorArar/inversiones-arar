@@ -9,16 +9,12 @@
 
 import Footer from "@/Components/Footer";
 import Header from "@/Components/Header";
+import { Empresa } from "@/Components/Header/header.types";
+import { PublicHeader } from "@/Components/Header/Public/PublicHeader";
 import ScrollToTop from "@/Components/ScrollToTop";
 import { Toaster } from "@/components/ui/toaster"
 import { PageProps } from '@inertiajs/core';
 import { usePage } from "@inertiajs/react";
-
-// Definir interfaz para el tipo Empresa
-interface Empresa {
-    id: number;     // ID de la empresa (id_siesa).
-    name: string;   // Nombre de la empresa (razon_social).
-}
 
 // Definir interfaz para las props que vienen de la página (de Inertia.js)
 interface PagePropsHeader extends PageProps {
@@ -36,7 +32,7 @@ export default function PublicLayout({ children }) {
     return (
         <div className="min-h-screen bg-background">
             {/* Header: Navegación superior común a todas las páginas públicas. */}
-            <Header empresas= {empresas} />
+            <PublicHeader empresas= {empresas} />
             {/* children: Contenido dinámico de la página (ej. secciones de Home). */}
             {children}
             <ScrollToTop />

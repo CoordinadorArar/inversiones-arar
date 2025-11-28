@@ -2,6 +2,7 @@
 
 namespace App\Models\GestionModulos;
 
+use App\Models\Rol;
 use App\Traits\HasAuditoria;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -40,6 +41,7 @@ class Modulo extends Model
     // Casts: Convierte permisos_extra de JSON a array automáticamente.
     protected $casts = [
         'permisos_extra' => 'array',  // Facilita manipulación como array en PHP.
+        'es_padre' => 'boolean',
     ];
 
     // Deshabilitar timestamps automáticos (usa fecha_creacion/modificacion manuales).
@@ -51,4 +53,48 @@ class Modulo extends Model
         'fecha_modificacion', // Fecha de modificación.
         'deleted_at'          // Fecha de eliminación suave.
     ];
+
+    /**
+     * Relación: Módulo padre
+     * Un módulo puede pertenecer a un módulo padre.
+    */
+    public function moduloPadre()
+    {
+        return $this->belongsTo(Modulo::class, 'modulo_padre_id');
+    }
+    
+    /**
+     * Relación: Módulos hijos
+     * Un módulo padre puede tener muchos módulos hijos.
+    */
+    public function modulosHijos()
+    {
+        return $this->hasMany(Modulo::class, 'modulo_padre_id');
+    }
+
+    /**
+     * Relación: Pestañas
+     * Un módulo puede tener muchas pestañas.
+     */
+    public function pestanas()
+    {
+        return $this->hasMany(Pestana::class, 'modulo_id');
+    }
+
+    /**
+     * Relación: Roles (muchos a muchos)
+     * Un módulo puede estar asignado a muchos roles.
+     * Tabla pivote: modulo_rol (con columna 'permisos' JSON)
+     */
+    public function roles()
+    {
+        return $this->belongsToMany(
+            Rol::class,
+            'modulo_rol',
+            'modulo_id',
+            'rol_id'
+        )
+        ->withPivot('permisos') // Agregar columna JSON de permisos
+        ->withTimestamps();
+    }
 }

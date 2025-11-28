@@ -50,7 +50,7 @@ export default function Footer() {
                     <div className="space-y-6 lg:col-span-4">
                         <div className="flex items-center gap-3">
                             <img
-                                src="images/logo-arar.png"
+                                src="/images/logo-arar.png"
                                 alt="Logo Inversiones Arar"
                                 className="h-20 hover:scale-105 transition-transform duration-300"
                             />
