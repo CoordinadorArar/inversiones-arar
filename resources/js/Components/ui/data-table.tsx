@@ -37,15 +37,15 @@ import {
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Settings2, ArrowUpDown, ArrowUp, ArrowDown, Search } from "lucide-react";
 
 /**
- * DataTable - Componente de tabla avanzada con todas las funcionalidades
+ * DataTable - con todas las funcionalidades
  * 
  * Características:
  * - Búsqueda global
- * - Paginación (prev/next + selección de filas por página)
+ * - Paginación adaptable a mobile
  * - Ordenamiento por columnas
- * - Filtros por columna
  * - Selector de columnas visibles
- * - Responsivo
+ * - Scroll horizontal en mobile
+ * - Layout adaptativo en toolbar y paginación
  * 
  * @author Yariangel Aray - Tabla de referencia para todo el sistema
  * @version 1.0
@@ -93,10 +93,11 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="flex flex-col gap-4 h-full">
-      {/* TOOLBAR MEJORADO */}
-      <div className="flex items-center justify-between gap-4 flex-shrink-0">
-        <div className="relative flex-1 max-w-sm">
+    <div className="flex flex-col gap-3 md:gap-4">
+      {/* TOOLBAR RESPONSIVO - Stack en mobile, row en desktop */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-between gap-3 flex-shrink-0">
+        {/* Búsqueda - Full width en mobile */}
+        <div className="relative flex-1 sm:max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder={searchPlaceholder}
@@ -106,9 +107,13 @@ export function DataTable<TData, TValue>({
           />
         </div>
 
+        {/* Botón columnas - Full width en mobile */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="border-primary/20 hover:border-primary/40 hover:text-primary">
+            <Button
+              variant="outline"
+              className="border-primary/20 hover:border-primary/40 hover:text-primary w-full sm:w-auto"
+            >
               <Settings2 className="h-4 w-4 mr-2" />
               Columnas
             </Button>
@@ -135,16 +140,23 @@ export function DataTable<TData, TValue>({
         </DropdownMenu>
       </div>
 
-      {/* TABLA CON DISEÑO MEJORADO */}
+      {/* TABLA CON SCROLL HORIZONTAL EN MOBILE */}
       <div className="flex-1 rounded-lg border border-primary/10 overflow-hidden min-h-0 shadow-sm">
+        {/* 
+          overflow-x-auto: Permite scroll horizontal en mobile
+          overflow-y-auto: Permite scroll vertical
+        */}
         <div className="overflow-auto h-full">
           <Table>
-            {/* HEADER CON FONDO PRIMARIO */}
+            {/* HEADER - Sticky en scroll vertical */}
             <TableHeader className="sticky top-0 z-10 bg-primary/90 backdrop-blur-sm">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id} className="hover:bg-transparent border-none">
                   {headerGroup.headers.map((header) => (
-                    <TableHead key={header.id} className="font-semibold text-primary-foreground">
+                    <TableHead
+                      key={header.id}
+                      className="font-semibold text-primary-foreground whitespace-nowrap"
+                    >
                       {header.isPlaceholder ? null : (
                         <div className="flex items-center gap-2">
                           {header.column.getCanSort() ? (
@@ -180,8 +192,8 @@ export function DataTable<TData, TValue>({
                 </TableRow>
               ))}
             </TableHeader>
-            
-            {/* BODY CON HOVER SUAVE */}
+
+            {/* BODY */}
             <TableBody>
               {table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
@@ -191,7 +203,10 @@ export function DataTable<TData, TValue>({
                     className="transition-colors border-b border-border/50"
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id} className="py-2 font-medium text-foreground/80">
+                      <TableCell
+                        key={cell.id}
+                        className="py-3 font-medium text-foreground/80"
+                      >
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext()
@@ -219,9 +234,10 @@ export function DataTable<TData, TValue>({
         </div>
       </div>
 
-      {/* PAGINACIÓN MEJORADA */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 flex-shrink-0 pt-2">
-        <div className="text-sm text-muted-foreground">
+      {/* PAGINACIÓN RESPONSIVA */}
+      <div className="flex flex-col sm:flex-row items-end sm:items-center sm:justify-between gap-3 sm:gap-4 flex-shrink-0 pt-2">
+        {/* Fila 1: Info de resultados (centrada en mobile) */}
+        <div className="text-sm text-muted-foreground text-center sm:text-left">
           Mostrando{" "}
           <span className="font-semibold text-foreground">
             {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}
@@ -240,8 +256,10 @@ export function DataTable<TData, TValue>({
           {" resultado(s)"}
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center gap-4">
-          <div className="flex items-center gap-2">
+        {/* Fila 2: Controles (stack en mobile, row en desktop) */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+          {/* Selector de filas por página */}
+          <div className="flex items-center justify-center sm:justify-start gap-2">
             <p className="text-sm font-medium whitespace-nowrap">Filas por página</p>
             <Select
               value={`${table.getState().pagination.pageSize}`}
@@ -262,51 +280,61 @@ export function DataTable<TData, TValue>({
             </Select>
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
-              Página {table.getState().pagination.pageIndex + 1} de{" "}
-              {table.getPageCount()}
-            </span>
+          <div className="flex gap-4 justify-between">
+            {/* Indicador de página */}
+            <div className="flex items-center">
+              <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
+                Página {table.getState().pagination.pageIndex + 1} de{" "}
+                {table.getPageCount()}
+              </span>
+            </div>
+
+            {/* Botones de navegación */}
+            <div className="flex items-center sm:justify-end gap-1">
+              {/* Ocultar botones de primera/última en mobile */}
+              <Button
+                variant="outline"
+                size="icon"
+                className="hidden sm:flex h-9 w-9 border-primary/20 hover:bg-primary/10 hover:border-primary/40 hover:text-primary"
+                onClick={() => table.setPageIndex(0)}
+                disabled={!table.getCanPreviousPage()}
+              >
+                <ChevronsLeft className="h-4 w-4" />
+              </Button>
+
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-9 w-9 border-primary/20 hover:bg-primary/10 hover:border-primary/40 hover:text-primary"
+                onClick={() => table.previousPage()}
+                disabled={!table.getCanPreviousPage()}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-9 w-9 border-primary/20 hover:bg-primary/10 hover:border-primary/40 hover:text-primary"
+                onClick={() => table.nextPage()}
+                disabled={!table.getCanNextPage()}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+
+              {/* Ocultar botones de primera/última en mobile */}
+              <Button
+                variant="outline"
+                size="icon"
+                className="hidden sm:flex h-9 w-9 border-primary/20 hover:bg-primary/10 hover:border-primary/40 hover:text-primary"
+                onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+                disabled={!table.getCanNextPage()}
+              >
+                <ChevronsRight className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
 
-          <div className="flex items-center gap-1">
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-9 w-9 border-primary/20 hover:bg-primary/10 hover:border-primary/40 hover:text-primary"
-              onClick={() => table.setPageIndex(0)}
-              disabled={!table.getCanPreviousPage()}
-            >
-              <ChevronsLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-9 w-9 border-primary/20 hover:bg-primary/10 hover:border-primary/40 hover:text-primary"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-9 w-9 border-primary/20 hover:bg-primary/10 hover:border-primary/40 hover:text-primary"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-9 w-9 border-primary/20 hover:bg-primary/10 hover:border-primary/40 hover:text-primary"
-              onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-              disabled={!table.getCanNextPage()}
-            >
-              <ChevronsRight className="h-4 w-4" />
-            </Button>
-          </div>
         </div>
       </div>
     </div>

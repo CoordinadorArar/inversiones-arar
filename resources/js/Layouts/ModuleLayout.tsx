@@ -30,27 +30,31 @@ export function ModuleLayout({
 
             {/* Pestañas */}
             <Tabs value={activeTab} className="w-full h-full flex flex-col over">
-                <TabsList className="w-full justify-start p-0 gap-2">
-                    {tabs.map((tab) => (
-                        <Link key={tab.id} href={tab.ruta}>
-                            <TabsTrigger
-                                value={tab.ruta}
-                                className={cn(
-                                    "px-4 py-2",
-                                    activeTab === tab.ruta &&
-                                    "!text-primary font-bold",
-                                    activeTab !== tab.ruta &&
-                                    "hover:text-foreground hover:bg-gray-400/5"
-                                )}
-                                onClick={e => {
-                                    if (activeTab === tab.ruta) e.preventDefault();
-                                }}
-                            >
-                                {tab.nombre}
-                            </TabsTrigger>
-                        </Link>
-                    ))}
-                </TabsList>
+                {/* Tabs con scroll horizontal en mobile */}
+                <div className="overflow-x-auto pb-2 -mx-3 sm:mx-0">
+
+                    <TabsList className="w-max sm:w-full justify-start p-0 gap-2 mx-3 sm:mx-0">
+                        {tabs.map((tab) => (
+                            <Link key={tab.id} href={tab.ruta}>
+                                <TabsTrigger
+                                    value={tab.ruta}
+                                    className={cn(
+                                        "px-4 py-2",
+                                        activeTab === tab.ruta &&
+                                        "!text-primary font-bold",
+                                        activeTab !== tab.ruta &&
+                                        "hover:text-foreground hover:bg-gray-400/5"
+                                    )}
+                                    onClick={e => {
+                                        if (activeTab === tab.ruta) e.preventDefault();
+                                    }}
+                                >
+                                    {tab.nombre}
+                                </TabsTrigger>
+                            </Link>
+                        ))}
+                    </TabsList>
+                </div>
 
                 {/* Contenido */}
                 <div className="mt-2 flex-1 min-h-0">

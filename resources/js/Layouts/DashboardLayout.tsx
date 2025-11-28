@@ -56,7 +56,7 @@ export function DashboardLayout({ children, header }: DashboardLayoutProps) {
   return (
     <SidebarProvider>
       {/* Grid layout: sidebar auto + contenido 1fr, full width, bg background. */}
-      <div className="min-h-screen grid grid-cols-[auto_1fr] w-full bg-background">
+      <div className="min-h-screen flex lg:grid lg:grid-cols-[auto_1fr] w-full bg-background">
         {/* Sidebar: Pasa menu, estado de grupos abiertos y setter. */}
         <DashboardSidebar
           menu={menu}
@@ -65,12 +65,12 @@ export function DashboardLayout({ children, header }: DashboardLayoutProps) {
         />
 
         {/* Contenedor principal: flex col. */}
-        <div className="flex flex-col">
+        <div className="flex flex-col w-full">
           {/* Header: Pasa título. */}
           <DashboardHeader title={header} user={user} />
 
           {/* Main: Contenido principal con padding, bg muted, shadow inset. */}
-          <main className="flex-1 p-6 bg-muted/60 shadow-[inset_2px_2px_4px_0_rgb(0_0_0_/_0.05)]">
+          <main className="flex-1 p-3 sm:p-4 md:p-6 bg-muted/60 shadow-[inset_2px_2px_4px_0_rgb(0_0_0_/_0.05)]">
             {/* Contenedor max-width centrado. */}
             <div className="max-w-7xl mx-auto h-full">
               {children}  {/* Renderiza children (páginas del dashboard). */}
