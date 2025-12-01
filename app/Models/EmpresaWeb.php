@@ -44,6 +44,7 @@ class EmpresaWeb extends Model
         'sitio_web',             // URL del sitio.
         'dominio',               // Dominio para correos.
         'logo_url',              // Ruta al logo.
+        'mostrar_en_header',     // Flag para mostrar en header.
         'mostrar_en_empresas',   // Flag para página empresas.
         'mostrar_en_portafolio', // Flag para portafolio.
         'permitir_pqrsd'         // Flag para permitir PQRSD.
@@ -57,5 +58,12 @@ class EmpresaWeb extends Model
         'fecha_creacion',     // Fecha de creación.
         'fecha_modificacion', // Fecha de modificación.
         'deleted_at'          // Fecha de eliminación suave.
+    ];
+
+    protected $casts = [
+        'mostrar_en_header' => 'boolean',
+        'mostrar_en_empresas' => 'boolean',
+        'mostrar_en_portafolio' => 'boolean',
+        'permitir_pqrsd' => 'boolean',
     ];
 }

@@ -12,8 +12,8 @@ export interface EmpresaInterface {
   dominio: string | null
   sitio_web: string | null
   logo_url: string | null
-  header: boolean
-  empresas: boolean
-  portafolio: boolean
-  pqrsd: boolean
+  mostrar_en_header: boolean
+  mostrar_en_empresas: boolean
+  mostrar_en_portafolio: boolean
+  permitir_pqrsd: boolean
 }

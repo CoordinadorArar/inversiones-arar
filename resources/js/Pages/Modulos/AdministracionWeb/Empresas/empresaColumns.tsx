@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ExternalLink, Globe, Image as ImageIcon } from "lucide-react"
 import { useState } from "react"
-import { EmpresaInterface } from "./interfaces"
+import { EmpresaInterface } from "./empresaInterface"
 import ImageModal from "@/Components/ImageModal"
 import { EmptyBadge } from "@/Components/EmptyBadge"
 import { ActionButton } from "@/Components/ActionButton"
@@ -20,6 +20,7 @@ export const EmpresaColumns: ColumnDef<EmpresaInterface>[] = [
   {
     accessorKey: "id",
     header: "ID",
+    enableHiding: false
   },
   {
     accessorKey: "id_siesa",
@@ -120,4 +121,91 @@ export const EmpresaColumns: ColumnDef<EmpresaInterface>[] = [
       );
     },
   },
+  {
+    accessorKey: 'mostrar_en_header',
+    header: 'En header',
+    cell: ({ row }) => {
+      const value = row.original.mostrar_en_header;
+      return (
+        <Badge
+          className={`
+          ${value
+              ? "bg-green-500/10 text-green-700 border-green-500/20"
+              : "bg-gray-500/10 text-gray-600 border-gray-500/20"
+            } 
+          font-medium
+        `}
+        >
+          {value ? "Activo" : "Inactivo"}
+        </Badge>
+      );
+    },
+  },
+  {
+    accessorKey: 'mostrar_en_empresas',
+    header: 'En página Empresas',
+    cell: ({ row }) => {
+      const value = row.original.mostrar_en_empresas;
+      return (
+        <Badge
+          className={`
+          ${value
+              ? "bg-green-500/10 text-green-700 border-green-500/20"
+              : "bg-gray-500/10 text-gray-600 border-gray-500/20"
+            } 
+          font-medium
+        `}
+        >
+          {value ? "Activo" : "Inactivo"}
+        </Badge>
+      );
+    },
+  },
+  {
+    accessorKey: 'mostrar_en_portafolio',
+    header: 'En página Portafolio',
+    cell: ({ row }) => {
+      const value = row.original.mostrar_en_header;
+      return (
+        <Badge
+          className={`
+          ${value
+              ? "bg-green-500/10 text-green-700 border-green-500/20"
+              : "bg-gray-500/10 text-gray-600 border-gray-500/20"
+            } 
+          font-medium
+        `}
+        >
+          {value ? "Activo" : "Inactivo"}
+        </Badge>
+      );
+    },
+  },
+  {
+    accessorKey: 'permitir_pqrsd',
+    header: 'Permitir PQRS',
+    cell: ({ row }) => {
+      const value = row.original.permitir_pqrsd;
+      return (
+        <Badge
+          className={`
+          ${value
+              ? "bg-green-500/10 text-green-700 border-green-500/20"
+              : "bg-gray-500/10 text-gray-600 border-gray-500/20"
+            } 
+          font-medium
+        `}
+        >
+          {value ? "Activo" : "Inactivo"}
+        </Badge>
+      );
+    },
+  }
 ]
+
+export const EmpresaInactiveColumns = {
+  mostrar_en_header: false,
+  mostrar_en_empresas: false,
+  mostrar_en_portafolio: false,
+  permitir_pqrsd: false,
+}

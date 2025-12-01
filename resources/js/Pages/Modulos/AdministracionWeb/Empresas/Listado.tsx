@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { ModuleLayout } from "@/Layouts/ModuleLayout";
 import { DashboardLayout } from "@/Layouts/DashboardLayout";
 import { DataTable } from "@/Components/ui/data-table";
-import { EmpresaColumns } from "./empresaColumns";
+import { EmpresaColumns, EmpresaInactiveColumns } from "./empresaColumns";
 
 interface EmpresasListadoProps {
   tabs: Array<{
@@ -32,6 +32,7 @@ export default function EmpresasListado({ empresas, tabs, moduloNombre }: Empres
             columns={EmpresaColumns} 
             data={empresas}
             searchPlaceholder="Buscar empresas..."
+            initialColumnVisibility={EmpresaInactiveColumns}
           />
         </CardContent>
       </Card>

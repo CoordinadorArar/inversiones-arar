@@ -65,4 +65,8 @@ class PQRSD extends Model
         'fecha_finalizacion',
         'deleted_at'
     ];
+
+    protected $casts = [
+        'anonimo' => 'boolean',
+    ];
 }

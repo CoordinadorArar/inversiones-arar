@@ -56,16 +56,18 @@ interface DataTableProps<TData, TValue = unknown> {
   data: TData[];
   columns: ColumnDef<TData, TValue>[];
   searchPlaceholder?: string;
+  initialColumnVisibility?: VisibilityState | {};
 }
 
 export function DataTable<TData, TValue>({
   data,
   columns,
   searchPlaceholder = "Buscar...",
+  initialColumnVisibility = {}
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(initialColumnVisibility);
   const [globalFilter, setGlobalFilter] = useState("");
 
   const table = useReactTable({
@@ -91,6 +93,7 @@ export function DataTable<TData, TValue>({
       },
     },
   });
+  
 
   return (
     <div className="flex flex-col gap-3 md:gap-4">
@@ -132,7 +135,7 @@ export function DataTable<TData, TValue>({
                       column.toggleVisibility(!!value)
                     }
                   >
-                    {column.id}
+                    {column.columnDef.header as string}
                   </DropdownMenuCheckboxItem>
                 );
               })}
