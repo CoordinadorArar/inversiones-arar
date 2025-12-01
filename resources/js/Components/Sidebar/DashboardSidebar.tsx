@@ -45,7 +45,7 @@ export function DashboardSidebar({
   };
   
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" className="z-50">
       <SidebarLogo collapsed={collapsed} />
       
       <SidebarContent className="mt-2">

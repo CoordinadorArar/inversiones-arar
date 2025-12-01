@@ -13,7 +13,7 @@ import { SearchButton } from "./SearchButton";
  */
 export function DashboardHeader({ title, user }: DashboardHeaderProps) {
   return (
-    <header className="h-14 border-b bg-background backdrop-blur supports-[backdrop-filter]:bg-background/60 flex-shrink-0 sticky top-0 z-50">
+    <header className="h-14 border-b bg-background backdrop-blur supports-[backdrop-filter]:bg-background/60 flex-shrink-0 sticky top-0 z-40">
       <div className="h-full pr-6 pl-4 flex items-center justify-between">
         
         {/* Lado izquierdo */}

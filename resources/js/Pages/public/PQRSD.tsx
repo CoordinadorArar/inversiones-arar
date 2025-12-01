@@ -35,7 +35,8 @@ import {
     AlertCircle,
     HelpCircle,
     Clock,
-    HatGlasses
+    HatGlasses,
+    Upload
 } from 'lucide-react';
 import { Progress } from '@/Components/ui/progress';
 import {
@@ -65,7 +66,7 @@ interface FormData {
 }
 
 interface PQRSDProps {
-    empresas: Array<{ id: number; name: string; siglas: string}>;
+    empresas: Array<{ id: number; name: string; siglas: string }>;
     departamentos: Array<{ id: number; name: string }>;
     ciudades: Array<{ id: number; name: string; id_dpto: number }>;
     tiposPqrs: Array<{ id: number; nombre: string; abreviatura: string }>;
@@ -512,7 +513,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                 formData.append(`files[${index}]`, file);
             });
 
-            formData.append('esAnonimo', data.esAnonimo ? '1' : '0');            
+            formData.append('esAnonimo', data.esAnonimo ? '1' : '0');
 
             // Fetch POST a ruta pqrsd.store.
             const response = await fetch(route('pqrsd.store'), {
@@ -872,7 +873,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                             maxLength={LIMITS.nombre}
                                                             autoComplete="given-name"
                                                         />
-                                                        <div className="relative !mt-0">
+                                                        <div className="relative">
                                                             <InputError message={errors.nombre} />
                                                             <span className="text-xs text-muted-foreground absolute top-0 right-0">
                                                                 {data.nombre.length}/{LIMITS.nombre}
@@ -894,7 +895,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                             maxLength={LIMITS.apellido}
                                                             autoComplete='family-name'
                                                         />
-                                                        <div className="relative !mt-0">
+                                                        <div className="relative">
                                                             <InputError message={errors.apellido} />
                                                             <span className="text-xs text-muted-foreground absolute top-0 right-0">
                                                                 {data.apellido.length}/{LIMITS.apellido}
@@ -944,7 +945,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                             maxLength={LIMITS.numId}
                                                             autoComplete='document-number'
                                                         />
-                                                        <div className="relative !mt-0">
+                                                        <div className="relative">
                                                             <InputError message={errors.numId} />
                                                             <span className="text-xs text-muted-foreground absolute top-0 right-0">
                                                                 {data.numId.length}/{LIMITS.numId}
@@ -974,7 +975,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                             maxLength={LIMITS.correo}
                                                             autoComplete="email"
                                                         />
-                                                        <div className="relative !mt-0">
+                                                        <div className="relative">
                                                             <InputError message={errors.correo} />
                                                             <span className="text-xs text-muted-foreground absolute top-0 right-0">
                                                                 {data.correo.length}/{LIMITS.correo}
@@ -997,7 +998,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                             maxLength={LIMITS.telefono}
                                                             autoComplete="tel"
                                                         />
-                                                        <div className="relative !mt-0">
+                                                        <div className="relative">
                                                             <InputError message={errors.telefono} />
                                                             <span className="text-xs text-muted-foreground absolute top-0 right-0">
                                                                 {data.telefono.length}/{LIMITS.telefono}
@@ -1068,12 +1069,12 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                             id="direccion"
                                                             placeholder="Ingrese su dirección"
                                                             value={data.direccion}
-                                                            onChange={(e) => setData({ ...data, direccion: e.target.value })}                                                            
+                                                            onChange={(e) => setData({ ...data, direccion: e.target.value })}
                                                             className={errors.direccion ? "border-destructive" : ""}
                                                             maxLength={LIMITS.direccion}
                                                             autoComplete="street-address"
                                                         />
-                                                        <div className="relative !mt-0">
+                                                        <div className="relative">
                                                             <InputError message={errors.direccion} />
                                                             <span className="text-xs text-muted-foreground absolute top-0 right-0">
                                                                 {data.direccion.length}/{LIMITS.direccion}
@@ -1124,7 +1125,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                         onKeyDown={handleMessagesKeyDown}
                                                         maxLength={LIMITS.mensaje}
                                                     />
-                                                    <div className="relative !mt-0">
+                                                    <div className="relative">
                                                         <InputError message={errors.mensaje} />
                                                         <span className="text-xs text-muted-foreground absolute top-0 right-0">
                                                             {data.mensaje.length}/{LIMITS.mensaje}
@@ -1139,16 +1140,18 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                             Archivos adjuntos (opcional)
                                                         </Label>
                                                         <div
-                                                            className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors 
+                                                            className={`border-2  border-dashed rounded-lg p-6 pb-2 text-center transition-colors 
                                                                 ${isDragging ? 'border-primary bg-primary/5'
-                                                                    : 'border-muted-foreground/25 hover:border-primary/50'}`}
+                                                                    : 'border-primary/30 bg-muted/30 hover:border-primary/50 hover:bg-muted/50'}`}
                                                             onDragOver={handleDragOver}
                                                             onDragLeave={handleDragLeave}
                                                             onDrop={handleDrop}
                                                         >
-                                                            <FileText className="w-10 h-10 md:w-12 md:h-12 mx-auto mb-3 text-muted-foreground" />
-                                                            <p className="text-xs md:text-sm text-muted-foreground mb-2">
-                                                                Arrastre archivos aquí o seleccionelos desde su dispositivo.
+                                                            <div className="h-12 w-12 rounded-full bg-primary/10 inline-flex items-center justify-center">
+                                                                <FileText className="h-6 w-6 text-primary" />
+                                                            </div>
+                                                            <p className="text-sm font-medium text-muted-foreground mb-1 mt-2">
+                                                                Subir archivos
                                                             </p>
                                                             <Input
                                                                 type="file"
@@ -1159,15 +1162,15 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                                 id="file-upload"
                                                                 disabled={files.length >= 5}
                                                             />
+                                                            <p className="text-xs text-muted-foreground">
+                                                                PDF o JPG (máx 500KB). Hasta 5 archivos.
+                                                            </p>
                                                             <Label
                                                                 htmlFor="file-upload"
-                                                                className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors text-sm"
+                                                                className="mt-4 cursor-pointer inline-flex items-center gap-2 px-4 py-1.5 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors text-sm"
                                                             >
                                                                 Seleccionar archivos
                                                             </Label>
-                                                            <p className="text-xs text-muted-foreground mt-2">
-                                                                Solo PDF y JPG. Máximo 500KB por archivo. Hasta 5 archivos.
-                                                            </p>
                                                         </div>
                                                     </div>
 
@@ -1278,5 +1281,5 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
 }
 
 PQRSD.layout = (page) => (
-    <PublicLayout children={page}/>
+    <PublicLayout children={page} />
 )

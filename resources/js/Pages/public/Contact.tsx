@@ -271,7 +271,7 @@ export default function Contact() {
                                 <Card className="group hover:shadow-lg transition-all duration-300 border-primary/20 hover:border-primary/40 overflow-hidden">
                                     <CardContent className="relative p-4">
                                         <div className="flex items-start gap-4">
-                                            <div className="relative !mt-0">
+                                            <div className="relative">
                                                 <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center flex-shrink-0  transition-transform shadow-lg">
                                                     <Mail className="h-6 w-6 text-white" />
                                                 </div>
@@ -296,7 +296,7 @@ export default function Contact() {
                                 <Card className="group hover:shadow-lg transition-all duration-300 border-primary/20 hover:border-primary/40 overflow-hidden">
                                     <CardContent className="relative p-4">
                                         <div className="flex items-start gap-4">
-                                            <div className="relative !mt-0">
+                                            <div className="relative">
                                                 <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center flex-shrink-0 transition-transform shadow-lg">
                                                     <Phone className="h-6 w-6 text-white" />
                                                 </div>
@@ -405,7 +405,7 @@ export default function Contact() {
                                                         className={`${errors.subject ? "border-destructive focus-visible:ring-destructive" : ""}`}
                                                         maxLength={LIMITS.subject}
                                                     />
-                                                    <div className="relative !mt-0">
+                                                    <div className="relative">
                                                         <InputError message={errors.subject} />
                                                         <span className="text-xs text-muted-foreground absolute top-0 right-0">
                                                             {data.subject.length}/{LIMITS.subject}
@@ -429,7 +429,7 @@ export default function Contact() {
                                                         maxLength={LIMITS.name}
                                                         autoComplete="name"
                                                     />
-                                                    <div className="relative !mt-0">
+                                                    <div className="relative">
                                                         <InputError message={errors.name} />
                                                         <span className="text-xs text-muted-foreground absolute top-0 right-0">
                                                             {data.name.length}/{LIMITS.name}
@@ -454,7 +454,7 @@ export default function Contact() {
                                                         maxLength={LIMITS.email}
                                                         autoComplete="email"
                                                     />
-                                                    <div className="relative !mt-0">
+                                                    <div className="relative">
                                                         <InputError message={errors.email} />
                                                         <span className="text-xs text-muted-foreground absolute top-0 right-0">
                                                             {data.email.length}/{LIMITS.email}
@@ -479,7 +479,7 @@ export default function Contact() {
                                                         maxLength={LIMITS.phone}
                                                         autoComplete="tel"
                                                     />
-                                                    <div className="relative !mt-0">
+                                                    <div className="relative">
                                                         <InputError message={errors.phone} />
                                                         <span className="text-xs text-muted-foreground absolute top-0 right-0">
                                                             {data.phone.length}/{LIMITS.phone}
@@ -502,7 +502,7 @@ export default function Contact() {
                                                         className={`${errors.company ? "border-destructive focus-visible:ring-destructive" : ""}`}
                                                         maxLength={LIMITS.company}
                                                     />
-                                                    <div className="relative !mt-0">
+                                                    <div className="relative">
                                                         <InputError message={errors.company} />
                                                         <span className="text-xs text-muted-foreground absolute top-0 right-0">
                                                             {data.company.length}/{LIMITS.company}
@@ -527,7 +527,7 @@ export default function Contact() {
                                                     className={errors.message ? "border-destructive focus-visible:ring-destructive" : ""}
                                                     maxLength={LIMITS.message}
                                                 />
-                                                <div className="relative !mt-0">
+                                                <div className="relative">
                                                     <InputError message={errors.message} />
                                                     <span className="text-xs text-muted-foreground absolute top-0 right-0">
                                                         {data.message.length}/{LIMITS.message}

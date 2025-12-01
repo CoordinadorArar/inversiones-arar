@@ -23,7 +23,6 @@ export const UserDropdown = ({ user }: UserDropdownProps) => {
           className="relative h-9 w-9 rounded-full hover:ring-2 hover:ring-primary/20 transition-all"
         >
           <Avatar className="h-8 w-8">
-            <AvatarImage src="" alt="Usuario" />
             <AvatarFallback className="bg-gradient-to-br from-primary to-primary/60 text-primary-foreground font-semibold">
               <User />
             </AvatarFallback>

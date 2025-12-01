@@ -1,3 +1,33 @@
+/**
+ * Componente DataTable - Tabla avanzada con múltiples funcionalidades.
+ * 
+ * Propósito: Componente reutilizable para mostrar datos tabulares con búsqueda global,
+ * paginación, ordenamiento por columnas, visibilidad de columnas toggleable, y diseño responsive.
+ * Usa TanStack Table (React Table) para manejo eficiente de datos y estado.
+ * 
+ * Características principales:
+ * - Búsqueda global con input.
+ * - Paginación con selector de filas por página.
+ * - Ordenamiento asc/desc por columnas clickeables.
+ * - Toggle de visibilidad de columnas via dropdown.
+ * - Diseño responsive: Stack en mobile, row en desktop; scroll horizontal.
+ * - Estados vacíos con mensaje amigable.
+ * - Header sticky, backdrop blur para mejor UX.
+ * 
+ * Props:
+ * - data: Array de datos a mostrar (TData[]).
+ * - columns: Definición de columnas (ColumnDef<TData, TValue>[]).
+ * - searchPlaceholder: Placeholder para input de búsqueda (opcional).
+ * - initialColumnVisibility: Estado inicial de visibilidad de columnas (opcional).
+ * 
+ * Dependencias: TanStack Table, componentes UI de Shadcn (Table, Input, Button, etc.).
+ * 
+ * @author Yariangel Aray - Tabla de referencia para todo el sistema.
+ * @version 1.0
+ * @date 2025-11-27
+ */
+
+// Imports: Hooks de React, TanStack Table, componentes UI, íconos.
 import { useState } from "react";
 import {
   useReactTable,
@@ -36,51 +66,39 @@ import {
 } from "@/Components/ui/select";
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Settings2, ArrowUpDown, ArrowUp, ArrowDown, Search } from "lucide-react";
 
-/**
- * DataTable - con todas las funcionalidades
- * 
- * Características:
- * - Búsqueda global
- * - Paginación adaptable a mobile
- * - Ordenamiento por columnas
- * - Selector de columnas visibles
- * - Scroll horizontal en mobile
- * - Layout adaptativo en toolbar y paginación
- * 
- * @author Yariangel Aray - Tabla de referencia para todo el sistema
- * @version 1.0
- * @date 2025-11-28
- */
-
+// Interface genérica para props del componente.
 interface DataTableProps<TData, TValue = unknown> {
-  data: TData[];
-  columns: ColumnDef<TData, TValue>[];
-  searchPlaceholder?: string;
-  initialColumnVisibility?: VisibilityState | {};
+  data: TData[];  // Datos a tabular.
+  columns: ColumnDef<TData, TValue>[];  // Definición de columnas.
+  searchPlaceholder?: string;  // Placeholder para búsqueda (default "Buscar...").
+  initialColumnVisibility?: VisibilityState | {};  // Visibilidad inicial de columnas.
 }
 
+// Componente funcional genérico DataTable.
 export function DataTable<TData, TValue>({
   data,
   columns,
   searchPlaceholder = "Buscar...",
   initialColumnVisibility = {}
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(initialColumnVisibility);
-  const [globalFilter, setGlobalFilter] = useState("");
+  // Estados para TanStack Table: sorting, filtros, visibilidad, búsqueda global.
+  const [sorting, setSorting] = useState<SortingState>([]);  // Estado de ordenamiento.
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);  // Filtros por columna.
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(initialColumnVisibility);  // Visibilidad de columnas.
+  const [globalFilter, setGlobalFilter] = useState("");  // Filtro global (búsqueda).
 
+  // Instancia de tabla TanStack con modelos y estados.
   const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    onColumnVisibilityChange: setColumnVisibility,
-    onGlobalFilterChange: setGlobalFilter,
+    data,  // Datos pasados.
+    columns,  // Columnas pasadas.
+    getCoreRowModel: getCoreRowModel(),  // Modelo base.
+    getPaginationRowModel: getPaginationRowModel(),  // Paginación.
+    getSortedRowModel: getSortedRowModel(),  // Ordenamiento.
+    getFilteredRowModel: getFilteredRowModel(),  // Filtros.
+    onSortingChange: setSorting,  // Handler para sorting.
+    onColumnFiltersChange: setColumnFilters,  // Handler para filtros.
+    onColumnVisibilityChange: setColumnVisibility,  // Handler para visibilidad.
+    onGlobalFilterChange: setGlobalFilter,  // Handler para búsqueda global.
     state: {
       sorting,
       columnFilters,
@@ -89,17 +107,17 @@ export function DataTable<TData, TValue>({
     },
     initialState: {
       pagination: {
-        pageSize: 10,
+        pageSize: 10,  // Tamaño inicial de página.
       },
     },
   });
-  
 
+  // Render: Contenedor flex col con toolbar, tabla y paginación.
   return (
     <div className="flex flex-col gap-3 md:gap-4">
-      {/* TOOLBAR RESPONSIVO - Stack en mobile, row en desktop */}
+      {/* TOOLBAR RESPONSIVO: Input de búsqueda y dropdown de columnas. */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-between gap-3 flex-shrink-0">
-        {/* Búsqueda - Full width en mobile */}
+        {/* Input de búsqueda global con ícono. */}
         <div className="relative flex-1 sm:max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
@@ -110,7 +128,7 @@ export function DataTable<TData, TValue>({
           />
         </div>
 
-        {/* Botón columnas - Full width en mobile */}
+        {/* Dropdown para toggle de visibilidad de columnas. */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -122,20 +140,21 @@ export function DataTable<TData, TValue>({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
+            {/* Mapea columnas que se pueden ocultar, con checkbox. */}
             {table
               .getAllColumns()
-              .filter((column) => column.getCanHide())
+              .filter((column) => column.getCanHide())  // Solo columnas hideables.
               .map((column) => {
                 return (
                   <DropdownMenuCheckboxItem
                     key={column.id}
                     className="capitalize"
-                    checked={column.getIsVisible()}
+                    checked={column.getIsVisible()}  // Estado actual.
                     onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
+                      column.toggleVisibility(!!value)  // Toggle visibilidad.
                     }
                   >
-                    {column.columnDef.header as string}
+                    {column.columnDef.header as string}  // Nombre de columna.
                   </DropdownMenuCheckboxItem>
                 );
               })}
@@ -143,15 +162,11 @@ export function DataTable<TData, TValue>({
         </DropdownMenu>
       </div>
 
-      {/* TABLA CON SCROLL HORIZONTAL EN MOBILE */}
+      {/* TABLA CON SCROLL: Contenedor con overflow para scroll horizontal/vertical. */}
       <div className="flex-1 rounded-lg border border-primary/10 overflow-hidden min-h-0 shadow-sm">
-        {/* 
-          overflow-x-auto: Permite scroll horizontal en mobile
-          overflow-y-auto: Permite scroll vertical
-        */}
         <div className="overflow-auto h-full">
           <Table>
-            {/* HEADER - Sticky en scroll vertical */}
+            {/* HEADER STICKY: Fijo en scroll vertical con backdrop. */}
             <TableHeader className="sticky top-0 z-10 bg-primary/90 backdrop-blur-sm">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id} className="hover:bg-transparent border-none">
@@ -162,16 +177,18 @@ export function DataTable<TData, TValue>({
                     >
                       {header.isPlaceholder ? null : (
                         <div className="flex items-center gap-2">
+                          {/* Si columna es sorteable, botón con ícono de flecha. */}
                           {header.column.getCanSort() ? (
                             <Button
                               variant="ghost"
                               className="h-8 px-2 hover:!bg-primary/90 hover:text-primary-foreground font-semibold"
-                              onClick={() => header.column.toggleSorting()}
+                              onClick={() => header.column.toggleSorting()}  // Toggle sorting.
                             >
                               {flexRender(
                                 header.column.columnDef.header,
                                 header.getContext()
                               )}
+                              {/* Ícono según estado de sorting. */}
                               {header.column.getIsSorted() === "asc" ? (
                                 <ArrowUp className="ml-2 h-3.5 w-3.5" />
                               ) : header.column.getIsSorted() === "desc" ? (
@@ -181,6 +198,7 @@ export function DataTable<TData, TValue>({
                               )}
                             </Button>
                           ) : (
+                            // Si no sorteable, solo texto.
                             <span className="px-2">
                               {flexRender(
                                 header.column.columnDef.header,
@@ -196,9 +214,10 @@ export function DataTable<TData, TValue>({
               ))}
             </TableHeader>
 
-            {/* BODY */}
+            {/* BODY: Filas de datos o estado vacío. */}
             <TableBody>
               {table.getRowModel().rows?.length ? (
+                // Si hay filas, mapea y renderiza.
                 table.getRowModel().rows.map((row) => (
                   <TableRow
                     key={row.id}
@@ -219,6 +238,7 @@ export function DataTable<TData, TValue>({
                   </TableRow>
                 ))
               ) : (
+                // Estado vacío: Mensaje con ícono.
                 <TableRow className="hover:bg-transparent">
                   <TableCell
                     colSpan={columns.length}
@@ -237,9 +257,9 @@ export function DataTable<TData, TValue>({
         </div>
       </div>
 
-      {/* PAGINACIÓN RESPONSIVA */}
+      {/* PAGINACIÓN RESPONSIVA: Info, selector de filas, navegación. */}
       <div className="flex flex-col sm:flex-row items-end sm:items-center sm:justify-between gap-3 sm:gap-4 flex-shrink-0 pt-2">
-        {/* Fila 1: Info de resultados (centrada en mobile) */}
+        {/* Info de resultados mostrados. */}
         <div className="text-sm text-muted-foreground text-center sm:text-left">
           Mostrando{" "}
           <span className="font-semibold text-foreground">
@@ -259,15 +279,15 @@ export function DataTable<TData, TValue>({
           {" resultado(s)"}
         </div>
 
-        {/* Fila 2: Controles (stack en mobile, row en desktop) */}
+        {/* Controles: Selector de filas por página y navegación. */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-          {/* Selector de filas por página */}
+          {/* Selector de filas por página. */}
           <div className="flex items-center justify-center sm:justify-start gap-2">
             <p className="text-sm font-medium whitespace-nowrap">Filas por página</p>
             <Select
               value={`${table.getState().pagination.pageSize}`}
               onValueChange={(value) => {
-                table.setPageSize(Number(value));
+                table.setPageSize(Number(value));  // Cambia pageSize.
               }}
             >
               <SelectTrigger className="h-9 w-[75px] border-primary/20">
@@ -284,7 +304,7 @@ export function DataTable<TData, TValue>({
           </div>
 
           <div className="flex gap-4 justify-between">
-            {/* Indicador de página */}
+            {/* Indicador de página actual. */}
             <div className="flex items-center">
               <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
                 Página {table.getState().pagination.pageIndex + 1} de{" "}
@@ -292,9 +312,9 @@ export function DataTable<TData, TValue>({
               </span>
             </div>
 
-            {/* Botones de navegación */}
+            {/* Botones de navegación de página. */}
             <div className="flex items-center sm:justify-end gap-1">
-              {/* Ocultar botones de primera/última en mobile */}
+              {/* Botón primera página (oculto en mobile). */}
               <Button
                 variant="outline"
                 size="icon"
@@ -305,6 +325,7 @@ export function DataTable<TData, TValue>({
                 <ChevronsLeft className="h-4 w-4" />
               </Button>
 
+              {/* Botón página anterior. */}
               <Button
                 variant="outline"
                 size="icon"
@@ -315,6 +336,7 @@ export function DataTable<TData, TValue>({
                 <ChevronLeft className="h-4 w-4" />
               </Button>
 
+              {/* Botón página siguiente. */}
               <Button
                 variant="outline"
                 size="icon"
@@ -325,7 +347,7 @@ export function DataTable<TData, TValue>({
                 <ChevronRight className="h-4 w-4" />
               </Button>
 
-              {/* Ocultar botones de primera/última en mobile */}
+              {/* Botón última página (oculto en mobile). */}
               <Button
                 variant="outline"
                 size="icon"
@@ -337,7 +359,6 @@ export function DataTable<TData, TValue>({
               </Button>
             </div>
           </div>
-
         </div>
       </div>
     </div>

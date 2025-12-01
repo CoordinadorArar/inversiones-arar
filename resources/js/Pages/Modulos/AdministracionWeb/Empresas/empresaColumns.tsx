@@ -1,6 +1,15 @@
+/**
+ * Define columnas para la tabla de empresas usando TanStack Table.
+ * Incluye personalización de celdas con badges, botones, modales y enlaces.
+ * Columnas inactivas por defecto para simplificar vista inicial.
+ * 
+ * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
+ * @version 1.0
+ * @date 2025-11-27
+ */
+
 import { ColumnDef } from "@tanstack/react-table"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import { ExternalLink, Globe, Image as ImageIcon } from "lucide-react"
 import { useState } from "react"
 import { EmpresaInterface } from "./empresaInterface"
@@ -9,25 +18,23 @@ import { EmptyBadge } from "@/Components/EmptyBadge"
 import { ActionButton } from "@/Components/ActionButton"
 
 /**
- * Columnas tipadas para tabla de Empresas
- * Explicación:
- *  - accessorKey: propiedad de la interfaz que se muestra
- *  - header: nombre visible en la columna
- *  - cell: personalización de cada celda
+ * EmpresaColumns: Definición de columnas para la tabla.
+ * 
+ * Cada columna tiene accessorKey (propiedad de EmpresaInterface), header, y cell personalizada.
+ * Incluye badges para estados, botones para acciones (visitar web, ver logo), y EmptyBadge para nulls.
  */
-
 export const EmpresaColumns: ColumnDef<EmpresaInterface>[] = [
   {
     accessorKey: "id",
     header: "ID",
-    enableHiding: false
+    enableHiding: false  // No se puede ocultar.
   },
   {
     accessorKey: "id_siesa",
     header: "ID Siesa",
     cell: ({ row }) => {
       const id_siesa = row.original.id_siesa;
-
+      // Muestra badge si existe, sino EmptyBadge.
       return id_siesa ? (
         <Badge variant="outline" className="font-mono text-xs">
           {id_siesa}
@@ -39,13 +46,14 @@ export const EmpresaColumns: ColumnDef<EmpresaInterface>[] = [
   },
   {
     accessorKey: "razon_social",
-    header: "Razón Social",
+    header: "Razón Social",  // Texto plano.
   },
   {
     accessorKey: "siglas",
     header: "Siglas",
     cell: ({ row }) => {
       const siglas = row.original.siglas;
+      // Badge primary si existe, sino EmptyBadge.
       return siglas ? (
         <Badge variant="default" className="text-primary bg-primary/15 border-0">
           {siglas}
@@ -58,9 +66,9 @@ export const EmpresaColumns: ColumnDef<EmpresaInterface>[] = [
   {
     accessorKey: "tipo_empresa",
     header: "Tipo de Empresa",
-    enableSorting: true,
     cell: ({ row }) => {
       const tipo = row.original.tipo_empresa;
+      // Texto si existe, sino EmptyBadge.
       return tipo ? (
         <span className="text-sm">{tipo}</span>
       ) : (
@@ -73,11 +81,10 @@ export const EmpresaColumns: ColumnDef<EmpresaInterface>[] = [
     header: "Web",
     cell: ({ row }) => {
       const sitio = row.original.sitio_web;
-
+      // Botón ActionButton para abrir la página de la empresa, sino EmptyBadge.
       if (!sitio) {
         return <EmptyBadge />;
       }
-
       return (
         <a
           href={sitio}
@@ -98,12 +105,11 @@ export const EmpresaColumns: ColumnDef<EmpresaInterface>[] = [
     header: "Logo",
     cell: ({ row }) => {
       const logoUrl = row.original.logo_url;
-      const [open, setOpen] = useState(false);
-
+      const [open, setOpen] = useState(false);  // Estado para modal de imagen.
+      // Botón para abrir ImageModal si existe logo, sino EmptyBadge.
       if (!logoUrl) {
         return <EmptyBadge />;
       }
-
       return (
         <>
           <ActionButton
@@ -126,6 +132,7 @@ export const EmpresaColumns: ColumnDef<EmpresaInterface>[] = [
     header: 'En header',
     cell: ({ row }) => {
       const value = row.original.mostrar_en_header;
+      // Badge verde si true, gris si false.
       return (
         <Badge
           className={`
@@ -203,9 +210,15 @@ export const EmpresaColumns: ColumnDef<EmpresaInterface>[] = [
   }
 ]
 
+/**
+ * EmpresaInactiveColumns: Columnas ocultas por defecto en la tabla.
+ * 
+ * Simplifica la vista inicial ocultando flags booleanos (mostrar_*, permitir_*).
+ * Usuario puede mostrarlas via toggle en DataTable.
+ */
 export const EmpresaInactiveColumns = {
-  mostrar_en_header: false,
+  mostrar_en_header: false,      // Oculta por defecto.
   mostrar_en_empresas: false,
   mostrar_en_portafolio: false,
   permitir_pqrsd: false,
-}
+};
