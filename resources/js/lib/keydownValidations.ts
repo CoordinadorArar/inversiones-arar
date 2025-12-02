@@ -68,3 +68,23 @@ export const handlePasswordKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) 
         e.preventDefault();
     }
 };
+
+// handleUrlKeyDown: Permite caracteres válidos para URLs.
+// Uso: En inputs de sitio web (ej. <input onKeyDown={handleUrlKeyDown} />).
+// Permite: letras, números, :, /, ., -, _, ?, =, &, #
+export const handleUrlKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const allowed = /^[a-zA-Z0-9:/.?\-_=&#]$/;
+    if (!allowed.test(e.key) && !allowedKeys.includes(e.key) && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+    }
+};
+
+// handleDominioKeyDown: Permite solo letras, números, puntos y guiones.
+// Uso: En inputs de dominio de correo (ej. <input onKeyDown={handleDominioKeyDown} />).
+// Permite: a-z, A-Z, 0-9, ., -
+export const handleDominioKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const allowed = /^[a-zA-Z0-9.-]$/;
+    if (!allowed.test(e.key) && !allowedKeys.includes(e.key) && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+    }
+};

@@ -45,7 +45,7 @@ class EmpresaWebRequest extends FormRequest
 
         // Regla condicional: Si mostrar_en_header o mostrar_en_empresas está activo
         if ($this->input('mostrar_en_header') || $this->input('mostrar_en_empresas')) {
-            $rules['id_siesa'] = 'required|string|max:20';
+            $rules['id_siesa'] = 'required|string|max:20|exists:sqlsrv_second.t010_mm_companias,f010_id';
         }
 
         // Regla condicional: Si mostrar_en_empresas está activo
