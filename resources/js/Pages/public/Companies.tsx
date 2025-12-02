@@ -14,7 +14,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Briefcase, Globe, ExternalLink, Users } from "lucide-react";
 import { Button } from '@/components/ui/button';
 
-export default function Companies({empresas}) {
+export default function Companies({ empresas }) {
 
     return (
         <>
@@ -101,11 +101,17 @@ function CompanyCard({ empresa }) {
                 {/* Header con logo y razon social */}
                 <div className="flex items-center gap-4 mb-6">
                     <div className="relative h-28 w-28 flex-shrink-0 rounded-xl bg-gradient-to-br from-primary/5 to-accent/5 p-2 flex items-center justify-center transition-all group-hover:scale-105 group-hover:shadow-md">
-                        <img
-                            src={empresa.logo_url}
-                            alt={`Logo de ${empresa.razon_social}`}
-                            className="w-full h-full object-contain"
-                        />
+                        {empresa.logo_url ? (
+                            <img
+                                src={"/storage/" + empresa.logo_url}
+                                alt={`Logo de ${empresa.razon_social}`}
+                                className="w-full h-full object-contain"
+                            />
+                        ) : (
+                            <span className="text-lg md:text-3xl font-bold text-primary capitalize">
+                                {empresa.razon_social.charAt(0)}
+                            </span>
+                        )}
                     </div>
                     <div className="flex-1">
                         <h3 className="capitalize text-xl font-bold mb-1 group-hover:text-primary transition-colors leading-tight">
@@ -154,5 +160,5 @@ function CompanyCard({ empresa }) {
 }
 
 Companies.layout = (page) => (
-    <PublicLayout children={page}/>
+    <PublicLayout children={page} />
 )

@@ -139,7 +139,7 @@ export function EmpresaLogoUpload({
           <div className="relative w-full max-w-xs">
             <div className="aspect-video w-full rounded-lg border-2 border-dashed border-primary/30 bg-muted/30 p-4 flex items-center justify-center overflow-hidden">
               <img
-                src={logoPreview}
+                src={"/storage/" + logoPreview}
                 alt="Preview del logo"
                 className="max-w-full max-h-full object-contain"
               />

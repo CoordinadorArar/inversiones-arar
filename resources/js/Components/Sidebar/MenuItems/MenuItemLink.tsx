@@ -22,7 +22,7 @@ export const MenuItemLink = ({
     <Link
       href={url}
       className={cn(
-        "flex items-center gap-2 transition-all duration-300 rounded-md",
+        "flex items-center gap-2 transition-all duration-300 rounded-md whitespace-nowrap",
         // Estilos específicos para subitems (padding y tamaño de texto)
         isSubItem ? "w-full px-3 py-1.5 text-sm" : "",
         // Estilos cuando está activo

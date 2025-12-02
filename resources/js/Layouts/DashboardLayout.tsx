@@ -21,6 +21,7 @@ import { useEffect, useState } from "react";
 import { DashboardSidebar } from "@/Components/Sidebar/DashboardSidebar";
 import { MenuParent } from "@/Components/Sidebar/menu.types";
 import { DashboardHeader } from "@/Components/Header/Dashboard/DashboardHeader";
+import { Toaster } from "@/Components/ui/toaster";
 
 // Interface para props del componente.
 interface DashboardLayoutProps {
@@ -78,6 +79,7 @@ export function DashboardLayout({ children, header }: DashboardLayoutProps) {
           </main>
         </div>
       </div>
+      <Toaster />
     </SidebarProvider>
   );
 }

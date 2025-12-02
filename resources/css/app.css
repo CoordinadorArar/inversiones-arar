@@ -95,3 +95,16 @@
 .drop-shadow-primary {
   filter: drop-shadow(0 0 15px hsla(25, 95%, 53%, 0.5));
 }
+
+/* Scroll bonito para el sidebar */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply transition-all rounded-sm bg-muted-foreground/40;
+}

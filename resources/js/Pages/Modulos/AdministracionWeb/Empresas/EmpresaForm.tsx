@@ -54,6 +54,7 @@ interface EmpresaFormProps {
     onSubmit: (data: EmpresaFormData) => Promise<void>;
     onDelete?: () => Promise<void>;
     onCancel: () => void;
+    externalErrors?: Record<string, string>;
 }
 
 export function EmpresaForm({
@@ -63,13 +64,14 @@ export function EmpresaForm({
     onSubmit,
     onDelete,
     onCancel,
+    externalErrors = {},
 }: EmpresaFormProps) {
 
     const [data, setData] = useState<EmpresaFormData>({
         ...EMPRESA_INITIAL_DATA,
         ...initialData,
     });
-    console.log(data);
+
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [processing, setProcessing] = useState(false);
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -81,6 +83,20 @@ export function EmpresaForm({
             firstInputRef.current?.focus();
         }
     }, [disabled, mode]);
+
+    // Combinar errores locales con externos:
+    useEffect(() => {
+        if (Object.keys(externalErrors).length > 0) {
+            setErrors(externalErrors); // ✅ Actualizar errores del backend
+
+            // Scroll al primer error del backend
+            const firstErrorField = Object.keys(externalErrors)[0];
+            document.getElementById(firstErrorField)?.scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+            });
+        }
+    }, [externalErrors]);
 
     useEffect(() => {
         setData({
@@ -385,43 +401,48 @@ export function EmpresaForm({
 
             {/* Botones de acción */}
             <div className="flex flex-wrap gap-3 pt-4 border-t">
-                {mode === "edit" && onDelete && (
-                    <Button
-                        type="button"
-                        variant="destructive"
-                        onClick={() => setShowDeleteDialog(true)}
-                        disabled={processing || disabled}
-                    >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Eliminar
-                    </Button>
+
+                {!disabled && (
+                    <>
+                        {mode === "edit" && onDelete && (
+                            <Button
+                                type="button"
+                                variant="destructive"
+                                onClick={() => setShowDeleteDialog(true)}
+                                disabled={processing || disabled}
+                            >
+                                <Trash2 className="h-4 w-4" />
+                                Eliminar
+                            </Button>
+                        )}
+
+                        <div className="flex-1" />
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={onCancel}
+                            disabled={processing}
+                        >
+                            <X className="h-4 w-4" />
+                            Cancelar
+                        </Button>
+
+                        <Button type="submit" disabled={processing || disabled}>
+                            {mode === "create" ? (
+                                <>
+                                    <Plus className="h-4 w-4" />
+                                    {processing ? "Creando..." : "Crear Empresa"}
+                                </>
+                            ) : (
+                                <>
+                                    <Save className="h-4 w-4" />
+                                    {processing ? "Guardando..." : "Guardar cambios"}
+                                </>
+                            )}
+                        </Button>
+                    </>
                 )}
 
-                <div className="flex-1" />
-
-                <Button
-                    type="button"
-                    variant="outline"
-                    onClick={onCancel}
-                    disabled={processing}
-                >
-                    <X className="h-4 w-4 mr-2" />
-                    Cancelar
-                </Button>
-
-                <Button type="submit" disabled={processing || disabled}>
-                    {mode === "create" ? (
-                        <>
-                            <Plus className="h-4 w-4 mr-2" />
-                            Crear Empresa
-                        </>
-                    ) : (
-                        <>
-                            <Save className="h-4 w-4 mr-2" />
-                            Guardar Cambios
-                        </>
-                    )}
-                </Button>
             </div>
 
             {/* Dialog de confirmación de eliminación */}

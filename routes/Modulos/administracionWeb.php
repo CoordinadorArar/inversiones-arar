@@ -29,7 +29,7 @@ use Illuminate\Support\Facades\Route;
 
 // Grupo de rutas protegidas con middleware 'auth' (requiere login).
 Route::middleware('auth')->group(function () {
-    
+
     // ===================================================================
     // MÓDULO PADRE: Administración Web
     // Ruta base: Redirige dinámicamente al primer módulo hijo accesible para el usuario.
@@ -44,7 +44,7 @@ Route::middleware('auth')->group(function () {
 
     // Prefijo para subrutas del módulo padre.
     Route::prefix('administracion-web')->group(function () {
-        
+
         // ===============================================================
         // MÓDULO HIJO: Empresas
         // Ruta: Redirige a la primera pestaña accesible dentro de Empresas.
@@ -59,9 +59,18 @@ Route::middleware('auth')->group(function () {
         Route::prefix('empresas')->group(function () {
             // Pestaña: Listado de empresas.
             Route::get('/listado', [EmpresaWebController::class, 'index']);
-            
+
             // Pestaña: Gestión de empresas (crear/editar).
             Route::get('/gestion', [EmpresaWebController::class, 'gestion']);
+
+            // Acción: Crear empresa (POST).
+            Route::post('/gestion', [EmpresaWebController::class, 'store'])->name('empresa.store');
+
+            // Acción: Actualizar empresa (PUT con ID).
+            Route::put('/gestion/{id}', [EmpresaWebController::class, 'update'])->name('empresa.update');
+
+            // Acción: Eliminar empresa (DELETE con ID).
+            Route::delete('/gestion/{id}', [EmpresaWebController::class, 'destroy'])->name('empresa.destroy');
         });
 
         // ===============================================================
@@ -77,7 +86,7 @@ Route::middleware('auth')->group(function () {
         // Grupo de pestañas para Configuración General (comentadas, por implementar).
         Route::prefix('configuracion-general')->group(function () {
             // Route::get('/informacion-corporativa', [ConfiguracionGeneralController::class, 'informacionCorporativa']);
-            
+
             // Route::get('/redes-sociales', [ConfiguracionGeneralController::class, 'redesSociales']);
         });
 
@@ -94,9 +103,9 @@ Route::middleware('auth')->group(function () {
         // Grupo de pestañas para Tablas Maestras (comentadas, por implementar).
         Route::prefix('tablas-maestras')->group(function () {
             // Route::get('/tipos-identificaciones', [TablasMaestrasController::class, 'tiposIdentificaciones']);
-            
+
             // Route::get('/tipos-pqrsd', [TablasMaestrasController::class, 'tiposPqrsd']);
-            
+
             // Route::get('/estados-pqrsd', [TablasMaestrasController::class, 'estadosPqrsd']);
         });
     });

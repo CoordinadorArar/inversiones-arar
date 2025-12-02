@@ -121,7 +121,7 @@ export const EmpresaColumns: ColumnDef<EmpresaInterface>[] = [
           <ImageModal
             open={open}
             onClose={() => setOpen(false)}
-            src={logoUrl}
+            src={"/storage/" + logoUrl}
           />
         </>
       );

@@ -96,26 +96,15 @@ class Rol extends Model
      */
     public function tienePermisoModulo(int $moduloId, string $permiso): bool
     {
-        $moduloRol = $this->modulos()
-            ->where('modulo_id', $moduloId)
-            ->first();
-
-        if (!$moduloRol) {
-            return false;
-        }
-
-        $permisos = json_decode($moduloRol->pivot->permisos, true) ?? [];
-
-        // Verificar permisos CRUD estándar
-        if (isset($permisos[$permiso])) {
-            return $permisos[$permiso];
-        }
+        $permisos = $this->getPermisosModulo($moduloId);
+        
+        return in_array($permiso, $permisos);
 
         return false;
     }
 
     /**
-     * Helper: Verificar si el rol tiene un permiso específico en una pestaña.
+     * Verificar si el rol tiene un permiso específico en una pestaña.
      * 
      * @param int $pestanaId ID de la pestaña
      * @param string $permiso Nombre del permiso (ej. 'crear', 'exportar')
@@ -128,21 +117,10 @@ class Rol extends Model
      */
     public function tienePermisoPestana(int $pestanaId, string $permiso): bool
     {
-        $pestanaRol = $this->pestanas()
-            ->where('pestana_id', $pestanaId)
-            ->first();
-
-        if (!$pestanaRol) {
-            return false;
-        }
-
-        $permisos = json_decode($pestanaRol->pivot->permisos, true) ?? [];
-
-        if (isset($permisos[$permiso])) {
-            return $permisos[$permiso];
-        }
-
-        return false;
+        $permisos = $this->getPermisosPestana($pestanaId);
+        
+        // Verificar si el permiso está en el array
+        return in_array($permiso, $permisos);
     }
 
     /**

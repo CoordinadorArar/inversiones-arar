@@ -281,7 +281,7 @@ function ClientCard({ cliente }) {
                 {cliente.logo_url ? (
                     <div className="relative mb-3 md:mb-4">
                         <img
-                            src={cliente.logo_url}
+                            src={"/storage/" + cliente.logo_url}
                             alt={`Logo de ${cliente.razon_social}`}
                             className="h-12 md:h-16 w-auto object-contain relative z-10 group-hover:scale-110 transition-transform duration-500"
                         />

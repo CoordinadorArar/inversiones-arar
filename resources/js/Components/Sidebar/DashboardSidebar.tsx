@@ -35,7 +35,7 @@ export function DashboardSidebar({
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const [openPopover, setOpenPopover] = useState<string | null>(null);
-  
+
   const toggleGroup = (title: string) => {
     setOpenGroups((prev) =>
       prev.includes(title)
@@ -43,19 +43,19 @@ export function DashboardSidebar({
         : [...prev, title]
     );
   };
-  
+
   return (
     <Sidebar collapsible="icon" className="z-50">
       <SidebarLogo collapsed={collapsed} />
-      
-      <SidebarContent className="mt-2">
+
+      <SidebarContent className="mt-2 overflow-y-auto sidebar-scroll">
         <SidebarGroup>
           <SidebarGroupLabel>Menú Principal</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {/* Item fijo: Dashboard */}
               <DashboardMenuItem collapsed={collapsed} />
-              
+
               {/* Items dinámicos del menú */}
               {menu.map((item) => (
                 <SidebarMenuItem key={item.title}>
@@ -107,13 +107,13 @@ const SidebarLogo = ({ collapsed }: { collapsed: boolean }) => {
  */
 const DashboardMenuItem = ({ collapsed }: { collapsed: boolean }) => {
   const { isActive } = useActiveRoute();
-  
+
   return (
     <SidebarMenuButton asChild>
       <Link
         href={route('dashboard')}
         className={cn(
-          "flex items-center gap-2 transition-all duration-300 rounded-md",
+          "flex items-center gap-2 transition-all duration-300 rounded-md whitespace-nowrap",
           isActive('/dashboard')
             ? `bg-primary/10 text-primary font-medium hover:!text-primary hover:!bg-primary/15 ${!collapsed && "border-r-4 border-primary"}`
             : "hover:bg-muted"

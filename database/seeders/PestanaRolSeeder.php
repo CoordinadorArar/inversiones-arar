@@ -15,7 +15,15 @@ class PestanaRolSeeder extends Seeder
     {
         $accesos = [
             ['pestana_id' => 1, 'rol_id' => 1],
-            ['pestana_id' => 2, 'rol_id' => 1],
+            [
+                'pestana_id' => 2,
+                'rol_id' => 1,
+                'permisos' => json_encode([
+                    "crear",
+                    "editar",
+                    "eliminar",
+                ]),
+            ],
             ['pestana_id' => 3, 'rol_id' => 1],
             ['pestana_id' => 4, 'rol_id' => 1],
             ['pestana_id' => 5, 'rol_id' => 1],
@@ -27,13 +35,13 @@ class PestanaRolSeeder extends Seeder
             ['pestana_id' => 11, 'rol_id' => 1],
             ['pestana_id' => 12, 'rol_id' => 1],
             ['pestana_id' => 13, 'rol_id' => 1],
-            ['pestana_id' => 14, 'rol_id' => 1],            
-            ['pestana_id' => 15, 'rol_id' => 1],            
-            ['pestana_id' => 16, 'rol_id' => 1],            
-            ['pestana_id' => 17, 'rol_id' => 1],            
-            ['pestana_id' => 18, 'rol_id' => 1],            
-            ['pestana_id' => 19, 'rol_id' => 1],            
-            ['pestana_id' => 20, 'rol_id' => 1],            
+            ['pestana_id' => 14, 'rol_id' => 1],
+            ['pestana_id' => 15, 'rol_id' => 1],
+            ['pestana_id' => 16, 'rol_id' => 1],
+            ['pestana_id' => 17, 'rol_id' => 1],
+            ['pestana_id' => 18, 'rol_id' => 1],
+            ['pestana_id' => 19, 'rol_id' => 1],
+            ['pestana_id' => 20, 'rol_id' => 1],
         ];
 
         foreach ($accesos as $acceso) {
@@ -43,7 +51,7 @@ class PestanaRolSeeder extends Seeder
                     'pestana_id' => $acceso['pestana_id'],
                 ],
                 [
-                    'permisos' =>  null,
+                    'permisos' =>  $acceso['permisos'] ?? null,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]
