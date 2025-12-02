@@ -35,6 +35,12 @@ class Auditoria extends Model
         'fecha_creacion'
     ];
 
+    // Campos tratados como fechas.
+    protected $dates = [
+        'fecha_creacion',
+    ];
+
+
     /**
      * BLOQUE: Método registrar - Crear entrada de auditoría.
      * 
@@ -77,5 +83,15 @@ class Auditoria extends Model
             'usuario_id'            => $usuario,
             'cambios'               => $cambios ? json_encode($cambios) : null,
         ]);
+    }
+
+    /**
+     * Relación: Usuario que realizó la acción.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function usuario()
+    {
+        return $this->belongsTo(User::class, 'usuario_id', 'id');
     }
 }

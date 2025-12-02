@@ -87,6 +87,30 @@ export function DataTable<TData, TValue>({
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(initialColumnVisibility);  // Visibilidad de columnas.
   const [globalFilter, setGlobalFilter] = useState("");  // Filtro global (búsqueda).
 
+  // Función personalizada para filtro global
+  const customGlobalFilterFn = (row: any, columnId: string, filterValue: string) => {
+    const search = filterValue.toLowerCase();
+    const rowData = row.original as any;
+
+    // Busca en todos los campos planos
+    return Object.keys(rowData).some(key => {
+      const value = rowData[key];
+      if (value === null || value === undefined) return false;
+
+      // Si es string, búsqueda directa
+      if (typeof value === 'string') {
+        return value.toLowerCase().includes(search);
+      }
+
+      // Si es número, conviértelo a string
+      if (typeof value === 'number') {
+        return value.toString().includes(search);
+      }
+
+      return false;
+    });
+  };
+
   // Instancia de tabla TanStack con modelos y estados.
   const table = useReactTable({
     data,  // Datos pasados.
@@ -95,6 +119,7 @@ export function DataTable<TData, TValue>({
     getPaginationRowModel: getPaginationRowModel(),  // Paginación.
     getSortedRowModel: getSortedRowModel(),  // Ordenamiento.
     getFilteredRowModel: getFilteredRowModel(),  // Filtros.
+    globalFilterFn: customGlobalFilterFn,
     onSortingChange: setSorting,  // Handler para sorting.
     onColumnFiltersChange: setColumnFilters,  // Handler para filtros.
     onColumnVisibilityChange: setColumnVisibility,  // Handler para visibilidad.
@@ -154,7 +179,8 @@ export function DataTable<TData, TValue>({
                       column.toggleVisibility(!!value)  // Toggle visibilidad.
                     }
                   >
-                    {column.columnDef.header as string}  // Nombre de columna.
+                    {/* Nombre de columna. */}
+                    {column.columnDef.header as string}
                   </DropdownMenuCheckboxItem>
                 );
               })}

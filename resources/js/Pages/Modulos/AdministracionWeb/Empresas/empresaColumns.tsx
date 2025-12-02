@@ -55,7 +55,7 @@ export const EmpresaColumns: ColumnDef<EmpresaInterface>[] = [
       const siglas = row.original.siglas;
       // Badge primary si existe, sino EmptyBadge.
       return siglas ? (
-        <Badge variant="default" className="text-primary bg-primary/15 border-0">
+        <Badge className="text-primary bg-primary/15 border-0">
           {siglas}
         </Badge>
       ) : (

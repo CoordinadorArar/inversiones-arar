@@ -37,6 +37,21 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->group('public', [
             \App\Http\Middleware\SharePublicData::class,  // Comparte empresasHeader a vistas públicas.
         ]);
+
+        // ALIASES PARA MIDDLEWARES CON PARÁMETROS
+        $middleware->alias([
+            // Alias 'modulo.access': Para validar acceso a módulos por ID.
+            // - Middleware: CheckModuloAccess (busca Modulo::find($idModulo)).
+            // - Uso: middleware('modulo.access:ID_DEL_MODULO') en rutas de módulos directos.
+            // - Ejemplo: middleware('modulo.access:5') valida módulo con ID 5.
+            'modulo.access' => \App\Http\Middleware\CheckModuloAccess::class,
+            // Alias 'pestana.access': Para validar acceso a pestañas por ID.
+            // - Middleware: CheckPestanaAccess (busca Pestana::find($idPestana)).
+            // - Uso: middleware('pestana.access:ID_DE_LA_PESTANA') en rutas de pestañas.
+            // - Ejemplo: middleware('pestana.access:1') valida pestaña con ID 1.
+            // - Agregado para pestañas: Extiende validación a subniveles de módulos.
+            'pestana.access' => \App\Http\Middleware\CheckPestanaAccess::class,
+        ]);
     })
     // Configurar manejo de excepciones (vacío por ahora).
     ->withExceptions(function (Exceptions $exceptions) {

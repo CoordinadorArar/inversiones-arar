@@ -58,8 +58,9 @@ Route::middleware('auth')->group(function () {
         // Grupo de pestañas para Empresas (prefijo /administracion-web/empresas).
         Route::prefix('empresas')->group(function () {
             // Pestaña: Listado de empresas.
-            Route::get('/listado', [EmpresaWebController::class, 'index']);
-
+            // Middleware: pestana.access:1 (ID de la pestaña en DB) para validar acceso.
+            Route::get('/listado', [EmpresaWebController::class, 'index'])->middleware('pestana.access:1');
+            
             // Pestaña: Gestión de empresas (crear/editar).
             Route::get('/gestion', [EmpresaWebController::class, 'gestion']);
 

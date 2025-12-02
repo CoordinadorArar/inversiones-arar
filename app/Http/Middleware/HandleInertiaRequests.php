@@ -33,7 +33,7 @@ class HandleInertiaRequests extends Middleware
         $user = $request->user();
 
         if ($user) {
-            $modulos = Modulo::all();
+            $modulos = $user->rol->modulos()->get();
 
             $menu = $modulos
                 ->whereNull('modulo_padre_id') // solo módulos raíz (padres y los independientes)
