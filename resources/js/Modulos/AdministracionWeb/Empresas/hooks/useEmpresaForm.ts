@@ -4,7 +4,7 @@ import {
     EmpresaFormData,
     EMPRESA_INITIAL_DATA,
     createEmpresaSchema,
-} from "../empresaForm.types";
+} from "../types/empresaForm.types";
 
 /**
  * Interface para las props del hook useEmpresaForm.

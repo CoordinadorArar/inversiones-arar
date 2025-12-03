@@ -17,7 +17,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Info } from "lucide-react";
-import { EmpresaFormData, SWITCH_DESCRIPTIONS } from "./empresaForm.types";
+import { EmpresaFormData, SWITCH_DESCRIPTIONS } from "../types/empresaForm.types";
 import {
   Tooltip,
   TooltipContent,

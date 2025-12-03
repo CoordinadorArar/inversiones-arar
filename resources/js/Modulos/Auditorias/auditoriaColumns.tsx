@@ -29,7 +29,7 @@ import { Eye, NotebookTabs } from "lucide-react";
 import { EmptyBadge } from "@/Components/EmptyBadge"; 
 import { useState } from "react"; 
 import { ActionButton } from "@/Components/ActionButton";  
-import DetailsModal from "./DetailsModal";  
+import DetailsModal from "./partials/DetailsModal";  
 
 // Definición de columnas para DataTable de auditorías.
 export const AuditoriaColumns: ColumnDef<AuditoriaInterface>[] = [

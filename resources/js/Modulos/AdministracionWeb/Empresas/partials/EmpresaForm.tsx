@@ -4,11 +4,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import InputError from "@/Components/InputError";
 import { Save, Trash2, X, Plus } from "lucide-react";
-import { EmpresaFormData, EMPRESA_LIMITS } from "./empresaForm.types";
+import { EmpresaFormData, EMPRESA_LIMITS } from "../types/empresaForm.types";
 import { EmpresaSwitches } from "./EmpresaSwitches";
 import { EmpresaLogoUpload } from "./EmpresaLogoUpload";
 import { EmpresaDeleteDialog } from "./EmpresaDeleteDialog";
-import { useEmpresaForm } from "./hooks/useEmpresaForm";
+import { useEmpresaForm } from "../hooks/useEmpresaForm";
 import {
     handleTextKeyDown,
     handleNumberKeyDown,

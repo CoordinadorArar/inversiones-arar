@@ -63,7 +63,7 @@ class AuditoriaController extends Controller
             ];
         });
 
-        return Inertia::render('Modulos/Auditorias/Listado', [
+        return Inertia::render('Modulos:Auditorias/pages/Listado', [
             'auditorias' => $auditorias,
             'moduloNombre' => $this->moduloNombre,
         ]);

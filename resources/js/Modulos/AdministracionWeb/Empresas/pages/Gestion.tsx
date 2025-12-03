@@ -16,13 +16,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { ModuleLayout } from "@/Layouts/ModuleLayout";
 import { DashboardLayout } from "@/Layouts/DashboardLayout";
 import { SearchableSelect } from "@/Components/SearchableSelect";
-import { EMPRESA_INITIAL_DATA } from "./empresaForm.types";
+import { EMPRESA_INITIAL_DATA } from "../types/empresaForm.types";
 import { Button } from "@/Components/ui/button";
 import { FilePlus, Pencil, Plus } from "lucide-react";
-import { EmpresaForm } from "./EmpresaForm";
+import { EmpresaForm } from "../partials/EmpresaForm";
 import { Label } from "@/components/ui/label";
-import { EmpresaInterface } from "./empresaInterface";
-import { useEmpresaGestion } from "./hooks/useEmpresaGestion";
+import { EmpresaInterface } from "../types/empresaInterface";
+import { useEmpresaGestion } from "../hooks/useEmpresaGestion";
 import { useMemo } from "react";
 
 interface EmpresaGestionProps {

@@ -18,9 +18,9 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { DashboardLayout } from "@/Layouts/DashboardLayout";
-import { AuditoriaInterface } from "./auditoriaInterface";
+import { AuditoriaInterface } from "../auditoriaInterface";
 import { DataTable } from "@/Components/ui/data-table";
-import { AuditoriaColumns } from "./auditoriaColumns";
+import { AuditoriaColumns } from "../auditoriaColumns";
 import { Head } from "@inertiajs/react";
 
 // Interface para props del componente.

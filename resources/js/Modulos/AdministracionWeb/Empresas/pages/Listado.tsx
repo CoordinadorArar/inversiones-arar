@@ -21,8 +21,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { ModuleLayout } from "@/Layouts/ModuleLayout";
 import { DashboardLayout } from "@/Layouts/DashboardLayout";
 import { DataTable } from "@/Components/ui/data-table";
-import { EmpresaColumns, EmpresaInactiveColumns } from "./empresaColumns";
-import { EmpresaInterface } from "./empresaInterface";
+import { EmpresaColumns, EmpresaInactiveColumns } from "../empresaColumns";
+import { EmpresaInterface } from "../types/empresaInterface";
 
 // Interface para props del componente.
 interface EmpresasListadoProps {

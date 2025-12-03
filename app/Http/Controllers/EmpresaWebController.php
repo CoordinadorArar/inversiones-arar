@@ -72,7 +72,7 @@ class EmpresaWebController extends Controller
     public function index()
     {
         // Renderiza vista Inertia con datos.
-        return Inertia::render('Modulos/AdministracionWeb/Empresas/Listado', [
+        return Inertia::render('Modulos:AdministracionWeb/Empresas/pages/Listado', [
             'tabs' => $this->tabs,              // Pestañas accesibles.
             'empresas' => EmpresaWeb::all(),    // Todas las empresas.
             'moduloNombre' => $this->moduloNombre,  // Nombre del módulo.
@@ -97,7 +97,7 @@ class EmpresaWebController extends Controller
         $empresas = in_array('editar', $permisos) ? EmpresaWeb::all() : [];
 
         // Renderiza vista Inertia con datos.
-        return Inertia::render('Modulos/AdministracionWeb/Empresas/Gestion', [
+        return Inertia::render('Modulos:AdministracionWeb/Empresas/pages/Gestion', [
             'tabs' => $this->tabs,              // Pestañas accesibles.
             'empresas' => $empresas,
             'permisos' => $permisos,            // Permisos de la pestaña.

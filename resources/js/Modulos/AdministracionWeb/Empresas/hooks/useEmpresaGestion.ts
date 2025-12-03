@@ -9,8 +9,8 @@
  */
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { EmpresaInterface } from "../empresaInterface";
-import { EmpresaFormData } from "../empresaForm.types";
+import { EmpresaInterface } from "../types/empresaInterface";
+import { EmpresaFormData } from "../types/empresaForm.types";
 import { SearchableSelectOption } from "@/Components/SearchableSelect";
 
 /**

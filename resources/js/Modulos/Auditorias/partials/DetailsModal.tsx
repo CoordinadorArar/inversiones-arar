@@ -22,7 +22,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";  
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/Components/ui/table";  
 import { Badge } from "@/Components/ui/badge";  
-import { AuditoriaInterface } from "./auditoriaInterface"; 
+import { AuditoriaInterface } from "../auditoriaInterface"; 
 import { FileText } from "lucide-react"; 
 
 // Interface para props del componente.
