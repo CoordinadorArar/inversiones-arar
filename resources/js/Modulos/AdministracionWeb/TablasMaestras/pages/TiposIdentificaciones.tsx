@@ -1,10 +1,10 @@
 /**
- * Página TiposIdentificaciones
+ * Página TiposIdentificaciones.
  * 
- * Vista con tabla y formulario lateral para gestión de tipos
- * - Tabla en el lado izquierdo
- * - Formulario en el lado derecho (se muestra según permisos)
- * - Lógica de crear/editar integrada
+ * Vista con tabla y formulario lateral para gestión de tipos de identificación.
+ * - Tabla en el lado izquierdo para listar tipos.
+ * - Formulario en el lado derecho (se muestra según permisos) para crear/editar.
+ * - Lógica integrada para operaciones CRUD via hooks.
  * 
  * @author Yariangel Aray
  * @date 2025-12-03
@@ -20,6 +20,10 @@ import { createTipoColumns } from "../columns/tipoColumns";
 import { useTipoGestion } from "../hooks/useTipoGestion";
 import { TipoForm } from "../partials/TipoForm";
 
+/**
+ * Interfaz para las props del componente TiposIdentificaciones.
+ * Define la estructura de datos pasados desde el backend via Inertia.
+ */
 interface TiposIdentificacionesProps {
   tabs: Array<{
     id: number;
@@ -31,13 +35,14 @@ interface TiposIdentificacionesProps {
   permisos: string[];
 }
 
-export default function TiposIdentificaciones({
-  tipos: tiposIniciales,
-  tabs,
-  moduloNombre,
-  permisos,
-}: TiposIdentificacionesProps) {
+/**
+ * Componente principal para la página de Tipos de Identificaciones.
+ * Renderiza la tabla de tipos y el formulario lateral condicionalmente, manejando estados via hook personalizado.
+ */
+export default function TiposIdentificaciones({ tipos: tiposIniciales, tabs, moduloNombre, permisos }: TiposIdentificacionesProps) {
 
+  // Aquí se usa el hook useTipoGestion para manejar estados y lógica de CRUD (crear, editar, eliminar).
+  // Devuelve estados como tipos, mode, permisos, y funciones para manejar eventos.
   const {
     tipos,
     mode,
@@ -61,34 +66,37 @@ export default function TiposIdentificaciones({
     permisos,
   });
 
+  // Aquí se crea la configuración de columnas para la tabla, pasando funciones de edición/eliminación y permisos.
   const columns = createTipoColumns({
     onEdit: handleEdit,
     onDelete: handleDeleteClick,
     permisos: { editar: puedeEditar, eliminar: puedeEliminar },
   });
 
-  // Preparar datos iniciales del formulario
+   // Preparar datos iniciales del formulario: si está en modo edición, usa datos del tipo seleccionado.
   const formInitialData =
     mode === "edit" && editingTipo
       ? {
           nombre: editingTipo.nombre,
           abreviatura: editingTipo.abreviatura,
         }
-      : undefined;
+      : {};
 
   return (
     <>
+      {/* Aquí se usa ModuleLayout para envolver la página con navegación de pestañas y header del módulo. */}
       <ModuleLayout
         moduloNombre={moduloNombre}
         tabs={tabs}
         activeTab={window.location.pathname}
       >
         <div className={`grid gap-4 ${shouldShowForm ? 'lg:grid-cols-[1fr_320px]' : ''}`}>
-          {/* Tabla */}
+          {/* Sección de la tabla: Usa Card para contener el listado de tipos. */}
           <Card className="py-6 h-full flex flex-col shadow border-none gap-4">
             <CardHeader>
               <CardTitle className="flex items-center gap-5">
                 Listado de Tipos de Identificaciones
+                {/* Aquí se incluye HelpManualButton para acceder al manual de usuario. */}
                 <HelpManualButton
                   url="/docs/Manual-Tablas-Maestras.pdf"
                   variant="muted"
@@ -97,6 +105,7 @@ export default function TiposIdentificaciones({
             </CardHeader>
 
             <CardContent className="flex-1 min-h-0 flex flex-col">
+              {/* Aquí se usa DataTable para renderizar la tabla con columnas dinámicas y búsqueda. */}
               <DataTable
                 columns={columns}
                 data={tipos}
@@ -104,8 +113,7 @@ export default function TiposIdentificaciones({
               />
             </CardContent>
           </Card>
-
-          {/* Formulario lateral - Solo se muestra si hay permisos */}
+          {/* Sección del formulario lateral: Solo se muestra si el usuario tiene permisos para crear/editar. */}
           {shouldShowForm && (
             <Card className="py-4 h-min shadow border-none sticky top-16">
               <CardHeader>
@@ -114,6 +122,7 @@ export default function TiposIdentificaciones({
                 </CardTitle>
               </CardHeader>
               <CardContent>
+                {/* Aquí se usa TipoForm para manejar el formulario de creación/edición, con validaciones y envío. */}
                 <TipoForm
                   mode={mode}
                   initialData={formInitialData}
@@ -127,8 +136,7 @@ export default function TiposIdentificaciones({
           )}
         </div>
       </ModuleLayout>
-
-      {/* Dialog de confirmación de eliminación */}
+      {/* Sección del dialog de eliminación: Usa DeleteDialog para confirmar la eliminación de un tipo. */}
       <DeleteDialog
         open={showDeleteDialog}
         onOpenChange={handleCancelDelete}
@@ -140,6 +148,10 @@ export default function TiposIdentificaciones({
   );
 }
 
+/**
+ * Layout del componente: Envuelve la página en DashboardLayout con header dinámico.
+ * Se usa para renderizar el componente dentro del layout principal.
+ */
 TiposIdentificaciones.layout = (page) => (
   <DashboardLayout header={page.props.moduloNombre} children={page} />
 );

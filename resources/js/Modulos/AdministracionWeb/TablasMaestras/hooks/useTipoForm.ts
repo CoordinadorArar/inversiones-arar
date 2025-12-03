@@ -1,8 +1,9 @@
 /**
- * Hook useTipoForm
+ * Hook useTipoForm.
  * 
- * Maneja la lógica interna del formulario de tipos de identificación
- * Validaciones, estado local y handlers
+ * Maneja la lógica interna del formulario de tipos: validaciones con Zod,
+ * estado local de datos y errores, handlers para cambios y envío, y efectos para focus y errores externos.
+ * Se usa en componentes de formulario para simplificar la gestión de estado y validaciones.
  * 
  * @author Yariangel Aray
  * @date 2025-12-03
@@ -11,10 +12,26 @@ import { useState, useEffect, useRef } from "react";
 import { z } from "zod";
 import { TipoFormData, tipoSchema } from "../types/tipoForm.types";
 
+/**
+ * Datos iniciales por defecto para el formulario de tipos.
+ * Usados para resetear o inicializar el estado.
+ */
 const INITIAL_DATA: TipoFormData = {
   nombre: "",
   abreviatura: "",
 };
+
+/**
+ * Interfaz para las props del hook useTipoForm.
+ * Define los parámetros necesarios para configurar el comportamiento del formulario.
+ * @typedef {Object} UseTipoFormProps
+ * @property {"create" | "edit"} mode - Modo del formulario (crear o editar).
+ * @property {Partial<TipoFormData>} [initialData] - Datos iniciales opcionales para prellenar el formulario.
+ * @property {(data: TipoFormData) => Promise<void>} onSubmit - Función a llamar al enviar datos válidos.
+ * @property {() => void} onCancel - Función a llamar al cancelar.
+ * @property {Record<string, string>} [externalErrors] - Errores externos opcionales (ej. del backend).
+ * @property {boolean} [processing] - Indica si hay un proceso en curso (ej. envío).
+ */
 
 interface UseTipoFormProps {
   mode: "create" | "edit";
@@ -25,34 +42,31 @@ interface UseTipoFormProps {
   processing?: boolean;
 }
 
-export function useTipoForm({
-  mode,
-  initialData,
-  onSubmit,
-  onCancel,
-  externalErrors = {},
-  processing = false,
-}: UseTipoFormProps) {
-  // Estado de datos del formulario
+/**
+ * Hook personalizado para gestionar el estado y lógica de un formulario de tipos de.
+ * Incluye validación, manejo de errores y handlers para interacciones del usuario.
+ */
+export function useTipoForm({ mode, initialData, onSubmit, onCancel, externalErrors = {}, processing = false }: UseTipoFormProps) {
+  // Aquí se usa useState para manejar el estado de los datos del formulario.
   const [data, setData] = useState<TipoFormData>({
     ...INITIAL_DATA,
     ...initialData,
   });
 
-  // Estado de errores locales
+  // Aquí se usa useState para manejar errores locales del formulario.
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Ref para el primer input (focus automático)
+  // Aquí se usa useRef para referenciar el primer input y hacer focus automático.
   const firstInputRef = useRef<HTMLInputElement>(null);
 
-  // Efecto: Focus en el primer input al crear
+  // Aquí se usa useEffect para hacer focus en el primer input cuando se crea un nuevo tipo.
   useEffect(() => {
     if (mode === "create") {
       firstInputRef.current?.focus();
     }
   }, [mode]);
 
-  // Efecto: Actualizar errores externos
+  // Aquí se usa useEffect para actualizar errores externos y hacer scroll al primer error.
   useEffect(() => {
     if (Object.keys(externalErrors).length > 0) {
       setErrors(externalErrors);
@@ -60,7 +74,7 @@ export function useTipoForm({
     }
   }, [externalErrors]);
 
-  // Efecto: Actualizar datos cuando cambian initialData
+  // Aquí se usa useEffect para actualizar datos cuando cambian initialData o mode.
   useEffect(() => {
     setData({
       ...INITIAL_DATA,
@@ -70,7 +84,10 @@ export function useTipoForm({
   }, [initialData, mode]);
 
   /**
-   * Scroll al primer error
+   * Función auxiliar: Hace scroll al primer campo con error.
+   * Mejora la UX al mostrar errores visibles.
+   * 
+   * @param {Record<string, string>} errorObj - Objeto con errores.
    */
   const scrollToFirstError = (errorObj: Record<string, string>) => {
     const firstErrorField = Object.keys(errorObj)[0];
@@ -81,12 +98,16 @@ export function useTipoForm({
   };
 
   /**
-   * Handler: Actualiza un campo del formulario
+   * Handler: Actualiza el valor de un campo del formulario y limpia errores locales.
+   * Se llama en eventos de cambio de inputs.
+   * 
+   * @param {keyof TipoFormData} field - Nombre del campo a actualizar.
+   * @param {string} value - Nuevo valor del campo.
    */
   const handleChange = (field: keyof TipoFormData, value: string) => {
     setData((prev) => ({ ...prev, [field]: value }));
 
-    // Limpiar error del campo
+    // Limpiar error del campo si existe
     if (errors[field]) {
       setErrors((prev) => {
         const newErrors = { ...prev };
@@ -97,7 +118,11 @@ export function useTipoForm({
   };
 
   /**
-   * Handler: Envío del formulario
+   * Handler: Maneja el envío del formulario con validación usando Zod.
+   * Previene envío si hay errores y llama a onSubmit con datos válidos.
+   * Resetea el formulario en modo crear si no hay errores.
+   * 
+   * @param {React.FormEvent} e - Evento del formulario.
    */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -131,7 +156,8 @@ export function useTipoForm({
   };
 
   /**
-   * Handler: Cancelar
+   * Handler: Maneja la cancelación del formulario.
+   * Resetea estado y llama a onCancel.
    */
   const handleCancelClick = () => {
     setErrors({});

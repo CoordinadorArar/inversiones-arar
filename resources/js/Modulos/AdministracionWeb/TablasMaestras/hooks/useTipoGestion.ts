@@ -1,8 +1,10 @@
 /**
- * Hook useTipoGestion
+ * Hook useTipoGestion.
  * 
- * Maneja toda la lógica de estado y operaciones CRUD para tipos de identificación
- * Incluye lógica especial para mostrar/ocultar formulario según permisos
+ * Maneja toda la lógica de estado y operaciones CRUD para tipos:
+ * incluye verificación de permisos, estados para modo y edición, y handlers para crear, editar y eliminar.
+ * Actualiza la lista de tipos localmente tras operaciones exitosas y muestra toasts para feedback.
+ * Se usa en componentes de gestión para centralizar la lógica de UI y API.
  * 
  * @author Yariangel Aray
  * @date 2025-12-03
@@ -12,40 +14,63 @@ import { useToast } from "@/hooks/use-toast";
 import { TipoIdentificacionInterface } from "../types/tipoInterface";
 import { TipoFormData } from "../types/tipoForm.types";
 
+/**
+ * Interfaz para las props del hook useTipoGestion.
+ * Define los datos iniciales y permisos necesarios para gestionar tipos.
+ * 
+ * @typedef {Object} UseTipoGestionProps
+ * @property {TipoIdentificacionInterface[]} tiposIniciales - Lista inicial de tipos de identificación.
+ * @property {string[]} permisos - Lista de permisos del usuario (ej. "crear", "editar").
+ */
 interface UseTipoGestionProps {
   tiposIniciales: TipoIdentificacionInterface[];
   permisos: string[];
 }
-
+/**
+ * Hook personalizado para gestionar estado y operaciones CRUD de tipos.
+ * Incluye lógica para mostrar/ocultar formulario según permisos y manejar interacciones con la API.
+ */
 export function useTipoGestion({ tiposIniciales, permisos }: UseTipoGestionProps) {
+  // Aquí se usa useToast para mostrar notificaciones de éxito/error al usuario.
   const { toast } = useToast();
 
-  // Verificar permisos
-    const puedeCrear = permisos.includes("crear");
-    const puedeEditar = permisos.includes("editar");
-    const puedeEliminar = permisos.includes("eliminar");
+  // Verificar permisos: Determina si el usuario puede crear, editar o eliminar.
+  const puedeCrear = permisos.includes("crear");
+  const puedeEditar = permisos.includes("editar");
+  const puedeEliminar = permisos.includes("eliminar");
 
-  // Estados
+  // Aquí se usa useState para manejar la lista de tipos (actualizada tras operaciones).
   const [tipos, setTipos] = useState<TipoIdentificacionInterface[]>(tiposIniciales);
+  // Aquí se usa useState para manejar el modo del formulario (crear o editar).
   const [mode, setMode] = useState<"create" | "edit">("create");
+  // Aquí se usa useState para almacenar el ID del tipo en edición.
   const [editingTipoId, setEditingTipoId] = useState<number | null>(null);
+  // Aquí se usa useState para manejar errores del formulario.
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  // Aquí se usa useState para indicar si hay un proceso en curso (envío/eliminación).
   const [processing, setProcessing] = useState(false);
+  // Aquí se usa useState para controlar la visibilidad del dialog de eliminación.
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  // Aquí se usa useState para almacenar el tipo seleccionado para eliminar.
   const [tipoToDelete, setTipoToDelete] = useState<TipoIdentificacionInterface | null>(null);
 
-  // Obtener tipo en edición
+  // Variable calculada: Obtiene el tipo actualmente en edición basado en editingTipoId.
   const editingTipo = tipos.find((tipo) => tipo.id === editingTipoId);
 
   /**
- * Determina si el formulario debe mostrarse
- * - Si puede crear: siempre se muestra
- * - Si solo puede editar: se muestra solo cuando está editando
- */
+   * Determina si el formulario debe mostrarse.
+   * - Si puede crear: siempre se muestra.
+   * - Si solo puede editar: se muestra solo cuando está editando.
+   * 
+   * @returns {boolean} True si el formulario debe renderizarse.
+   */
   const shouldShowForm = puedeCrear || (puedeEditar && mode === "edit");
 
   /**
-   * Inicia el modo de edición
+   * Inicia el modo de edición para un tipo específico.
+   * Verifica permisos antes de cambiar estados.
+   * 
+   * @param {number} id - ID del tipo a editar.
    */
   const handleEdit = (id: number) => {
     const tipo = tipos.find((t) => t.id === id);
@@ -57,8 +82,7 @@ export function useTipoGestion({ tiposIniciales, permisos }: UseTipoGestionProps
   };
 
   /**
-   * Cancela la edición y vuelve al modo crear (si puede crear)
-   * o oculta el formulario (si solo puede editar)
+   * Cancela la edición y resetea al modo crear (si puede crear) o oculta el formulario.
    */
   const handleCancel = () => {
     setFormErrors({});
@@ -67,7 +91,10 @@ export function useTipoGestion({ tiposIniciales, permisos }: UseTipoGestionProps
   };
 
   /**
-   * Maneja el envío del formulario (crear o actualizar)
+   * Maneja el envío del formulario para crear o actualizar un tipo.
+   * Envía datos a la API, actualiza la lista local y muestra feedback con toasts.
+   * 
+   * @param {TipoFormData} data - Datos validados del formulario.
    */
   const handleSubmit = async (data: TipoFormData) => {
     setProcessing(true);
@@ -109,7 +136,7 @@ export function useTipoGestion({ tiposIniciales, permisos }: UseTipoGestionProps
 
         if (response.ok) {
           if (mode === "create") {
-            // Agregar el nuevo tipo
+            // Agregar el nuevo tipo a la lista
             setTipos((prev) => [result.tipo, ...prev]);
             toast({
               title: "Tipo creado",
@@ -119,7 +146,7 @@ export function useTipoGestion({ tiposIniciales, permisos }: UseTipoGestionProps
             // Si puede crear, se queda en modo crear
             // El formulario se resetea automáticamente
           } else {
-            // Actualizar el tipo existente
+            // Actualizar el tipo existente en la lista
             setTipos((prev) =>
               prev.map((tipo) => (tipo.id === result.tipo.id ? result.tipo : tipo))
             );
@@ -168,7 +195,10 @@ export function useTipoGestion({ tiposIniciales, permisos }: UseTipoGestionProps
   };
 
   /**
-   * Inicia el proceso de eliminación
+   * Inicia el proceso de eliminación abriendo el dialog.
+   * Verifica permisos antes de proceder.
+   * 
+   * @param {TipoIdentificacionInterface} tipo - Tipo a eliminar.
    */
   const handleDeleteClick = (tipo: TipoIdentificacionInterface) => {
     if (!puedeEliminar) return;
@@ -177,7 +207,7 @@ export function useTipoGestion({ tiposIniciales, permisos }: UseTipoGestionProps
   };
 
   /**
-   * Cancela la eliminación
+   * Cancela la eliminación cerrando el dialog.
    */
   const handleCancelDelete = () => {
     setShowDeleteDialog(false);
@@ -185,7 +215,8 @@ export function useTipoGestion({ tiposIniciales, permisos }: UseTipoGestionProps
   };
 
   /**
-   * Confirma y ejecuta la eliminación
+   * Confirma y ejecuta la eliminación del tipo.
+   * Envía petición a la API, actualiza la lista y muestra feedback.
    */
   const handleConfirmDelete = async () => {
     if (!tipoToDelete || !puedeEliminar) return;

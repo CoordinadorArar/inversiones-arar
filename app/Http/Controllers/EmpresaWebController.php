@@ -2,51 +2,56 @@
 
 namespace App\Http\Controllers;
 
-/**
- * Controlador EmpresaWebController.
- * 
- * Propósito: Maneja vistas y lógica para el módulo "Empresas" dentro de "Administración Web".
- * Usa permisos basados en roles y pestañas para controlar acceso. Renderiza componentes React via Inertia.
- * 
- * Propiedades:
- * - $moduloId: ID fijo del módulo (6, para Empresas).
- * - $rol: Rol del usuario autenticado.
- * - $tabs: Pestañas accesibles del módulo para el rol.
- * - $moduloNombre: Nombre del módulo (para UI).
- * 
- * Métodos:
- * - index: Vista de listado de empresas.
- * - gestion: Vista de gestión (crear/editar) de empresas.
- * 
- * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- 
- * @date 2025-11-27
- */
-
 use App\Models\EmpresaWeb;
 use App\Http\Requests\AdministracionWeb\EmpresaWebRequest;
 use App\Models\GestionModulos\Modulo;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
+/**
+ * Controlador para gestionar empresas en el módulo de Administración Web.
+ * Maneja vistas de listado y gestión, operaciones CRUD (crear, leer, actualizar, eliminar),
+ * integrándose con React via Inertia y verificando permisos por rol y pestaña.
+ *
+ * @author Yariangel Aray
+ * @date 2025-11-27
+ */
 class EmpresaWebController extends Controller
 {
-
-    // ID fijo del módulo Empresas (no cambia).
+    /**
+     * ID fijo del módulo Empresas (no cambia).
+     * Usado para acceder a datos relacionados con el módulo.
+     *
+     * @var int
+     */
     protected int $moduloId = 6;
 
-    // Rol del usuario autenticado (cargado en constructor).
+    /**
+     * Rol del usuario autenticado (cargado en constructor).
+     * Contiene el objeto rol para acceder a permisos y pestañas.
+     *
+     * @var mixed
+     */
     protected $rol;
 
-    // Pestañas accesibles del módulo para el rol (array de pestañas).
+    /**
+     * Pestañas accesibles del módulo para el rol (array de pestañas).
+     * Lista de pestañas que el usuario puede ver según su rol.
+     *
+     * @var mixed
+     */
     protected $tabs;
 
-    // Nombre del módulo (para pasar a vistas).
+    /**
+     * Nombre del módulo (para pasar a vistas).
+     * Nombre del módulo obtenido de la base de datos, usado en las vistas de Inertia.
+     *
+     * @var mixed
+     */
     protected $moduloNombre;
 
     /**
      * Constructor: Inicializa propiedades con datos del usuario autenticado.
-     * 
      * Carga rol, pestañas accesibles y nombre del módulo para usar en métodos.
      * Se ejecuta automáticamente al instanciar el controlador.
      */
@@ -63,11 +68,10 @@ class EmpresaWebController extends Controller
     }
 
     /**
-     * BLOQUE: index - Vista de listado de empresas.
-     * 
-     * Renderiza componente 'Listado' con empresas, pestañas y nombre del módulo.
-     * 
-     * @return \Inertia\Response
+     * Muestra la vista de listado de empresas en React via Inertia.
+     * Renderiza el componente 'Listado' con empresas ordenadas, pestañas y nombre del módulo.
+     *
+     * @return \Inertia\Response Respuesta de Inertia con la vista y datos necesarios.
      */
     public function index()
     {
@@ -79,14 +83,11 @@ class EmpresaWebController extends Controller
         ]);
     }
 
-
     /**
-     * BLOQUE: gestion - Vista de gestión de empresas.
-     * 
-     * Renderiza componente 'Gestion' para crear/editar empresas.
-     * Similar a index, pero con permisos de la pestaña 2 (Gestión).
-     * 
-     * @return \Inertia\Response
+     * Muestra la vista de gestión de empresas en React via Inertia.
+     * Renderiza el componente 'Gestion' con empresas (si tiene permiso de editar), permisos de la pestaña 2 y datos del módulo.
+     *
+     * @return \Inertia\Response Respuesta de Inertia con la vista y datos necesarios.
      */
     public function gestion()
     {
@@ -105,15 +106,12 @@ class EmpresaWebController extends Controller
         ]);
     }
 
-
     /**
-     * Crea una nueva empresa.
-     * 
-     * Valida permiso "crear" antes de procesar.
-     * Retorna JSON para evitar recarga de página.
-     * 
-     * @param EmpresaWebRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * Crea una nueva empresa en la base de datos.
+     * Valida permisos, maneja subida de logo y retorna respuesta JSON.
+     *
+     * @param EmpresaWebRequest $request Solicitud con datos validados para crear la empresa.
+     * @return \Illuminate\Http\JsonResponse Respuesta JSON con mensaje de éxito o error.
      */
     public function store(EmpresaWebRequest $request)
     {
@@ -154,14 +152,12 @@ class EmpresaWebController extends Controller
     }
 
     /**
-     * Actualiza una empresa existente.
-     * 
-     * Valida permiso "editar" antes de procesar.
-     * Retorna JSON para evitar recarga de página.
-     * 
-     * @param EmpresaWebRequest $request
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
+     * Actualiza una empresa existente en la base de datos.
+     * Valida permisos, maneja subida de logo (eliminando anterior si existe) y retorna respuesta JSON.
+     *
+     * @param EmpresaWebRequest $request Solicitud con datos validados para actualizar.
+     * @param int $id ID de la empresa a actualizar.
+     * @return \Illuminate\Http\JsonResponse Respuesta JSON con mensaje de éxito o error.
      */
     public function update(EmpresaWebRequest $request, int $id)
     {
@@ -208,13 +204,11 @@ class EmpresaWebController extends Controller
     }
 
     /**
-     * Elimina (soft delete) una empresa.
-     * 
-     * Valida permiso "eliminar" antes de procesar.
-     * Retorna JSON para evitar recarga de página.
-     * 
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
+     * Elimina una empresa de la base de datos (soft delete).
+     * Valida permisos y retorna respuesta JSON.
+     *
+     * @param int $id ID de la empresa a eliminar.
+     * @return \Illuminate\Http\JsonResponse Respuesta JSON con mensaje de éxito o error.
      */
     public function destroy(int $id)
     {
