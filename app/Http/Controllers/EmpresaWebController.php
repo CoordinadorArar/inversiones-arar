@@ -19,7 +19,7 @@ namespace App\Http\Controllers;
  * - gestion: Vista de gestión (crear/editar) de empresas.
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
+ 
  * @date 2025-11-27
  */
 
@@ -74,7 +74,7 @@ class EmpresaWebController extends Controller
         // Renderiza vista Inertia con datos.
         return Inertia::render('Modulos:AdministracionWeb/Empresas/pages/Listado', [
             'tabs' => $this->tabs,              // Pestañas accesibles.
-            'empresas' => EmpresaWeb::all(),    // Todas las empresas.
+            'empresas' => EmpresaWeb::orderByDesc('id')->get(),    // Todas las empresas.
             'moduloNombre' => $this->moduloNombre,  // Nombre del módulo.
         ]);
     }
@@ -94,7 +94,7 @@ class EmpresaWebController extends Controller
         $permisos = $this->rol->getPermisosPestana(2);
 
         // Si puede editar, enviar empresas; si no, array vacío
-        $empresas = in_array('editar', $permisos) ? EmpresaWeb::all() : [];
+        $empresas = in_array('editar', $permisos) ? EmpresaWeb::orderByDesc('id')->get() : [];
 
         // Renderiza vista Inertia con datos.
         return Inertia::render('Modulos:AdministracionWeb/Empresas/pages/Gestion', [

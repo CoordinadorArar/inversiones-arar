@@ -5,7 +5,7 @@
  * Usa Zod para validación, y validaciones de teclado personalizadas.
  * 
  * @author Yariangel Aray
- * @version 2.0
+ 
  * @date 2025-11-19
  */
 
@@ -46,6 +46,7 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Checkbox } from '@/Components/ui/checkbox';
+import HelpManualButton from '@/Components/HelpManualButton';
 
 // Interfaces: Tipos para props y datos del formulario.
 interface FormData {
@@ -605,24 +606,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                         <h1 className="text-3xl md:text-4xl lg:text-5xl text-primary font-bold">
                                             PQRS y Denuncias
                                         </h1>
-                                        <TooltipProvider delayDuration={200}>
-                                            <Tooltip>
-                                                <TooltipTrigger asChild>
-                                                    <a
-                                                        href="/docs/Manual-PQRSD.pdf"
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        aria-label='ayuda-pqrsd'
-                                                        className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors"
-                                                    >
-                                                        <HelpCircle className="h-4 w-4 text-primary" />
-                                                    </a>
-                                                </TooltipTrigger>
-                                                <TooltipContent>
-                                                    <p className="text-sm">Ver manual de ayuda</p>
-                                                </TooltipContent>
-                                            </Tooltip>
-                                        </TooltipProvider>
+                                        <HelpManualButton url="/docs/Manual-PQRSD.pdf" variant="primary" />
                                     </div>
                                     <p className="text-base md:text-lg text-accent-foreground/80 mb-3">
                                         Canal oficial de <strong>Inversiones Arar S.A.</strong> para recibir sus inquietudes

@@ -23,7 +23,7 @@
  * Dependencias: TanStack Table, componentes UI de Shadcn (Table, Input, Button, etc.).
  * 
  * @author Yariangel Aray - Tabla de referencia para todo el sistema.
- * @version 1.0
+ 
  * @date 2025-11-27
  */
 
@@ -286,23 +286,27 @@ export function DataTable<TData, TValue>({
       {/* PAGINACIÓN RESPONSIVA: Info, selector de filas, navegación. */}
       <div className="flex flex-col sm:flex-row items-end sm:items-center sm:justify-between gap-3 sm:gap-4 flex-shrink-0 pt-2">
         {/* Info de resultados mostrados. */}
-        <div className="text-sm text-muted-foreground text-center sm:text-left">
-          Mostrando{" "}
-          <span className="font-semibold text-foreground">
-            {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}
+        <div className="text-sm text-muted-foreground text-center sm:text-left flex flex-wrap">
+          <span>
+            Mostrando{" "}
+            <span className="font-semibold text-foreground">
+              {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}
+            </span>
+            {" - "}
+            <span className="font-semibold text-foreground">
+              {Math.min(
+                (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
+                table.getFilteredRowModel().rows.length
+              )}
+            </span>
           </span>
-          {" - "}
-          <span className="font-semibold text-foreground">
-            {Math.min(
-              (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
-              table.getFilteredRowModel().rows.length
-            )}
+          <span className="ml-1">
+            {" de "}
+            <span className="font-semibold text-foreground">
+              {table.getFilteredRowModel().rows.length}
+            </span>
+            {" resultado(s)"}
           </span>
-          {" de "}
-          <span className="font-semibold text-foreground">
-            {table.getFilteredRowModel().rows.length}
-          </span>
-          {" resultado(s)"}
         </div>
 
         {/* Controles: Selector de filas por página y navegación. */}

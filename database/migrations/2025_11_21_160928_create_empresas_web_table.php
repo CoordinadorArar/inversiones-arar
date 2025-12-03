@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Schema;
  * Propósito: Centralizar datos de empresas visibles en la web, con integración a Siesa.
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
+ 
  * @date 2025-11-21
  */
 

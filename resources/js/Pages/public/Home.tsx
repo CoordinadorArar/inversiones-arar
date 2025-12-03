@@ -11,7 +11,7 @@
  * - Cards con efectos hover mejorados
  * 
  * @author Yariangel Aray
- * @version 2.0
+ 
  * @date 2025-11-19
  */
 

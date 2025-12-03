@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * y permisos_extra específicos (JSON array). Soporta jerarquía (padre/hijo).
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
+ 
  * @date 2025-11-26
  */
 

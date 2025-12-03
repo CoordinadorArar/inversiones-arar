@@ -3,7 +3,7 @@
  * Input de contraseña con tooltip informativo, toggle de visibilidad y validaciones
  * 
  * @author Yariangel Aray
- * @version 1.0
+ 
  * @date 2025-11-19
  */
 

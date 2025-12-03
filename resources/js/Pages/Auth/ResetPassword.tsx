@@ -3,7 +3,7 @@
  * Implementa validaciones frontend con Zod, estado local y manejo de errores
  * 
  * @author Yariangel Aray
- * @version 1.0
+ 
  * @date 2025-11-19
  */
 

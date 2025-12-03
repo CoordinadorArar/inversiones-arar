@@ -9,36 +9,42 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-interface EmpresaDeleteDialogProps {
+interface DeleteDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    onConfirm: () => Promise<void>;
-    empresaNombre: string;
-    processing: boolean;
+    onConfirm: () => Promise<void> | void;
+    title?: string;
+    description?: string;
+    description_second?: string;
+    itemName?: string;
+    processing?: boolean;
 }
 
 /**
- * Dialog de confirmación para eliminar empresa
+ * Dialog de confirmación para eliminar
  * 
  * @author Yariangel Aray
  * @date 2025-12-02
  */
-export function EmpresaDeleteDialog({
+export function DeleteDialog({
     open,
     onOpenChange,
     onConfirm,
-    empresaNombre,
-    processing,
-}: EmpresaDeleteDialogProps) {
+    title = "¿Está seguro de continuar con la eliminación?",
+    description = "Esta acción no se puede deshacer desde la plataforma.",
+    description_second = "Para restaurar posteriormente será necesario realizar el proceso manual desde la administración interna.",
+    itemName,
+    processing = false,
+}: DeleteDialogProps) {
     return (
         <AlertDialog open={open} onOpenChange={onOpenChange}>
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <AlertDialogTitle>¿Eliminar empresa?</AlertDialogTitle>
+                    <AlertDialogTitle>{title}</AlertDialogTitle>
                     <AlertDialogDescription>
-                        Esta acción no se puede deshacer desde la plataforma.
-                        La empresa «{empresaNombre}» será desactivada y dejará de estar disponible en el sistema.
-                        Para restaurarla posteriormente será necesario realizar el proceso manualmente desde la administración interna.
+                        {description}{" "}
+                        {itemName ? itemName : ""}
+                        <br/>{description_second}
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -50,7 +56,7 @@ export function EmpresaDeleteDialog({
                         disabled={processing}
                         className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                     >
-                        {processing ? "Eliminando..." : "Eliminar"}
+                        {processing ? "Procesando..." : "Confirmar"}
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

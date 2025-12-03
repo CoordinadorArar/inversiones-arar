@@ -12,7 +12,7 @@ namespace App\Mail;
  * del usuario, permitiendo iniciar el proceso de cambio de contraseña.
  * 
  * @author Yariangel 
- * @version 1.0
+ 
  * @date 2025-11-14
  */
 

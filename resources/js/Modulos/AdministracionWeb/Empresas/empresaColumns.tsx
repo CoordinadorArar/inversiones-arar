@@ -4,7 +4,7 @@
  * Columnas inactivas por defecto para simplificar vista inicial.
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
+ 
  * @date 2025-11-27
  */
 
@@ -55,7 +55,7 @@ export const EmpresaColumns: ColumnDef<EmpresaInterface>[] = [
       const siglas = row.original.siglas;
       // Badge primary si existe, sino EmptyBadge.
       return siglas ? (
-        <Badge className="text-primary bg-primary/15 border-0">
+        <Badge className="text-primary font-mono bg-primary/15 border-0">
           {siglas}
         </Badge>
       ) : (
@@ -71,6 +71,21 @@ export const EmpresaColumns: ColumnDef<EmpresaInterface>[] = [
       // Texto si existe, sino EmptyBadge.
       return tipo ? (
         <span className="text-sm">{tipo}</span>
+      ) : (
+        <EmptyBadge />
+      );
+    },
+  },
+  {
+    accessorKey: "dominio",
+    header: "Dominio",
+    cell: ({ row }) => {
+      const dominio = row.original.dominio;
+      // Badge primary si existe, sino EmptyBadge.
+      return dominio ? (
+        <Badge variant='outline' className="bg-slate-50 font-mono">
+          {dominio}
+        </Badge>
       ) : (
         <EmptyBadge />
       );

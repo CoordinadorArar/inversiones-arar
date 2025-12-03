@@ -15,7 +15,7 @@ use Inertia\Inertia;
  * Transforma datos para incluir usuario con detalles (nombre, email, rol, cargo).
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
+ 
  * @date 2025-12-02
  */
 

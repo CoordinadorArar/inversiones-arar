@@ -161,9 +161,13 @@ export function useEmpresaGestion({ empresasIniciales, permisos }: UseEmpresaGes
       if (response.ok) {
         // Éxito: Actualiza array local y muestra toast.
         if (mode === "create") {
-          setEmpresas((prev) => [...prev, result.empresa]);  // Agrega nueva empresa.
-          setSelectedEmpresaId(Number(result.empresa.id));  // Selecciona la nueva.
-          setMode("edit");  // Cambia a edit para continuar.
+          if(puedeEditar){
+            setEmpresas((prev) => [result.empresa, ...prev]);  // Agrega nueva empresa.
+            setSelectedEmpresaId(Number(result.empresa.id));  // Selecciona la nueva.
+            setMode("edit");  // Cambia a edit para continuar.
+          } else {
+            setMode("create");  // Cambia a edit para continuar.
+          }
           toast({
             title: "Empresa creada",
             description: "La empresa se ha creado correctamente",

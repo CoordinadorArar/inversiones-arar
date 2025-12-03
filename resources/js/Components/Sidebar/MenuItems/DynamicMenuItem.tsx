@@ -19,7 +19,7 @@
  * Dependencias: Hooks (useActiveRoute), tipos (menu.types), UI (Popover, Collapsible, etc.).
  * 
  * @author Yariangel Aray - Items dinámicos para menú jerárquico.
- * @version 1.0
+ 
  * @date 2025-11-28
  */
 

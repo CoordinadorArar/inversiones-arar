@@ -2,7 +2,7 @@
  * Funciones para validar entradas de teclado en React, previniendo caracteres no deseados en inputs/textareas.
  * Se usan en eventos onKeyDown para reforzar validaciones frontend (complemento a backend en Laravel).
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
+ 
  * @date 2025-11-11
  */
 

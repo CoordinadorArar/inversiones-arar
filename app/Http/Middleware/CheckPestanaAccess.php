@@ -24,7 +24,7 @@ use Symfony\Component\HttpFoundation\Response;
  * - Si no: abort(403).
  * 
  * @author Yariangel Aray
- * @version 1.0
+ 
  * @date 2025-12-02
  */
 

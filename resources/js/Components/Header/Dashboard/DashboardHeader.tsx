@@ -8,7 +8,7 @@ import { SearchButton } from "./SearchButton";
  * Header del dashboard con sidebar trigger, título y controles de usuario
  * 
  * @author Yariangel Aray - Refactorizado en componentes modulares
- * @version 2.0
+ 
  * @date 2025-11-28
  */
 export function DashboardHeader({ title, user }: DashboardHeaderProps) {

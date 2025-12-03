@@ -10,7 +10,7 @@ namespace App\Http\Requests;
  * respuestas JSON.
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
+ 
  * @date 2025-11-11
  */
 

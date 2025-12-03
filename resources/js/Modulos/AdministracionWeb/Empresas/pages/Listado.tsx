@@ -13,7 +13,7 @@
  * Layout: Envuelto en DashboardLayout con header dinámico.
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
+ 
  * @date 2025-11-27
  */
 
@@ -23,6 +23,10 @@ import { DashboardLayout } from "@/Layouts/DashboardLayout";
 import { DataTable } from "@/Components/ui/data-table";
 import { EmpresaColumns, EmpresaInactiveColumns } from "../empresaColumns";
 import { EmpresaInterface } from "../types/empresaInterface";
+import { CircleHelp, CircleQuestionMark, HelpCircle } from "lucide-react";
+import { Badge } from "@/Components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import HelpManualButton from "@/Components/HelpManualButton";
 
 // Interface para props del componente.
 interface EmpresasListadoProps {
@@ -48,12 +52,19 @@ export default function EmpresasListado({ empresas, tabs, moduloNombre }: Empres
       <Card className="py-6 h-full flex flex-col shadow border-none gap-4">
         {/* Header del card con título. */}
         <CardHeader>
-          <CardTitle>Listado de Empresas</CardTitle>
+          <CardTitle className="flex items-center gap-5">
+            Listado de Empresas
+            <HelpManualButton
+              url="/docs/Manual-Empresas-Listado.pdf"
+              variant="muted"
+            />
+          </CardTitle>
         </CardHeader>
-        
+
+
         {/* Contenido: DataTable con columnas y datos. */}
         <CardContent className="flex-1 min-h-0">
-          <DataTable 
+          <DataTable
             columns={EmpresaColumns}  // Columnas definidas en empresaColumns.
             data={empresas}  // Datos de empresas.
             searchPlaceholder="Buscar empresas..."  // Placeholder para búsqueda.

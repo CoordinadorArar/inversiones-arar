@@ -11,7 +11,7 @@ use Illuminate\Database\Seeder;
  * Llamado desde artisan (php artisan db:seed) para setup inicial.
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
+ 
  * @date 2025-11-18
  */
 

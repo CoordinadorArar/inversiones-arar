@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * Usado para categorizar PQRs en formularios y sistema.
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
+ 
  * @date 2025-11-18
  */
 

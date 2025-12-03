@@ -14,7 +14,7 @@ use Illuminate\Database\Seeder;
  * Asigna `modulo_padre_id` dinámicamente buscando por nombre del padre.
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
+ 
  * @date 2025-11-26
  */
 

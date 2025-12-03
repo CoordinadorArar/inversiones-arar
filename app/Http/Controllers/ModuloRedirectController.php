@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Auth;
  * - Redirigir al primer recurso accesible según permisos del rol del usuario.
  * 
  * @author Yariangel Aray
- * @version 1.0
+ 
  * @date 2025-11-27
  */
 class ModuloRedirectController extends Controller

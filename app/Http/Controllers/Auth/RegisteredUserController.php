@@ -23,7 +23,7 @@ use Inertia\Response;
  * Incluye validación de dominio empresarial para el email.
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.1
+ 
  * @date 2025-11-21
  */
 

@@ -19,7 +19,7 @@ namespace App\Http\Middleware;
  * - Seguridad: Solo para públicas; rutas auth no lo usan para evitar leaks.
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
+ 
  * @date 2025-11-25
  */
 use App\Models\EmpresaWeb;

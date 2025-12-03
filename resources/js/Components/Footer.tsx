@@ -2,7 +2,7 @@
  * Componente React para el footer del sitio. Muestra logo, contacto, enlaces legales, redes sociales y copyright.
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
+ 
  * @date 2025-11-11
  */
 

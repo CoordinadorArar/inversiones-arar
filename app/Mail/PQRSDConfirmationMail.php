@@ -13,7 +13,7 @@ use Illuminate\Queue\SerializesModels;
  * Confirma la recepción de la denuncia y proporciona número de radicado.
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
+ 
  * @date 2025-11-13
  */
 

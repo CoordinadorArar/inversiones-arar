@@ -13,7 +13,7 @@ use Illuminate\Database\Seeder;
  * Usado para workflow de seguimiento en el sistema de PQRs.
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
+ 
  * @date 2025-11-18
  */
 

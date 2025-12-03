@@ -24,7 +24,7 @@ import { Home } from "lucide-react";
  * Coordina todos los subcomponentes y maneja el estado global del sidebar.
  * 
  * @author Yariangel Aray - Refactorizado en componentes modulares
- * @version 2.0
+ 
  * @date 2025-11-28
  */
 export function DashboardSidebar({

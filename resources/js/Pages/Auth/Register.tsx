@@ -5,7 +5,7 @@
  * Valida que el correo sea empresarial usando dominios permitidos.
  * 
  * @author Yariangel Aray
- * @version 1.1
+ 
  * @date 2025-11-21
  */
 

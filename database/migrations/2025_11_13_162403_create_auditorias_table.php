@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Schema;
  * Usada para compliance y seguimiento de modificaciones en el sistema.
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
+ 
  * @date 2025-11-18
  */
 

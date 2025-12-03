@@ -24,6 +24,7 @@ import { Label } from "@/components/ui/label";
 import { EmpresaInterface } from "../types/empresaInterface";
 import { useEmpresaGestion } from "../hooks/useEmpresaGestion";
 import { useMemo } from "react";
+import HelpManualButton from "@/Components/HelpManualButton";
 
 interface EmpresaGestionProps {
   tabs: Array<{
@@ -67,19 +68,19 @@ export default function EmpresaGestion({
     if (mode === "edit" && selectedEmpresa) {
       return {
         id_siesa: selectedEmpresa.id_siesa || "",
-          razon_social: selectedEmpresa.razon_social,
-          siglas: selectedEmpresa.siglas || "",
-          tipo_empresa: selectedEmpresa.tipo_empresa || "",
-          descripcion: selectedEmpresa.descripcion || "",
-          sitio_web: selectedEmpresa.sitio_web || "",
-          dominio: selectedEmpresa.dominio || "",
-          logo: null,
-          logo_preview: selectedEmpresa.logo_url || null,
-          mostrar_en_header: selectedEmpresa.mostrar_en_header,
-          mostrar_en_empresas: selectedEmpresa.mostrar_en_empresas,
-          mostrar_en_portafolio: selectedEmpresa.mostrar_en_portafolio,
-          permitir_pqrsd: selectedEmpresa.permitir_pqrsd,
-        };
+        razon_social: selectedEmpresa.razon_social,
+        siglas: selectedEmpresa.siglas || "",
+        tipo_empresa: selectedEmpresa.tipo_empresa || "",
+        descripcion: selectedEmpresa.descripcion || "",
+        sitio_web: selectedEmpresa.sitio_web || "",
+        dominio: selectedEmpresa.dominio || "",
+        logo: null,
+        logo_preview: selectedEmpresa.logo_url || null,
+        mostrar_en_header: selectedEmpresa.mostrar_en_header,
+        mostrar_en_empresas: selectedEmpresa.mostrar_en_empresas,
+        mostrar_en_portafolio: selectedEmpresa.mostrar_en_portafolio,
+        permitir_pqrsd: selectedEmpresa.permitir_pqrsd,
+      };
     }
 
     return EMPRESA_INITIAL_DATA;
@@ -92,8 +93,14 @@ export default function EmpresaGestion({
       activeTab={window.location.pathname}
     >
       <Card className="py-6 h-full flex flex-col shadow border-none gap-4">
-        <CardHeader className="flex-shrink-0">
-          <CardTitle>Gestión de Empresas</CardTitle>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-5">
+            Gestión de Empresas
+            <HelpManualButton
+              url="/docs/Manual-Empresas-Gestion.pdf"
+              variant="muted"
+            />
+          </CardTitle>
         </CardHeader>
 
         <CardContent className="flex-1 min-h-0 flex flex-col space-y-6">
@@ -177,7 +184,7 @@ export default function EmpresaGestion({
             {/* Mensaje cuando está bloqueado */}
             {isFormDisabled && (
               <div className="absolute top-0 left-1/2 -translate-x-1/2 flex items-center justify-center pointer-events-none">
-                <div className="bg-background/90 p-6 rounded-lg border-2 border-dashed border-muted-foreground/20 text-center max-w-sm">
+                <div className="bg-background/90 p-6 rounded-lg border-2 border-dashed border-muted-foreground/20 text-center sm:max-w-sm">
                   {!puedeCrear && !puedeEditar ? (
                     <div className="space-y-2">
                       <p className="text-destructive font-medium">Sin permisos</p>

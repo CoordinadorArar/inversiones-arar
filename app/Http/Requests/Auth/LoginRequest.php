@@ -19,7 +19,7 @@ use Illuminate\Validation\ValidationException;
  * - Si no: Login estándar con bloqueo por intentos fallidos.
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
+ 
  * @date 2025-11-21
  */
 

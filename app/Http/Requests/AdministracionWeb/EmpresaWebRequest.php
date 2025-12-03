@@ -20,7 +20,7 @@ class EmpresaWebRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true; // La autorización se maneja con Policies
+        return true;
     }
 
     /**
@@ -28,14 +28,16 @@ class EmpresaWebRequest extends FormRequest
      */
     public function rules(): array
     {
+        $id = $this->route()->parameter('id') ?? null;        
+
         $rules = [
-            'id_siesa' => 'nullable|string|max:20|exists:sqlsrv_second.t010_mm_companias,f010_id',
-            'razon_social' => 'required|string|max:50|regex:/^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑüÜ\s&.,()-]+$/',
-            'siglas' => 'nullable|string|max:10|regex:/^[A-Z]*$/',
+            'id_siesa' => 'nullable|string|max:20|exists:sqlsrv_second.t010_mm_companias,f010_id|unique:empresas_web,id_siesa,' . $id,
+            'razon_social' => 'required|string|max:50|regex:/^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑüÜ\s&.,()-]+$/|unique:empresas_web,razon_social,' . $id,
+            'siglas' => 'nullable|string|max:10|regex:/^[A-Z]*$/|unique:empresas_web,siglas,' . $id,
             'tipo_empresa' => 'nullable|string|max:50',
             'descripcion' => 'nullable|string|max:150',
             'sitio_web' => 'nullable|url|max:100',
-            'dominio' => 'nullable|string|max:50|regex:/^[a-zA-Z0-9.-]*$/',
+            'dominio' => 'nullable|string|max:50|regex:/^[a-zA-Z0-9.-]*$/|unique:empresas_web,dominio,' . $id,
             'logo' => 'nullable|image|mimes:png,jpg,jpeg,svg|max:2048',
             'mostrar_en_header' => 'boolean',
             'mostrar_en_empresas' => 'boolean',
@@ -45,7 +47,7 @@ class EmpresaWebRequest extends FormRequest
 
         // Regla condicional: Si mostrar_en_header o mostrar_en_empresas está activo
         if ($this->input('mostrar_en_header') || $this->input('mostrar_en_empresas')) {
-            $rules['id_siesa'] = 'required|string|max:20|exists:sqlsrv_second.t010_mm_companias,f010_id';
+            $rules['id_siesa'] = 'required|string|max:20|exists:sqlsrv_second.t010_mm_companias,f010_id|unique:empresas_web,id_siesa,' . $id;
         }
 
         // Regla condicional: Si mostrar_en_empresas está activo
@@ -68,15 +70,18 @@ class EmpresaWebRequest extends FormRequest
             'id_siesa.required' => 'El ID de Siesa es obligatorio cuando se activa "Mostrar en Header" o "Mostrar en Empresas"',
             'id_siesa.max' => 'El ID de Siesa no debe superar :max caracteres',
             'id_siesa.exists' => 'El ID de Siesa no existe en los registros correspondientes',
+            'id_siesa.unique' => 'El ID de Siesa ya está en uso por otra empresa',
 
             // razon_social
             'razon_social.required' => 'La razón social es obligatoria',
             'razon_social.max' => 'La razón social no debe superar :max caracteres',
             'razon_social.regex' => 'La razón social solo puede contener letras, números y caracteres especiales básicos (&.,()-)',
+            'razon_social.unique' => 'La razón social ya está registrada',
 
             // siglas
             'siglas.max' => 'Las siglas no deben superar :max caracteres',
             'siglas.regex' => 'Las siglas solo pueden contener letras mayúsculas sin espacios',
+            'siglas.unique' => 'Las siglas ya están en uso por otra empresa',
 
             // tipo_empresa
             'tipo_empresa.required' => 'El tipo de empresa es obligatorio cuando se activa "Mostrar en Empresas"',
@@ -94,6 +99,7 @@ class EmpresaWebRequest extends FormRequest
             // dominio
             'dominio.max' => 'El dominio no debe superar :max caracteres',
             'dominio.regex' => 'El dominio solo puede contener letras, números, puntos y guiones',
+            'dominio.unique' => 'El dominio ya está en uso por otra empresa',
 
             // logo
             'logo.image' => 'El archivo debe ser una imagen',

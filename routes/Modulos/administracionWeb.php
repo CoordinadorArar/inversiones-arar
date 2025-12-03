@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\EmpresaWebController;
 use App\Http\Controllers\ModuloRedirectController;
-
+use App\Http\Controllers\TipoIdentificacionController;
 use Illuminate\Support\Facades\Route;
 
 /**
@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Route;
  * - Otros comentados (por implementar).
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
+ 
  * @date 2025-11-27
  */
 
@@ -57,21 +57,27 @@ Route::middleware('auth')->group(function () {
 
         // Grupo de pestañas para Empresas (prefijo /administracion-web/empresas).
         Route::prefix('empresas')->group(function () {
+
+            // --- VISTAS ---
+
             // Pestaña: Listado de empresas.
             // Middleware: pestana.access:1 (ID de la pestaña en DB) para validar acceso.
-            Route::get('/listado', [EmpresaWebController::class, 'index'])->middleware('pestana.access:1');
-            
+            Route::get('/listado', [EmpresaWebController::class, 'index'])
+                ->middleware('pestana.access:1');
+
             // Pestaña: Gestión de empresas (crear/editar).
             Route::get('/gestion', [EmpresaWebController::class, 'gestion']);
 
-            // Acción: Crear empresa (POST).
-            Route::post('/gestion', [EmpresaWebController::class, 'store'])->name('empresa.store');
-
-            // Acción: Actualizar empresa (PUT con ID).
-            Route::put('/gestion/{id}', [EmpresaWebController::class, 'update'])->name('empresa.update');
-
-            // Acción: Eliminar empresa (DELETE con ID).
-            Route::delete('/gestion/{id}', [EmpresaWebController::class, 'destroy'])->name('empresa.destroy');
+            // --- CRUD ---
+            // Mantienen el prefijo /gestion, pero se separan para mayor claridad.
+            Route::prefix('gestion')->group(function () {
+                // Acción: Crear empresa (POST).
+                Route::post('/', [EmpresaWebController::class, 'store'])->name('empresa.store');
+                // Acción: Actualizar empresa (PUT con ID).
+                Route::put('/{id}', [EmpresaWebController::class, 'update'])->name('empresa.update');
+                // Acción: Eliminar empresa (DELETE con ID).
+                Route::delete('/{id}', [EmpresaWebController::class, 'destroy'])->name('empresa.destroy');
+            });
         });
 
         // ===============================================================
@@ -103,7 +109,18 @@ Route::middleware('auth')->group(function () {
 
         // Grupo de pestañas para Tablas Maestras (comentadas, por implementar).
         Route::prefix('tablas-maestras')->group(function () {
-            // Route::get('/tipos-identificaciones', [TablasMaestrasController::class, 'tiposIdentificaciones']);
+            Route::get('/tipos-identificaciones', [TipoIdentificacionController::class, 'index'])->middleware('pestana.access:5');
+
+            // --- CRUD ---
+            // Mantienen el prefijo /tipos-identificaciones, pero se separan para mayor claridad.
+            Route::prefix('tipos-identificaciones')->group(function () {
+                // Acción: Crear tipo (POST).
+                Route::post('/', [TipoIdentificacionController::class, 'store'])->name('tipo-identificacion.store');
+                // Acción: Actualizar tipo (PUT con ID).
+                Route::put('/{id}', [TipoIdentificacionController::class, 'update'])->name('tipo-identificacion.update');
+                // Acción: Eliminar tipo (DELETE con ID).
+                Route::delete('/{id}', [TipoIdentificacionController::class, 'destroy'])->name('tipo-identificacion.destroy');
+            });
 
             // Route::get('/tipos-pqrsd', [TablasMaestrasController::class, 'tiposPqrsd']);
 

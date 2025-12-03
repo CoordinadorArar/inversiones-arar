@@ -10,7 +10,7 @@ use Illuminate\Validation\Rule;
  * Valida todos los campos del nuevo formulario multi-paso
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
+ 
  * @date 2025-11-14
  */
 

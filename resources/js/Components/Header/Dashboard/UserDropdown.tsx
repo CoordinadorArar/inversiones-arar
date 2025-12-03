@@ -15,7 +15,7 @@
  * - Estilos: Hover effects, backdrop blur, responsive.
  * 
  * @author Yariangel Aray - Dropdown de usuario para header.
- * @version 1.0
+ 
  * @date 2025-11-28
  */
 

@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
  * - Si no tiene acceso: 403 Forbidden.
  * 
  * @author Yariangel Aray - Rutas para módulos directos con validación por ID.
- * @version 1.1
+ 
  * @date 2025-12-02
  */
 

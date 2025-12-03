@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * Usado en formularios de PQRs para seleccionar tipo de documento.
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
+ 
  * @date 2025-11-18
  */
 

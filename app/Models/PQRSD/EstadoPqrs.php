@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * Usado para tracking del estado de cada PQR en el sistema.
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
+ 
  * @date 2025-11-18
  */
 

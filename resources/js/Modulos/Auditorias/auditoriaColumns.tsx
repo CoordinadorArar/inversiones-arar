@@ -15,7 +15,7 @@
  * Columnas: ID, Tabla, Registro Afectado, Acción, Usuario, Fecha, Cambios.
  * 
  * @author Yariangel Aray - Columnas para tabla de auditorías.
- * @version 1.0
+ 
  * @date 2025-12-02
  */
 

@@ -18,6 +18,7 @@ import {
     handleDominioKeyDown,
 } from "@/lib/keydownValidations";
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@/Components/ui/input-group";
+import { DeleteDialog } from "@/Components/DeleteDialog";
 
 interface EmpresaFormProps {
     mode: "create" | "edit";
@@ -36,7 +37,7 @@ interface EmpresaFormProps {
  * Maneja validaciones condicionales, estados bloqueados y envío de datos.
  * 
  * @author Yariangel Aray 
- * @version 1.0
+ 
  * @date 2025-11-28
  */
 export function EmpresaForm({
@@ -335,12 +336,12 @@ export function EmpresaForm({
             </form>
 
             {/* Dialog de confirmación de eliminación */}
-            <EmpresaDeleteDialog
+            <DeleteDialog
                 open={showDeleteDialog}
                 onOpenChange={handleDeleteCancel}
-                onConfirm={handleDeleteConfirm}
-                empresaNombre={data.razon_social}
+                onConfirm={handleDeleteConfirm}        
                 processing={processing}
+                itemName={`La empresa «${data.razon_social}» será desactivada y dejará de estar disponible en el sistema.`}
             />
         </>
     );

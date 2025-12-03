@@ -11,7 +11,7 @@ import { Link } from "@inertiajs/react";
  * Header público principal que orquesta todos los subcomponentes
  * 
  * @author Yariangel Aray - Refactorizado en componentes modulares
- * @version 3.0
+ 
  * @date 2025-11-28
  */
 

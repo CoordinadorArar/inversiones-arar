@@ -15,7 +15,7 @@ namespace App\Providers;
  * Al anular la propiedad $options y omitir este atributo, se resuelve el problema.
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
+ 
  * @date 2025-11-12
  */
 

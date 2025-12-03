@@ -7,7 +7,7 @@ namespace App\Http\Controllers\PQRSD;
  * Maneja el almacenamiento de denuncias y envío de correos a los responsables.
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
+ 
  * @date 2025-11-13
  */
 

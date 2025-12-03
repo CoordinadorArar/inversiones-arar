@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * Almacena info básica, visibilidad y integración con Siesa.
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
+ 
  * @date 2025-11-18
  */
 
@@ -25,7 +25,7 @@ class EmpresaWeb extends Model
     use SoftDeletes;   // Soft deletes: marca deleted_at en lugar de eliminar.
 
     // Tabla específica (no usa convención plural).
-    protected $table = 'empresas_web'; 
+    protected $table = 'empresas_web';
 
     /**
      * Campos mass assignable.
@@ -50,8 +50,10 @@ class EmpresaWeb extends Model
         'permitir_pqrsd'         // Flag para permitir PQRSD.
     ];
 
-    // Deshabilitar timestamps automáticos (usa fecha_creacion/modificacion manuales).
-    public $timestamps = false;
+    public $timestamps = true;
+    
+    const CREATED_AT = 'fecha_creacion';
+    const UPDATED_AT = 'fecha_modificacion';
 
     // Campos tratados como fechas (para Carbon).
     protected $dates = [

@@ -3,7 +3,7 @@
  * Implementa validaciones frontend con Zod y restricciones de teclado
  * 
  * @author Yariangel Aray
- * @version 2.0
+ 
  * @date 2025-11-19
  */
 

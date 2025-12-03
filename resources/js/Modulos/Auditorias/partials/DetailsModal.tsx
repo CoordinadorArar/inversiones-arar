@@ -15,7 +15,7 @@
  * Props: open (estado), onClose (callback), auditoria (datos).
  * 
  * @author Yariangel Aray - Modal para detalles de auditoría.
- * @version 1.0
+ 
  * @date 2025-12-02
  */
 
@@ -38,7 +38,7 @@ export default function DetailsModal({ open, onClose, auditoria }: Props) {
     return (
         <Dialog open={open} onOpenChange={onClose}>
             {/* Content: Max width/height, flex col para header/contenido. */}
-            <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col">
+            <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col">
                 {/* Header: Título con ícono, descripción. */}
                 <DialogHeader className="flex-shrink-0">
                     <DialogTitle className="flex items-center gap-2 text-xl">

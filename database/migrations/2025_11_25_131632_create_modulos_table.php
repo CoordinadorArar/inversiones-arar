@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Schema;
  * Propósito: Base para sistema de permisos por módulo, asignables a roles/usuarios.
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
+ 
  * @date 2025-11-26
  */
 

@@ -12,7 +12,7 @@ use Illuminate\Database\Seeder;
  * Incluye datos de razón social, siglas, tipo, descripciones, logos, visibilidad.
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
+ 
  * @date 2025-11-21 
  */
 

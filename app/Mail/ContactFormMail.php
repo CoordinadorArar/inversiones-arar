@@ -9,7 +9,7 @@ namespace App\Mail;
  * emails basados en los datos del formulario de contacto.
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
+ 
  * @date 2025-11-11
  */
 

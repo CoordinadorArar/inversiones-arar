@@ -7,7 +7,7 @@
  * globales (ej. empresas) a vistas públicas sin autenticación, optimizando consultas.
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
+ 
  * @date 2025-11-25
  */
 

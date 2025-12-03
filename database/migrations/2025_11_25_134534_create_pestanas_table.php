@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Schema;
  * Propósito: Granularidad en permisos: pestañas específicas dentro de módulos.
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
+ 
  * @date 2025-11-25
  */
 

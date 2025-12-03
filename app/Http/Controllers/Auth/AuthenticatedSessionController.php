@@ -19,7 +19,7 @@ use Inertia\Response;
  * Incluye lógica para redireccionar a registro si el usuario no existe en la web pero sí en contratos.
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
+ 
  * @date 2025-11-21
  */
 

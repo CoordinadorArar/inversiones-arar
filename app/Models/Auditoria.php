@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
  * Usado para compliance, tracking de modificaciones y quién las hizo.
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
+ 
  * @date 2025-11-18
  */
 

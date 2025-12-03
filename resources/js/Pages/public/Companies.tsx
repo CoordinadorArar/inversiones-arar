@@ -4,7 +4,7 @@
  * Muestra las empresas y sus enlaces a sus páginas principales
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
+ 
  * @date 2025-11-14
  */
 

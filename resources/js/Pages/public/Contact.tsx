@@ -4,7 +4,7 @@
  * Muestra información de contacto de la empresa y un formulario de contácto.
  * 
  * @author Yariangel Aray
- * @version 1.0
+ 
  * @date 2025-11-14
  */
 

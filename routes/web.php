@@ -7,7 +7,7 @@
  * empresas y PQRSD. Usa Inertia para renderizar componentes React. Todas son públicas (sin auth middleware).
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento y colaboración.
- * @version 1.0
+ 
  * @date 2025-11-18 
  */
 

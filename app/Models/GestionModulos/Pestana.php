@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * Usado para control de acceso a secciones específicas dentro de módulos.
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
+ 
  * @date 2025-11-26
  */
 

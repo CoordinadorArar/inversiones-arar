@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Schema;
  * Usada para categorizar las PQRs en el sistema.
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
+ 
  * @date 2025-11-18
  */
 
@@ -35,7 +35,7 @@ return new class extends Migration
     {
         Schema::create('tipos_pqrs', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre')->unique();
+            $table->string('nombre', 50)->unique();
             $table->string('abreviatura', 10)->unique();
             
             $table->dateTime('fecha_creacion')->useCurrent();

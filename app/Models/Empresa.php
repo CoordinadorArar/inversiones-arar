@@ -8,7 +8,7 @@ namespace App\Models;
  * Representa la tabla 't010_mm_companias' en la conexión 'sqlsrv_second' (base de datos secundaria, UNOEEARAR).
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
+ 
  * @date 2025-11-12
  */
 

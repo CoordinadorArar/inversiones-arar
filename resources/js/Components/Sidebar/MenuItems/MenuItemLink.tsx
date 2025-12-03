@@ -15,7 +15,7 @@
  * Props: url, icon, title, collapsed (opcional), isSubItem (opcional).
  * 
  * @author Yariangel Aray - Link reutilizable para menú.
- * @version 1.0
+ 
  * @date 2025-11-28
  */
 

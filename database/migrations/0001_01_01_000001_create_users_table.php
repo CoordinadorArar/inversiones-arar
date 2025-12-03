@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Schema;
  * Propósito: Reemplaza tablas estándar de Laravel (users, password_resets) con versiones personalizadas para el sistema.
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
+ 
  * @date 2025-11-18
  */
 

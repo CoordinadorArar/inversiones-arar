@@ -14,7 +14,7 @@ use Illuminate\Queue\SerializesModels;
  * Incluye todos los datos de la denuncia y archivos adjuntos si existen
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- * @version 1.0
+ 
  * @date 2025-11-14
  */
 

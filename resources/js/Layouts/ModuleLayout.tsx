@@ -17,7 +17,7 @@
  * - Flex layout: Tabs arriba, contenido abajo con flex-1.
  * 
  * @author Yariangel Aray - Layout modular para pestañas.
- * @version 1.0
+ 
  * @date 2025-11-26
  */
 
