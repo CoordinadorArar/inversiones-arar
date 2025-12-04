@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ConfiguracionController;
 use App\Http\Controllers\EmpresaWebController;
 use App\Http\Controllers\ModuloRedirectController;
 use App\Http\Controllers\PQRSD\EstadoPqrsController;
@@ -88,9 +89,14 @@ Route::middleware('auth')->group(function () {
 
         // Grupo de pestañas para Configuración General (comentadas, por implementar).
         Route::prefix('configuracion-general')->group(function () {
-            // Route::get('/informacion-corporativa', [ConfiguracionGeneralController::class, 'informacionCorporativa']);
+            Route::get('/informacion-corporativa', [ConfiguracionController::class, 'informacionCorporativa'])->middleware('pestana.access:3');
 
-            // Route::get('/redes-sociales', [ConfiguracionGeneralController::class, 'redesSociales']);
+            Route::get('/redes-sociales', [ConfiguracionController::class, 'redesSociales'])->middleware('pestana.access:4');
+
+            Route::post('/update-corporativa', [ConfiguracionController::class, 'updateInformacionCorporativa'])
+                ->name('update-corporativa');
+            Route::post('/update-redes', [ConfiguracionController::class, 'updateRedesSociales'])
+                ->name('update-redes');
         });
 
         // ===============================================================
@@ -146,7 +152,6 @@ Route::middleware('auth')->group(function () {
                 // Acción: Eliminar tipo (DELETE con ID).
                 Route::delete('/{id}', [EstadoPqrsController::class, 'destroy'])->name('estado-pqrsd.destroy');
             });
-
         });
     });
 });

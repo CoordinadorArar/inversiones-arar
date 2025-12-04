@@ -37,11 +37,14 @@ export function DashboardSidebar({
   const [openPopover, setOpenPopover] = useState<string | null>(null);
 
   const toggleGroup = (title: string) => {
-    setOpenGroups((prev) =>
-      prev.includes(title)
-        ? prev.filter((t) => t !== title)
-        : [...prev, title]
-    );
+    setOpenGroups((prev) => {
+      // Si el grupo ya está abierto, cerrarlo
+      if (prev.includes(title)) {
+        return [];
+      }
+      // Si está cerrado, abrir solo este (cerrar todos los demás)
+      return [title];
+    });
   };
 
   return (

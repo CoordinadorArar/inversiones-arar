@@ -6,8 +6,6 @@ import InputError from "@/Components/InputError";
 import { Save, Trash2, X, Plus } from "lucide-react";
 import { EmpresaFormData, EMPRESA_LIMITS } from "../types/empresaForm.types";
 import { EmpresaSwitches } from "./EmpresaSwitches";
-import { EmpresaLogoUpload } from "./EmpresaLogoUpload";
-import { EmpresaDeleteDialog } from "./EmpresaDeleteDialog";
 import { useEmpresaForm } from "../hooks/useEmpresaForm";
 import {
     handleTextKeyDown,
@@ -19,6 +17,7 @@ import {
 } from "@/lib/keydownValidations";
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@/Components/ui/input-group";
 import { DeleteDialog } from "@/Components/DeleteDialog";
+import { ImageUpload } from "@/Components/ImageUpload";
 
 interface EmpresaFormProps {
     mode: "create" | "edit";
@@ -51,7 +50,7 @@ export function EmpresaForm({
 }: EmpresaFormProps) {
 
     // Hook personalizado que maneja toda la lógica del formulario: estado, validaciones, envío y eliminación.
-    
+
     const {
         data,
         errors,
@@ -274,12 +273,21 @@ export function EmpresaForm({
                 </div>
 
                 {/* Logo Upload */}
-                <EmpresaLogoUpload
+                {/* <EmpresaLogoUpload
                     logoPreview={data.logo_preview}
                     onLogoChange={handleLogoChange}
                     onLogoRemove={handleLogoRemove}
                     disabled={disabled}
                     error={errors.logo}
+                /> */}
+
+                <ImageUpload
+                    preview={data.logo_preview}
+                    onImageChange={handleLogoChange}
+                    onImageRemove={handleLogoRemove}
+                    disabled={disabled}
+                    error={errors.icono}
+                    label="Logo de la Empresa (Opcional)"                                        
                 />
 
                 {/* Switches */}
@@ -306,7 +314,7 @@ export function EmpresaForm({
                             )}
 
                             <div className="flex-1" />
-                            
+
                             <Button
                                 type="button"
                                 variant="outline"
@@ -339,7 +347,7 @@ export function EmpresaForm({
             <DeleteDialog
                 open={showDeleteDialog}
                 onOpenChange={handleDeleteCancel}
-                onConfirm={handleDeleteConfirm}        
+                onConfirm={handleDeleteConfirm}
                 processing={processing}
                 itemName={`La empresa «${data.razon_social}» será desactivada y dejará de estar disponible en el sistema.`}
             />

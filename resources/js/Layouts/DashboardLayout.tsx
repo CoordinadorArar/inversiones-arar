@@ -41,11 +41,18 @@ export function DashboardLayout({ children, header }: DashboardLayoutProps) {
 
   const user = usePage().props.auth.user;
 
-  // Estado para grupos abiertos: Persistido en localStorage para evitar "saltos" al navegar.
+  // Estado inicial: Solo el primer grupo con items abierto (o ninguno)
   const [openGroups, setOpenGroups] = useState<string[]>(() => {
-    // Cargar desde localStorage al inicializar.
     const stored = localStorage.getItem('sidebar-open-groups');
-    return stored ? JSON.parse(stored) : [menu.find(item => (item.items ?? []).length > 0)?.title ?? ''];
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      // Asegurar que solo haya uno abierto
+      return parsed.length > 0 ? [parsed[0]] : [];
+    }
+
+    // Por defecto, ninguno abierto (o el primero con items)
+    const firstWithItems = menu.find(item => (item.items ?? []).length > 0);
+    return firstWithItems ? [firstWithItems.title] : [];
   });
 
   // Guardar en localStorage cada vez que openGroups cambie.

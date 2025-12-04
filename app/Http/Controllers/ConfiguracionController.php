@@ -5,62 +5,114 @@ namespace App\Http\Controllers;
 use App\Models\Configuracion;
 use App\Http\Requests\StoreConfiguracionRequest;
 use App\Http\Requests\UpdateConfiguracionRequest;
+use App\Models\GestionModulos\Modulo;
+use App\Services\ConfiguracionService;
+use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
+/**
+ * Controlador para gestionar configuraciones generales del sistema.
+ * Maneja dos pestañas: Información Corporativa y Redes Sociales.
+ * 
+ * @author Yariangel Aray
+ * @date 2025-12-04
+ */
 class ConfiguracionController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * ID fijo del módulo Empresas (no cambia).
+     * Usado para acceder a datos relacionados con el módulo.
+     *
+     * @var int
      */
-    public function index()
+    protected int $moduloId = 7;
+
+    /**
+     * Rol del usuario autenticado (cargado en constructor).
+     * Contiene el objeto rol para acceder a permisos y pestañas.
+     *
+     * @var mixed
+     */
+    protected $rol;
+
+    /**
+     * Pestañas accesibles del módulo para el rol (array de pestañas).
+     * Lista de pestañas que el usuario puede ver según su rol.
+     *
+     * @var mixed
+     */
+    protected $tabs;
+
+    /**
+     * Nombre del módulo (para pasar a vistas).
+     * Nombre del módulo obtenido de la base de datos, usado en las vistas de Inertia.
+     *
+     * @var mixed
+     */
+    protected $moduloNombre;
+
+    /**
+     * Constructor: Inicializa propiedades con datos del usuario autenticado.
+     * Carga rol, pestañas accesibles y nombre del módulo para usar en métodos.
+     * Se ejecuta automáticamente al instanciar el controlador.
+     */
+    public function __construct()
     {
-        //
+        // Obtiene el rol del usuario logueado.
+        $this->rol = Auth::user()->rol;
+
+        // Obtiene pestañas accesibles del módulo para el rol (método en modelo Rol).
+        $this->tabs = $this->rol->getPestanasModulo($this->moduloId);
+
+        // Obtiene nombre del módulo por ID.
+        $this->moduloNombre = Modulo::find($this->moduloId)->nombre;
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Muestra la vista de Información Corporativa.
+     * 
+     * @return \Inertia\Response
      */
-    public function create()
+    public function informacionCorporativa()
     {
-        //
+        // Obtener permisos de la pestaña
+        $permisos = $this->rol->getPermisosPestana(3);
+
+        // Obtener configuraciones de contacto e imágenes        
+        $contact = ConfiguracionService::getGroup('contact');
+        $images = ConfiguracionService::getGroup('image');
+
+        return Inertia::render('Modulos:AdministracionWeb/ConfiguracionGeneral/pages/InformacionCorporativa', [
+            'tabs' => $this->tabs,
+            'moduloNombre' => $this->moduloNombre,
+            'permisos' => $permisos,
+            'configuracion' => [
+                'contact' => $contact,
+                'images' => $images,
+            ]
+        ]);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Muestra la vista de Redes Sociales.
+     * 
+     * @return \Inertia\Response
      */
-    public function store(StoreConfiguracionRequest $request)
+    public function redesSociales()
     {
-        //
-    }
+        // Obtener permisos de la pestaña
+        $permisos = $this->rol->getPermisosPestana(4);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Configuracion $configuracion)
-    {
-        //
-    }
+        // Obtener configuraciones de redes sociales
+        $rrss = ConfiguracionService::getGroup('rrss');
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Configuracion $configuracion)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateConfiguracionRequest $request, Configuracion $configuracion)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Configuracion $configuracion)
-    {
-        //
+        return Inertia::render('Modulos:AdministracionWeb/ConfiguracionGeneral/pages/RedesSociales', [
+            'tabs' => $this->tabs,
+            'moduloNombre' => $this->moduloNombre,
+            'permisos' => $permisos,
+            'configuracion' => [
+                'rrss' => $rrss,
+            ]
+        ]);
     }
 }

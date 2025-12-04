@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Configuracion;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class ConfiguracionSeeder extends Seeder
@@ -60,11 +59,11 @@ class ConfiguracionSeeder extends Seeder
             // Configs de imágenes (logos/iconos).
             [
                 'nombre' => 'image.icono',
-                'valor' => 'storage/identidad/logo-arar.png'  // Ícono pequeño.
+                'valor' => '/identidad/icono-arar.png'  // Ícono pequeño.
             ],
             [
                 'nombre' => 'image.logo',
-                'valor' => 'storage/identidad/logo-arar.png'  // Logo completo.
+                'valor' => '/identidad/logo-arar.png'  // Logo completo.
             ],
         ];
 

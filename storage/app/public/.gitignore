@@ -2,3 +2,5 @@
 !.gitignore
 !logos_empresas/
 !logos_empresas/*
+!identidad/
+!identidad/*
