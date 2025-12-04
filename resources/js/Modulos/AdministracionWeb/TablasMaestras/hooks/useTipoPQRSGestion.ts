@@ -1,5 +1,5 @@
 /**
- * Hook useTipoPQRSDGestion.
+ * Hook useTipoPQRSGestion.
  * 
  * Hook específico para gestionar tipos de identificación.
  * Llama al hook genérico useTipoGestion con ruta base y configuración específicas.
@@ -12,14 +12,14 @@ import { useTipoGestion } from "./useTipoGestion";
 import { TipoInterface } from "../types/tipoInterface";
 
 /**
- * Interfaz para las props del hook useTipoPQRSDGestion.
+ * Interfaz para las props del hook useTipoPQRSGestion.
  * Define los datos iniciales y permisos necesarios.
  * 
- * @typedef {Object} UseTipoPQRSDGestionProps
+ * @typedef {Object} UseTipoPQRSGestionProps
  * @property {TipoInterface[]} tiposIniciales - Lista inicial de tipos.
  * @property {string[]} permisos - Lista de permisos del usuario.
  */
-interface UseTipoPQRSDGestionProps {
+interface UseTipoPQRSGestionProps {
   tiposIniciales: TipoInterface[];
   permisos: string[];
 }
@@ -28,7 +28,7 @@ interface UseTipoPQRSDGestionProps {
  * Hook personalizado para gestionar tipos de identificación.
  * Usa el hook genérico con rutas específicas.
  */
-export function useTipoPQRSDGestion({ tiposIniciales, permisos }: UseTipoPQRSDGestionProps) {
+export function useTipoPQRSGestion({ tiposIniciales, permisos }: UseTipoPQRSGestionProps) {
   return useTipoGestion({
     tiposIniciales,
     permisos,

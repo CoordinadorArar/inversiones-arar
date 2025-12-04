@@ -64,12 +64,12 @@ class PestanaSeeder extends Seeder
             ],
             [
                 'modulo' => 'Tablas Maestras',
-                'nombre' => 'Tipos de PQRSD',
+                'nombre' => 'Tipos de PQRS',
                 'ruta'   => '/tipos-pqrsd'
             ],
             [
                 'modulo' => 'Tablas Maestras',
-                'nombre' => 'Estados de PQRSD',
+                'nombre' => 'Estados de PQRS',
                 'ruta'   => '/estados-pqrsd'
             ],
 

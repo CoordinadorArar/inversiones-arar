@@ -1,7 +1,7 @@
 /**
- * Página TiposPQRSD.
+ * Página TiposPQRS.
  * 
- * Vista con tabla y formulario lateral para gestión de tipos de pqrsd.
+ * Vista con tabla y formulario lateral para gestión de tipos de pqrs.
  * - Tabla en el lado izquierdo para listar tipos.
  * - Formulario en el lado derecho (se muestra según permisos) para crear/editar.
  * - Lógica integrada para operaciones CRUD via hooks.
@@ -18,14 +18,14 @@ import HelpManualButton from "@/Components/HelpManualButton";
 import { TipoInterface } from "../types/tipoInterface";
 import { createTipoColumns } from "../columns/tipoColumns";
 import { TipoForm } from "../partials/TipoForm";
-import { useTipoPQRSDGestion } from "../hooks/useTipoPQRSDGestion";
+import { useTipoPQRSGestion } from "../hooks/useTipoPQRSGestion";
 import { useMemo } from "react";
 
 /**
- * Interfaz para las props del componente TiposPQRSD.
+ * Interfaz para las props del componente TiposPQRS.
  * Define la estructura de datos pasados desde el backend via Inertia.
  */
-interface TiposPQRSDProps {
+interface TiposPQRSProps {
   tabs: Array<{
     id: number;
     nombre: string;
@@ -37,10 +37,10 @@ interface TiposPQRSDProps {
 }
 
 /**
- * Componente principal para la página de Tipos de PQRSD.
+ * Componente principal para la página de Tipos de PQRS.
  * Renderiza la tabla de tipos y el formulario lateral condicionalmente, manejando estados via hook personalizado.
  */
-export default function TiposPQRSD({ tipos: tiposIniciales, tabs, moduloNombre, permisos }: TiposPQRSDProps) {
+export default function TiposPQRS({ tipos: tiposIniciales, tabs, moduloNombre, permisos }: TiposPQRSProps) {
 
   // Aquí se usa el hook useTipoGestion para manejar estados y lógica de CRUD (crear, editar, eliminar).
   // Devuelve estados como tipos, mode, permisos, y funciones para manejar eventos.
@@ -62,7 +62,7 @@ export default function TiposPQRSD({ tipos: tiposIniciales, tabs, moduloNombre, 
     handleDeleteClick,
     handleCancelDelete,
     handleConfirmDelete,
-  } = useTipoPQRSDGestion({
+  } = useTipoPQRSGestion({
     tiposIniciales,
     permisos,
   });
@@ -100,7 +100,7 @@ export default function TiposPQRSD({ tipos: tiposIniciales, tabs, moduloNombre, 
           <Card className="py-6 flex flex-col shadow border-none gap-4 overflow-hidden">
             <CardHeader>
               <CardTitle className="flex items-center gap-5">
-                Listado de Tipos de PQRSD
+                Listado de Tipos de PQRS
                 {/* Aquí se incluye HelpManualButton para acceder al manual de usuario. */}
                 <HelpManualButton
                   url="/docs/Manual-Tablas-Maestras.pdf"
@@ -114,7 +114,7 @@ export default function TiposPQRSD({ tipos: tiposIniciales, tabs, moduloNombre, 
               <DataTable
                 columns={columns}
                 data={tipos}
-                searchPlaceholder="Buscar tipos de PQRSD..."
+                searchPlaceholder="Buscar tipos de PQRS..."
               />
             </CardContent>
           </Card>
@@ -158,6 +158,6 @@ export default function TiposPQRSD({ tipos: tiposIniciales, tabs, moduloNombre, 
  * Layout del componente: Envuelve la página en DashboardLayout con header dinámico.
  * Se usa para renderizar el componente dentro del layout principal.
  */
-TiposPQRSD.layout = (page) => (
+TiposPQRS.layout = (page) => (
   <DashboardLayout header={page.props.moduloNombre} children={page} />
 );
