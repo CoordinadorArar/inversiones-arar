@@ -39,12 +39,6 @@ import {
     Upload
 } from 'lucide-react';
 import { Progress } from '@/Components/ui/progress';
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { Checkbox } from '@/Components/ui/checkbox';
 import HelpManualButton from '@/Components/HelpManualButton';
 

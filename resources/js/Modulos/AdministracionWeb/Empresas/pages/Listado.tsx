@@ -63,7 +63,7 @@ export default function EmpresasListado({ empresas, tabs, moduloNombre }: Empres
 
 
         {/* Contenido: DataTable con columnas y datos. */}
-        <CardContent className="flex-1 min-h-0">
+        <CardContent className="flex-1">
           <DataTable
             columns={EmpresaColumns}  // Columnas definidas en empresaColumns.
             data={empresas}  // Datos de empresas.

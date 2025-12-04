@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\EmpresaWebController;
 use App\Http\Controllers\ModuloRedirectController;
+use App\Http\Controllers\PQRSD\TipoPqrsController;
 use App\Http\Controllers\TipoIdentificacionController;
 use Illuminate\Support\Facades\Route;
 
@@ -17,13 +18,7 @@ use Illuminate\Support\Facades\Route;
  * - Módulos hijos: Redirigen a su primera pestaña accesible.
  * - Pestañas: Controladores específicos para acciones (listado, gestión, etc.).
  * 
- * Controladores usados:
- * - ModuloRedirectController: Maneja redirecciones basadas en permisos.
- * - EmpresaWebController: Para pestañas de Empresas.
- * - Otros comentados (por implementar).
- * 
- * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- 
+ * @author Yariangel Aray
  * @date 2025-11-27
  */
 
@@ -109,6 +104,7 @@ Route::middleware('auth')->group(function () {
 
         // Grupo de pestañas para Tablas Maestras (comentadas, por implementar).
         Route::prefix('tablas-maestras')->group(function () {
+            // Aquí se define la ruta para la pestaña de tipos de identificaciones, con middleware para acceso.
             Route::get('/tipos-identificaciones', [TipoIdentificacionController::class, 'index'])->middleware('pestana.access:5');
 
             // --- CRUD ---
@@ -122,9 +118,20 @@ Route::middleware('auth')->group(function () {
                 Route::delete('/{id}', [TipoIdentificacionController::class, 'destroy'])->name('tipo-identificacion.destroy');
             });
 
-            // Route::get('/tipos-pqrsd', [TablasMaestrasController::class, 'tiposPqrsd']);
+            // Aquí se define la ruta para la pestaña de tipos de pqrsd, con middleware para acceso.
+            Route::get('/tipos-pqrsd', [TipoPqrsController::class, 'index'])->middleware('pestana.access:6');
 
-            // Route::get('/estados-pqrsd', [TablasMaestrasController::class, 'estadosPqrsd']);
+            // --- CRUD ---
+            // Mantienen el prefijo /tipos-pqrsd, pero se separan para mayor claridad.
+            Route::prefix('tipos-pqrsd')->group(function () {
+                // Acción: Crear tipo (POST).
+                Route::post('/', [TipoPqrsController::class, 'store'])->name('tipo-pqrsd.store');
+                // Acción: Actualizar tipo (PUT con ID).
+                Route::put('/{id}', [TipoPqrsController::class, 'update'])->name('tipo-pqrsd.update');
+                // Acción: Eliminar tipo (DELETE con ID).
+                Route::delete('/{id}', [TipoPqrsController::class, 'destroy'])->name('tipo-pqrsd.destroy');
+            });
+
         });
     });
 });

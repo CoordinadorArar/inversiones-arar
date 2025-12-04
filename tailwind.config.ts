@@ -103,10 +103,21 @@ export default {
 						opacity: "0",
 					},
 				},
+				"fade": {
+					from: {
+						opacity: "0",
+						transform: " translateY(4px)",
+					},
+					to: {
+						opacity: "1",
+						transform: " translateY(0)",
+					}
+				}
 			},
 			animation: {
 				"collapsible-down": "collapsible-down 0.3s ease-out",
 				"collapsible-up": "collapsible-up 0.3s ease-out",
+				"fade": "fade 0.15s ease-out",
 			},
 		}
 	},

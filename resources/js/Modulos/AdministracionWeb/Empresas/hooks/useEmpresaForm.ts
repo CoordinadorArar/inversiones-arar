@@ -88,6 +88,10 @@ export function useEmpresaForm({
         }
     }, [initialData]);
 
+    useEffect(() => {
+        setErrors({});
+    }, [mode, initialData]);
+
     // ============================================================================
     // FUNCIONES HELPER (Auxiliares)
     // ============================================================================

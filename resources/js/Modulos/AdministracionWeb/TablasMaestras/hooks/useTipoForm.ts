@@ -56,16 +56,6 @@ export function useTipoForm({ mode, initialData, onSubmit, onCancel, externalErr
   // Aquí se usa useState para manejar errores locales del formulario.
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Aquí se usa useRef para referenciar el primer input y hacer focus automático.
-  const firstInputRef = useRef<HTMLInputElement>(null);
-
-  // Aquí se usa useEffect para hacer focus en el primer input cuando se crea un nuevo tipo.
-  useEffect(() => {
-    if (mode === "create") {
-      firstInputRef.current?.focus();
-    }
-  }, [mode]);
-
   // Aquí se usa useEffect para actualizar errores externos y hacer scroll al primer error.
   useEffect(() => {
     if (Object.keys(externalErrors).length > 0) {
@@ -74,7 +64,8 @@ export function useTipoForm({ mode, initialData, onSubmit, onCancel, externalErr
     }
   }, [externalErrors]);
 
-  // Aquí se usa useEffect para actualizar datos cuando cambian initialData o mode.
+  // Solo resetear datos cuando cambia el modo o initialData
+  // Resetear datos solo cuando mode o initialData cambian (no por errores)
   useEffect(() => {
     setData({
       ...INITIAL_DATA,
@@ -119,8 +110,7 @@ export function useTipoForm({ mode, initialData, onSubmit, onCancel, externalErr
 
   /**
    * Handler: Maneja el envío del formulario con validación usando Zod.
-   * Previene envío si hay errores y llama a onSubmit con datos válidos.
-   * Resetea el formulario en modo crear si no hay errores.
+   * Previene envío si hay errores y llama a onSubmit con datos válidos.   
    * 
    * @param {React.FormEvent} e - Evento del formulario.
    */
@@ -146,12 +136,10 @@ export function useTipoForm({ mode, initialData, onSubmit, onCancel, externalErr
     }
 
     // Llamar a onSubmit con datos validados
-    await onSubmit(result.data);
-
-    // Si es modo crear y no hay errores, resetear el formulario
-    if (mode === "create" && Object.keys(errors).length === 0) {
+    const submitResult = await onSubmit(result.data);
+    // Si devuelve reset, limpiar aquí
+    if (submitResult?.reset && mode === "create") {
       setData(INITIAL_DATA);
-      firstInputRef.current?.focus();
     }
   };
 
@@ -168,7 +156,6 @@ export function useTipoForm({ mode, initialData, onSubmit, onCancel, externalErr
   return {
     data,
     errors,
-    firstInputRef,
     handleChange,
     handleSubmit,
     handleCancelClick,

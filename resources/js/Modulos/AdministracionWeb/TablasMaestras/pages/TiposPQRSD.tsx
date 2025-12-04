@@ -1,7 +1,7 @@
 /**
- * Página TiposIdentificaciones.
+ * Página TiposPQRSD.
  * 
- * Vista con tabla y formulario lateral para gestión de tipos de identificación.
+ * Vista con tabla y formulario lateral para gestión de tipos de pqrsd.
  * - Tabla en el lado izquierdo para listar tipos.
  * - Formulario en el lado derecho (se muestra según permisos) para crear/editar.
  * - Lógica integrada para operaciones CRUD via hooks.
@@ -18,14 +18,14 @@ import HelpManualButton from "@/Components/HelpManualButton";
 import { TipoInterface } from "../types/tipoInterface";
 import { createTipoColumns } from "../columns/tipoColumns";
 import { TipoForm } from "../partials/TipoForm";
-import { useTipoIdentificacionGestion } from "../hooks/useTipoIdentificacionGestion";
+import { useTipoPQRSDGestion } from "../hooks/useTipoPQRSDGestion";
 import { useMemo } from "react";
 
 /**
- * Interfaz para las props del componente TiposIdentificaciones.
+ * Interfaz para las props del componente TiposPQRSD.
  * Define la estructura de datos pasados desde el backend via Inertia.
  */
-interface TiposIdentificacionesProps {
+interface TiposPQRSDProps {
   tabs: Array<{
     id: number;
     nombre: string;
@@ -37,10 +37,10 @@ interface TiposIdentificacionesProps {
 }
 
 /**
- * Componente principal para la página de Tipos de Identificaciones.
+ * Componente principal para la página de Tipos de PQRSD.
  * Renderiza la tabla de tipos y el formulario lateral condicionalmente, manejando estados via hook personalizado.
  */
-export default function TiposIdentificaciones({ tipos: tiposIniciales, tabs, moduloNombre, permisos }: TiposIdentificacionesProps) {
+export default function TiposPQRSD({ tipos: tiposIniciales, tabs, moduloNombre, permisos }: TiposPQRSDProps) {
 
   // Aquí se usa el hook useTipoGestion para manejar estados y lógica de CRUD (crear, editar, eliminar).
   // Devuelve estados como tipos, mode, permisos, y funciones para manejar eventos.
@@ -62,7 +62,7 @@ export default function TiposIdentificaciones({ tipos: tiposIniciales, tabs, mod
     handleDeleteClick,
     handleCancelDelete,
     handleConfirmDelete,
-  } = useTipoIdentificacionGestion({
+  } = useTipoPQRSDGestion({
     tiposIniciales,
     permisos,
   });
@@ -86,6 +86,7 @@ export default function TiposIdentificaciones({ tipos: tiposIniciales, tabs, mod
     return {}; // Siempre el mismo objeto vacío en modo crear
   }, [mode, editingTipo]);
 
+
   return (
     <>
       {/* Aquí se usa ModuleLayout para envolver la página con navegación de pestañas y header del módulo. */}
@@ -99,7 +100,7 @@ export default function TiposIdentificaciones({ tipos: tiposIniciales, tabs, mod
           <Card className="py-6 flex flex-col shadow border-none gap-4 overflow-hidden">
             <CardHeader>
               <CardTitle className="flex items-center gap-5">
-                Listado de Tipos de Identificaciones
+                Listado de Tipos de PQRSD
                 {/* Aquí se incluye HelpManualButton para acceder al manual de usuario. */}
                 <HelpManualButton
                   url="/docs/Manual-Tablas-Maestras.pdf"
@@ -108,12 +109,12 @@ export default function TiposIdentificaciones({ tipos: tiposIniciales, tabs, mod
               </CardTitle>
             </CardHeader>
 
-            <CardContent className="flex-1 min-h-0 flex flex-col">
+            <CardContent className="flex-1 min-h-0 flex flex-col overflow-auto">
               {/* Aquí se usa DataTable para renderizar la tabla con columnas dinámicas y búsqueda. */}
               <DataTable
                 columns={columns}
                 data={tipos}
-                searchPlaceholder="Buscar tipos de identificaciones..."
+                searchPlaceholder="Buscar tipos de PQRSD..."
               />
             </CardContent>
           </Card>
@@ -134,7 +135,7 @@ export default function TiposIdentificaciones({ tipos: tiposIniciales, tabs, mod
                   onCancel={handleCancel}
                   externalErrors={formErrors}
                   processing={processing}
-                  placeholders={{ nombre: "Ej: Cédula de Ciudadanía", abreviatura: "Ej: CC" }}
+                  placeholders={{ nombre: "Ej: Petición", abreviatura: "Ej: P" }}
                 />
               </CardContent>
             </Card>
@@ -157,6 +158,6 @@ export default function TiposIdentificaciones({ tipos: tiposIniciales, tabs, mod
  * Layout del componente: Envuelve la página en DashboardLayout con header dinámico.
  * Se usa para renderizar el componente dentro del layout principal.
  */
-TiposIdentificaciones.layout = (page) => (
+TiposPQRSD.layout = (page) => (
   <DashboardLayout header={page.props.moduloNombre} children={page} />
 );

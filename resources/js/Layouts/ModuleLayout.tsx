@@ -67,13 +67,13 @@ export function ModuleLayout({
                                 <TabsTrigger
                                     value={tab.ruta}  // Valor para resaltar activo.
                                     className={cn(
-                                        "px-4 py-2",
-                                        // Si activo: texto primary, bold.
-                                        activeTab === tab.ruta &&
-                                        "!text-primary font-bold",
-                                        // Si no activo: hover effects.
-                                        activeTab !== tab.ruta &&
-                                        "hover:text-foreground hover:bg-gray-400/5"
+                                        "relative px-4 py-2 transition-all duration-200",
+                                        "data-[state=active]:text-primary data-[state=active]:font-bold",
+                                        "hover:bg-gray-400/5 hover:text-foreground",
+
+                                        // underline animado                                        
+                                        "after:rounded-full after:bg-primary after:scale-x-0 after:transition-transform after:duration-300",
+                                        activeTab === tab.ruta && "after:scale-x-100"
                                     )}
                                     onClick={e => {
                                         // Previene navegación si ya está activo (evita recarga).
@@ -88,7 +88,7 @@ export function ModuleLayout({
                 </div>
 
                 {/* Contenido: Área flexible para children (tab activo). */}
-                <div className="mt-2 flex-1 min-h-0">
+                <div className="mt-2 flex-1 min-h-0 animate-fade">
                     {children}  {/* Renderiza el contenido del módulo. */}
                 </div>
             </Tabs>

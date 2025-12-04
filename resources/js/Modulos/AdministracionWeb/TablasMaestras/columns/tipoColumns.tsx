@@ -17,7 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/Components/ui/dropdown-menu";
 import { MoreVertical, Pencil, Trash2 } from "lucide-react";
-import { TipoIdentificacionInterface } from "../types/tipoInterface";
+import { TipoInterface } from "../types/tipoInterface";
 
 /**
  * Interfaz para el contexto de las columnas de tipos.
@@ -25,12 +25,12 @@ import { TipoIdentificacionInterface } from "../types/tipoInterface";
  * 
  * @typedef {Object} TipoColumnsContext
  * @property {(id: number) => void} onEdit - Función a llamar para editar un tipo.
- * @property {(tipo: TipoIdentificacionInterface) => void} onDelete - Función a llamar para eliminar un tipo.
+ * @property {(tipo: TipoInterface) => void} onDelete - Función a llamar para eliminar un tipo.
  * @property {{editar: boolean, eliminar: boolean}} permisos - Permisos del usuario para editar/eliminar.
  */
 interface TipoColumnsContext {
   onEdit: (id: number) => void;
-  onDelete: (tipo: TipoIdentificacionInterface) => void;
+  onDelete: (tipo: TipoInterface) => void;
   permisos: { editar: boolean; eliminar: boolean };
 }
 /**
@@ -38,13 +38,13 @@ interface TipoColumnsContext {
  * Incluye columnas base y una de acciones (si hay permisos), usando componentes UI para renderizar.
  * 
  * @param {TipoColumnsContext} context - Contexto con handlers y permisos.
- * @returns {ColumnDef<TipoIdentificacionInterface>[]} Array de definiciones de columnas para TanStack Table.
+ * @returns {ColumnDef<TipoInterface>[]} Array de definiciones de columnas para TanStack Table.
  */
 export const createTipoColumns = (
   context: TipoColumnsContext
-): ColumnDef<TipoIdentificacionInterface>[] => {
+): ColumnDef<TipoInterface>[] => {
   // Columnas base: ID, Nombre y Abreviatura (siempre visibles).
-  const baseColumns: ColumnDef<TipoIdentificacionInterface>[] = [
+  const baseColumns: ColumnDef<TipoInterface>[] = [
     {
       accessorKey: "id",
       header: "ID",

@@ -103,7 +103,7 @@ export default function EmpresaGestion({
           </CardTitle>
         </CardHeader>
 
-        <CardContent className="flex-1 min-h-0 flex flex-col space-y-6">
+        <CardContent className="flex-1 flex flex-col space-y-6">
           {/* Sección de selección */}
           <div>
             <div className={`grid gap-4 items-end${puedeCrear ? ' md:grid-cols-[1fr_auto]' : ''}`}>
@@ -163,7 +163,7 @@ export default function EmpresaGestion({
           </div>
 
           {/* Formulario */}
-          <div className="flex-1 min-h-0 relative">
+          <div className="flex-1 relative">
             <div
               className={`transition-opacity duration-300 ${isFormDisabled ? "opacity-50 pointer-events-none" : ""
                 }`}

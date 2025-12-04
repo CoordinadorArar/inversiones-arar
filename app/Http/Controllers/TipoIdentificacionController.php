@@ -19,7 +19,7 @@ use Inertia\Inertia;
 class TipoIdentificacionController extends Controller
 {
     /**
-     * ID fijo del módulo Empresas (no cambia).
+     * ID fijo del módulo Tablas Maestras (no cambia).
      */
     protected int $moduloId = 8;
 

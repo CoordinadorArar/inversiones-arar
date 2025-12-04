@@ -1,7 +1,7 @@
 /**
  * Componente TipoForm
  * 
- * Formulario compacto para crear/editar tipos de identificación
+ * Formulario compacto para crear/editar tipos
  * Se muestra en el panel lateral
  * 
  * @author Yariangel Aray
@@ -15,14 +15,16 @@ import { Plus, Save, X } from "lucide-react";
 import { TipoFormData, TIPO_LIMITS } from "../types/tipoForm.types";
 import { useTipoForm } from "../hooks/useTipoForm";
 import { handleTextKeyDown } from "@/lib/keydownValidations";
+import { TipoInterface } from "../types/tipoInterface";
 
 interface TipoFormProps {
   mode: "create" | "edit";
   initialData?: Partial<TipoFormData>;
-  onSubmit: (data: TipoFormData) => Promise<void>;
+  onSubmit: (data: TipoFormData) => Promise<any>;
   onCancel: () => void;
   externalErrors?: Record<string, string>;
   processing?: boolean;
+  placeholders?: {nombre:string; abreviatura:string};
 }
 
 export function TipoForm({
@@ -32,11 +34,11 @@ export function TipoForm({
   onCancel,
   externalErrors = {},
   processing = false,
+  placeholders
 }: TipoFormProps) {
   const {
     data,
     errors,
-    firstInputRef,
     handleChange,
     handleSubmit,
     handleCancelClick,
@@ -61,14 +63,13 @@ export function TipoForm({
         </Label>
         <Input
           id="nombre"
-          ref={firstInputRef}
           value={data.nombre}
           onChange={(e) => handleChange("nombre", e.target.value)}
           onKeyDown={handleTextKeyDown}
           maxLength={TIPO_LIMITS.nombre}
           disabled={processing}
           className={errors.nombre ? "border-destructive" : ""}
-          placeholder="Ej: Cédula de Ciudadanía"
+          placeholder={placeholders?.nombre || ''}
         />
         <div className="relative">
           <InputError message={errors.nombre} />
@@ -105,7 +106,7 @@ export function TipoForm({
           maxLength={TIPO_LIMITS.abreviatura}
           disabled={processing}
           className={errors.abreviatura ? "border-destructive" : ""}
-          placeholder="Ej: CC"
+          placeholder={placeholders?.abreviatura || ''}
         />
         <div className="relative">
           <InputError message={errors.abreviatura} />

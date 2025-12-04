@@ -158,7 +158,7 @@ export function DataTable<TData, TValue>({
           <DropdownMenuTrigger asChild>
             <Button
               variant="outline"
-              className="border-primary/20 hover:border-primary/40 hover:text-primary w-full sm:w-auto"
+              className="border-primary/20 hover:border-primary/40 hover:bg-primary/5 hover:text-primary w-full sm:w-auto"
             >
               <Settings2 className="h-4 w-4 mr-2" />
               Columnas
