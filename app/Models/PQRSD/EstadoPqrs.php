@@ -35,8 +35,10 @@ class EstadoPqrs extends Model
      */
     protected $fillable = ['nombre', 'abreviatura'];
 
-    // Deshabilitar timestamps automáticos (usa fecha_creacion/modificacion manuales).
-    public $timestamps = false;
+    public $timestamps = true;
+
+    const CREATED_AT = 'fecha_creacion';
+    const UPDATED_AT = 'fecha_modificacion';
 
     // Campos tratados como fechas.
     protected $dates = [

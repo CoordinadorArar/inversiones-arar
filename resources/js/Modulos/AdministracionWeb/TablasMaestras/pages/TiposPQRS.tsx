@@ -20,17 +20,15 @@ import { createTipoColumns } from "../columns/tipoColumns";
 import { TipoForm } from "../partials/TipoForm";
 import { useTipoPQRSGestion } from "../hooks/useTipoPQRSGestion";
 import { useMemo } from "react";
+import { Info } from "lucide-react";
+import { TabInterface } from "@/Types/tabInterface";
 
 /**
  * Interfaz para las props del componente TiposPQRS.
  * Define la estructura de datos pasados desde el backend via Inertia.
  */
 interface TiposPQRSProps {
-  tabs: Array<{
-    id: number;
-    nombre: string;
-    ruta: string;
-  }>;
+  tabs: TabInterface[];
   tipos: TipoInterface[];
   moduloNombre: string;
   permisos: string[];
@@ -120,25 +118,34 @@ export default function TiposPQRS({ tipos: tiposIniciales, tabs, moduloNombre, p
           </Card>
           {/* Sección del formulario lateral: Solo se muestra si el usuario tiene permisos para crear/editar. */}
           {shouldShowForm && (
-            <Card id="tipo-form-container" className="py-4 h-min shadow border-none sticky top-16">
-              <CardHeader>
-                <CardTitle className="text-lg">
-                  {mode === "create" ? "Crear Tipo" : "Editar Tipo"}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {/* Aquí se usa TipoForm para manejar el formulario de creación/edición, con validaciones y envío. */}
-                <TipoForm
-                  mode={mode}
-                  initialData={formInitialData}
-                  onSubmit={handleSubmit}
-                  onCancel={handleCancel}
-                  externalErrors={formErrors}
-                  processing={processing}
-                  placeholders={{ nombre: "Ej: Petición", abreviatura: "Ej: P" }}
-                />
-              </CardContent>
-            </Card>
+            <div>
+
+              <Card id="tipo-form-container" className="py-4 h-min shadow border-none sticky top-16">
+                <CardHeader>
+                  <CardTitle className="text-lg">
+                    {mode === "create" ? "Crear Tipo" : "Editar Tipo"}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {/* Aquí se usa TipoForm para manejar el formulario de creación/edición, con validaciones y envío. */}
+                  <TipoForm
+                    mode={mode}
+                    initialData={formInitialData}
+                    onSubmit={handleSubmit}
+                    onCancel={handleCancel}
+                    externalErrors={formErrors}
+                    processing={processing}
+                    placeholders={{ nombre: "Ej: Petición", abreviatura: "Ej: P" }}
+                  />
+                </CardContent>
+              </Card>
+              <p className="mt-6 text-xs text-muted-foreground text-center">
+                <Info className="h-4 w-4 mr-2 float-left" />
+                La información gestionada en este módulo es <b>sensible</b> y puede afectar el <b>funcionamiento</b> del sistema.
+                Antes de modificar o eliminar un registro, verifica que no esté asociado a <b>otros procesos, validaciones</b> o
+                <b> módulos operativos</b>. Realiza los cambios con precaución ya que pueden <b>impactar</b> en flujos, reglas de negocios o datos ya registrados.
+              </p>
+            </div>
           )}
         </div>
       </ModuleLayout>

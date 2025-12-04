@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\EmpresaWebController;
 use App\Http\Controllers\ModuloRedirectController;
+use App\Http\Controllers\PQRSD\EstadoPqrsController;
 use App\Http\Controllers\PQRSD\TipoPqrsController;
 use App\Http\Controllers\TipoIdentificacionController;
 use Illuminate\Support\Facades\Route;
@@ -130,6 +131,20 @@ Route::middleware('auth')->group(function () {
                 Route::put('/{id}', [TipoPqrsController::class, 'update'])->name('tipo-pqrsd.update');
                 // Acción: Eliminar tipo (DELETE con ID).
                 Route::delete('/{id}', [TipoPqrsController::class, 'destroy'])->name('tipo-pqrsd.destroy');
+            });
+
+            // Aquí se define la ruta para la pestaña de estados de pqrsd, con middleware para acceso.
+            Route::get('/estados-pqrsd', [EstadoPqrsController::class, 'index'])->middleware('pestana.access:7');
+
+            // --- CRUD ---
+            // Mantienen el prefijo /estados-pqrsd, pero se separan para mayor claridad.
+            Route::prefix('estados-pqrsd')->group(function () {
+                // Acción: Crear tipo (POST).
+                Route::post('/', [EstadoPqrsController::class, 'store'])->name('estado-pqrsd.store');
+                // Acción: Actualizar tipo (PUT con ID).
+                Route::put('/{id}', [EstadoPqrsController::class, 'update'])->name('estado-pqrsd.update');
+                // Acción: Eliminar tipo (DELETE con ID).
+                Route::delete('/{id}', [EstadoPqrsController::class, 'destroy'])->name('estado-pqrsd.destroy');
             });
 
         });

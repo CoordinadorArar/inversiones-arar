@@ -25,13 +25,10 @@ import { EmpresaInterface } from "../types/empresaInterface";
 import { useEmpresaGestion } from "../hooks/useEmpresaGestion";
 import { useMemo } from "react";
 import HelpManualButton from "@/Components/HelpManualButton";
+import { TabInterface } from "@/Types/tabInterface";
 
 interface EmpresaGestionProps {
-  tabs: Array<{
-    id: number;
-    nombre: string;
-    ruta: string;
-  }>;
+  tabs: TabInterface[];
   empresas: EmpresaInterface[];
   moduloNombre: string;
   permisos: string[];

@@ -23,18 +23,12 @@ import { DashboardLayout } from "@/Layouts/DashboardLayout";
 import { DataTable } from "@/Components/ui/data-table";
 import { EmpresaColumns, EmpresaInactiveColumns } from "../empresaColumns";
 import { EmpresaInterface } from "../types/empresaInterface";
-import { CircleHelp, CircleQuestionMark, HelpCircle } from "lucide-react";
-import { Badge } from "@/Components/ui/badge";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import HelpManualButton from "@/Components/HelpManualButton";
+import { TabInterface } from "@/Types/tabInterface";
 
 // Interface para props del componente.
 interface EmpresasListadoProps {
-  tabs: Array<{
-    id: number;
-    nombre: string;
-    ruta: string;
-  }>;
+  tabs: TabInterface[];
   empresas: EmpresaInterface[];
   moduloNombre: string;
 }

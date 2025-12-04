@@ -1,8 +1,8 @@
 /**
- * Página TiposIdentificaciones.
+ * Página EstadosPQRS.
  * 
- * Vista con tabla y formulario lateral para gestión de tipos de identificación.
- * - Tabla en el lado izquierdo para listar tipos.
+ * Vista con tabla y formulario lateral para gestión de estados de pqrs.
+ * - Tabla en el lado izquierdo para listar estados.
  * - Formulario en el lado derecho (se muestra según permisos) para crear/editar.
  * - Lógica integrada para operaciones CRUD via hooks.
  * 
@@ -18,16 +18,16 @@ import HelpManualButton from "@/Components/HelpManualButton";
 import { TipoInterface } from "../types/tipoInterface";
 import { createTipoColumns } from "../columns/tipoColumns";
 import { TipoForm } from "../partials/TipoForm";
-import { useTipoIdentificacionGestion } from "../hooks/useTipoIdentificacionGestion";
+import { useTipoPQRSGestion } from "../hooks/useTipoPQRSGestion";
 import { useMemo } from "react";
-import { Info } from "lucide-react";
+import { Info, InfoIcon } from "lucide-react";
 import { TabInterface } from "@/Types/tabInterface";
 
 /**
- * Interfaz para las props del componente TiposIdentificaciones.
+ * Interfaz para las props del componente EstadosPQRS.
  * Define la estructura de datos pasados desde el backend via Inertia.
  */
-interface TiposIdentificacionesProps {
+interface EstadosPQRSProps {
   tabs: TabInterface[];
   tipos: TipoInterface[];
   moduloNombre: string;
@@ -35,10 +35,10 @@ interface TiposIdentificacionesProps {
 }
 
 /**
- * Componente principal para la página de Tipos de Identificaciones.
+ * Componente principal para la página de Estados de PQRS.
  * Renderiza la tabla de tipos y el formulario lateral condicionalmente, manejando estados via hook personalizado.
  */
-export default function TiposIdentificaciones({ tipos: tiposIniciales, tabs, moduloNombre, permisos }: TiposIdentificacionesProps) {
+export default function EstadosPQRS({ tipos: tiposIniciales, tabs, moduloNombre, permisos }: EstadosPQRSProps) {
 
   // Aquí se usa el hook useTipoGestion para manejar estados y lógica de CRUD (crear, editar, eliminar).
   // Devuelve estados como tipos, mode, permisos, y funciones para manejar eventos.
@@ -60,7 +60,7 @@ export default function TiposIdentificaciones({ tipos: tiposIniciales, tabs, mod
     handleDeleteClick,
     handleCancelDelete,
     handleConfirmDelete,
-  } = useTipoIdentificacionGestion({
+  } = useTipoPQRSGestion({
     tiposIniciales,
     permisos,
   });
@@ -72,7 +72,7 @@ export default function TiposIdentificaciones({ tipos: tiposIniciales, tabs, mod
     permisos: { editar: puedeEditar, eliminar: puedeEliminar },
   });
 
-  // Preparar datos iniciales del formulario: si está en modo edición, usa datos del tipo seleccionado.
+  // Preparar datos iniciales del formulario: si está en modo edición, usa datos del estado seleccionado.
   // Usa useMemo para evitar recalculaciones innecesarias y que initialData "cambie" por errores.
   const formInitialData = useMemo(() => {
     if (mode === "edit" && editingTipo) {
@@ -84,6 +84,7 @@ export default function TiposIdentificaciones({ tipos: tiposIniciales, tabs, mod
     return {}; // Siempre el mismo objeto vacío en modo crear
   }, [mode, editingTipo]);
 
+
   return (
     <>
       {/* Aquí se usa ModuleLayout para envolver la página con navegación de pestañas y header del módulo. */}
@@ -93,11 +94,11 @@ export default function TiposIdentificaciones({ tipos: tiposIniciales, tabs, mod
         activeTab={window.location.pathname}
       >
         <div className={`grid gap-4 ${shouldShowForm ? 'lg:grid-cols-[1fr_320px]' : ''}`}>
-          {/* Sección de la tabla: Usa Card para contener el listado de tipos. */}
+          {/* Sección de la tabla: Usa Card para contener el listado de estados. */}
           <Card className="py-6 flex flex-col shadow border-none gap-4 overflow-hidden">
             <CardHeader>
               <CardTitle className="flex items-center gap-5">
-                Listado de Tipos de Identificaciones
+                Listado de Estados de PQRS
                 {/* Aquí se incluye HelpManualButton para acceder al manual de usuario. */}
                 <HelpManualButton
                   url="/docs/Manual-Tablas-Maestras.pdf"
@@ -106,23 +107,22 @@ export default function TiposIdentificaciones({ tipos: tiposIniciales, tabs, mod
               </CardTitle>
             </CardHeader>
 
-            <CardContent className="flex-1 min-h-0 flex flex-col">
+            <CardContent className="flex-1 min-h-0 flex flex-col overflow-auto">
               {/* Aquí se usa DataTable para renderizar la tabla con columnas dinámicas y búsqueda. */}
               <DataTable
                 columns={columns}
                 data={tipos}
-                searchPlaceholder="Buscar tipos de identificaciones..."
+                searchPlaceholder="Buscar estados de PQRS..."
               />
             </CardContent>
           </Card>
           {/* Sección del formulario lateral: Solo se muestra si el usuario tiene permisos para crear/editar. */}
           {shouldShowForm && (
             <div>
-
               <Card id="tipo-form-container" className="py-4 h-min shadow border-none sticky top-16">
                 <CardHeader>
                   <CardTitle className="text-lg">
-                    {mode === "create" ? "Crear Tipo" : "Editar Tipo"}
+                    {mode === "create" ? "Crear Estado" : "Editar Estado"}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -134,7 +134,7 @@ export default function TiposIdentificaciones({ tipos: tiposIniciales, tabs, mod
                     onCancel={handleCancel}
                     externalErrors={formErrors}
                     processing={processing}
-                    placeholders={{ nombre: "Ej: Cédula de Ciudadanía", abreviatura: "Ej: CC" }}
+                    placeholders={{ nombre: "Ej: Cancelado", abreviatura: "Ej: C" }}
                   />
                 </CardContent>
               </Card>
@@ -148,12 +148,12 @@ export default function TiposIdentificaciones({ tipos: tiposIniciales, tabs, mod
           )}
         </div>
       </ModuleLayout>
-      {/* Sección del dialog de eliminación: Usa DeleteDialog para confirmar la eliminación de un tipo. */}
+      {/* Sección del dialog de eliminación: Usa DeleteDialog para confirmar la eliminación de un estado. */}
       <DeleteDialog
         open={showDeleteDialog}
         onOpenChange={handleCancelDelete}
         onConfirm={handleConfirmDelete}
-        itemName={`El tipo «${tipoToDelete?.nombre}» será desactivado y dejará de estar disponible en el sistema.`}
+        itemName={`El estado «${tipoToDelete?.nombre}» será desactivado y dejará de estar disponible en el sistema.`}
         processing={processing}
       />
     </>
@@ -164,6 +164,6 @@ export default function TiposIdentificaciones({ tipos: tiposIniciales, tabs, mod
  * Layout del componente: Envuelve la página en DashboardLayout con header dinámico.
  * Se usa para renderizar el componente dentro del layout principal.
  */
-TiposIdentificaciones.layout = (page) => (
+EstadosPQRS.layout = (page) => (
   <DashboardLayout header={page.props.moduloNombre} children={page} />
 );
