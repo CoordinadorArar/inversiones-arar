@@ -16,6 +16,7 @@ import { TipoFormData, TIPO_LIMITS } from "../types/tipoForm.types";
 import { useTipoForm } from "../hooks/useTipoForm";
 import { handleTextKeyDown } from "@/lib/keydownValidations";
 import { TipoInterface } from "../types/tipoInterface";
+import { useFormChanges } from "@/hooks/use-form-changes";
 
 interface TipoFormProps {
   mode: "create" | "edit";
@@ -51,13 +52,26 @@ export function TipoForm({
     processing,
   });
 
+  // Detecta cambios usando el hook
+  const changes = useFormChanges(initialData || {}, data);
+
+  // Función para estilos condicionales (resalta si cambió)
+  const getInputClass = (field: keyof typeof data) => {
+    return (changes[field] && mode == "edit" ? "border-primary/50" : errors[field] ? "border-destructive" : "");
+  };
+
+  // Función para clase del label (resalta solo si cambió)
+  const getLabelClass = (field: keyof typeof data) => {
+    return `flex items-center gap-2 after:text-red-500 after:content-["*"] ${changes[field] && mode == "edit" ? "text-primary font-medium" : ""}`;
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {/* Nombre */}
       <div className="space-y-2">
         <Label
-          htmlFor="nombre"
-          className='flex items-center gap-2 after:ml-0.5 after:text-red-500 after:content-["*"]'
+          htmlFor="nombre"          
+          className={getLabelClass("nombre")}
         >
           Nombre
         </Label>
@@ -68,7 +82,7 @@ export function TipoForm({
           onKeyDown={handleTextKeyDown}
           maxLength={TIPO_LIMITS.nombre}
           disabled={processing}
-          className={errors.nombre ? "border-destructive" : ""}
+          className={getInputClass("nombre")}
           placeholder={placeholders?.nombre || ''}
         />
         <div className="relative">
@@ -83,7 +97,7 @@ export function TipoForm({
       <div className="space-y-2">
         <Label
           htmlFor="abreviatura"
-          className='flex items-center gap-2 after:ml-0.5 after:text-red-500 after:content-["*"]'
+          className={getLabelClass("abreviatura")}
         >
           Abreviatura
         </Label>
@@ -105,7 +119,7 @@ export function TipoForm({
           }}
           maxLength={TIPO_LIMITS.abreviatura}
           disabled={processing}
-          className={errors.abreviatura ? "border-destructive" : ""}
+          className={getInputClass("abreviatura")}
           placeholder={placeholders?.abreviatura || ''}
         />
         <div className="relative">

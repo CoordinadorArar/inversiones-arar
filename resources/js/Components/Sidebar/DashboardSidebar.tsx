@@ -29,16 +29,22 @@ import { Home } from "lucide-react";
  */
 export function DashboardSidebar({
   menu,
-  openGroup,
-  setOpenGroup
+  openGroups,
+  setOpenGroups
 }: DashboardSidebarProps) {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const [openPopover, setOpenPopover] = useState<string | null>(null);
 
-  const toggleGroup = (title: string | null) => {
-    // Si el grupo ya está abierto, cerrarlo. Si está cerrado, abrirlo (cierra el otro automáticamente)
-    setOpenGroup(openGroup === title ? null : title);
+  const toggleGroup = (title: string) => {
+    setOpenGroups((prev) => {
+      // Si el grupo ya está abierto, cerrarlo
+      if (prev.includes(title)) {
+        return [];
+      }
+      // Si está cerrado, abrir solo este (cerrar todos los demás)
+      return [title];
+    });
   };
 
   return (
@@ -59,7 +65,7 @@ export function DashboardSidebar({
                   <DynamicMenuItem
                     item={item}
                     collapsed={collapsed}
-                    openGroup={openGroup}
+                    openGroups={openGroups}
                     toggleGroup={toggleGroup}
                     openPopover={openPopover}
                     setOpenPopover={setOpenPopover}

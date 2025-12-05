@@ -6,22 +6,23 @@ import { ModuleLayout } from "@/Layouts/ModuleLayout";
 import { DashboardLayout } from "@/Layouts/DashboardLayout";
 import { router } from "@inertiajs/react";
 import { Save, MapPin, Phone, Mail, Image, Globe, MapPinHouse } from "lucide-react";
-import { toast } from "sonner";
-import { 
-  handleEmailKeyDown, 
-  handleNumberKeyDown, 
-  handleNumberTextKeyDown, 
-  handleUrlKeyDown 
+import {
+  handleEmailKeyDown,
+  handleNumberKeyDown,
+  handleNumberTextKeyDown,
+  handleUrlKeyDown
 } from "@/lib/keydownValidations";
 import { TabInterface } from "@/Types/tabInterface";
 import { ImageUpload } from "@/Components/ImageUpload";
-import { 
-  InputGroup, 
-  InputGroupAddon, 
-  InputGroupInput, 
-  InputGroupText 
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+  InputGroupText
 } from "@/Components/ui/input-group";
 import InputError from "@/Components/InputError";
+import { useToast } from "@/hooks/use-toast";
+import { useFormChanges } from "@/hooks/use-form-changes";
 
 interface InformacionCorporativaProps {
   tabs: TabInterface[];
@@ -48,9 +49,12 @@ export default function InformacionCorporativa({
   permisos,
   configuracion,
 }: InformacionCorporativaProps) {
-  const puedeEditar = !permisos.includes("editar");
+  const puedeEditar = permisos.includes("editar");
 
-  const [formData, setFormData] = useState({
+  const { toast } = useToast();
+
+  // Valores iniciales (para comparar cambios)
+  const [initialFormData, setInitialFormData] = useState({
     email: configuracion.contact.email || "",
     telefono: configuracion.contact.telefono || "",
     ubicacion: configuracion.contact.ubicacion || "",
@@ -60,6 +64,9 @@ export default function InformacionCorporativa({
     icono: null as File | null,
   });
 
+  // Estado actual del formulario
+  const [formData, setFormData] = useState(initialFormData);
+
   const [previews, setPreviews] = useState({
     logo: configuracion.images.logo || null,
     icono: configuracion.images.icono || null,
@@ -67,6 +74,9 @@ export default function InformacionCorporativa({
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Detecta cambios usando el hook
+  const changes = useFormChanges(initialFormData, formData);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -99,7 +109,11 @@ export default function InformacionCorporativa({
     e.preventDefault();
 
     if (!puedeEditar) {
-      toast.error("No tienes permiso para editar la configuración");
+      toast({
+        title: "Error",
+        description: "No tienes permiso para editar la configuración.",
+        variant: 'destructive'
+      });
       return;
     }
 
@@ -118,32 +132,45 @@ export default function InformacionCorporativa({
     });
 
     try {
-      const response = await fetch(route("configuracion.update-corporativa"), {
-        method: "POST",
-        headers: {
-          "X-CSRF-TOKEN": document
-            .querySelector('meta[name="csrf-token"]')
-            ?.getAttribute("content") || "",
-        },
-        body: formDataToSend,
-      });
+      // const response = await fetch(route("configuracion.update-corporativa"), {
+      //   method: "POST",
+      //   headers: {
+      //     "X-CSRF-TOKEN": document
+      //       .querySelector('meta[name="csrf-token"]')
+      //       ?.getAttribute("content") || "",
+      //   },
+      //   body: formDataToSend,
+      // });
 
-      const data = await response.json();
+      // const data = await response.json();
 
-      if (!response.ok) {
-        if (data.errors) {
-          setErrors(data.errors);
-        }
-        throw new Error(data.error || "Error al guardar");
-      }
+      // if (!response.ok) {
+      //   if (data.errors) {
+      //     setErrors(data.errors);
+      //   }
+      //   throw new Error(data.error || "Error al guardar");
+      // }
 
-      toast.success(data.message || "Configuración guardada correctamente");
-      router.reload({ only: ["configuracion"] });
+      // toast({
+      //   title: "Información Guardada",
+      //   description: "La configuración se ha guardado correctamente.",
+      //   variant: 'success'
+      // });
+      // router.reload();
     } catch (error: any) {
-      toast.error(error.message || "Error al guardar la configuración");
+      toast({
+        title: "Error",
+        description: error.message || "Error al guardar la configuración",
+        variant: 'destructive'
+      });
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  // Función para estilos condicionales (resalta si cambió)
+  const getInputClass = (field: keyof typeof formData) => {
+    return changes[field] ? "has-[[data-slot=input-group-control]]:border-primary/50" : errors[field] ? "border-destructive" : "";
   };
 
   return (
@@ -165,7 +192,7 @@ export default function InformacionCorporativa({
               </p>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-8">
+            <form onSubmit={handleSubmit} className="space-y-8" noValidate>
               {/* ================================================ */}
               {/* SECCIÓN DE CONTACTO */}
               {/* ================================================ */}
@@ -189,8 +216,9 @@ export default function InformacionCorporativa({
                 <div className="grid gap-4 md:grid-cols-2 pt-2">
                   {/* Email */}
                   <div className="space-y-2">
-                    <Label htmlFor="email">Correo Electrónico</Label>
-                    <InputGroup>
+                    <Label htmlFor="email" className={changes.email ? "text-primary" : ""}>Correo Electrónico</Label>
+
+                    <InputGroup className={getInputClass("email")}>
                       <InputGroupAddon>
                         <Mail className="h-4 w-4 text-muted-foreground" />
                       </InputGroupAddon>
@@ -202,8 +230,7 @@ export default function InformacionCorporativa({
                         onChange={handleInputChange}
                         onKeyDown={handleEmailKeyDown}
                         placeholder="ejemplo@empresa.com"
-                        disabled={isSubmitting}
-                        className={errors.email ? "border-destructive" : ""}
+                        disabled={isSubmitting}                        
                       />
                     </InputGroup>
                     <InputError message={errors.email} />
@@ -211,8 +238,8 @@ export default function InformacionCorporativa({
 
                   {/* Teléfono */}
                   <div className="space-y-2">
-                    <Label htmlFor="telefono">Teléfono</Label>
-                    <InputGroup>
+                    <Label htmlFor="telefono" className={changes.telefono ? "text-primary" : ""}>Teléfono</Label>
+                    <InputGroup className={getInputClass("telefono")}>
                       <InputGroupAddon>
                         <Phone className="h-4 w-4 text-muted-foreground" />
                       </InputGroupAddon>
@@ -234,8 +261,8 @@ export default function InformacionCorporativa({
 
                 {/* Ubicación principal (full width) */}
                 <div className="space-y-2">
-                  <Label htmlFor="ubicacion">Ubicación</Label>
-                  <InputGroup>
+                  <Label htmlFor="ubicacion" className={changes.ubicacion ? "text-primary" : ""}>Ubicación</Label>
+                  <InputGroup className={getInputClass("ubicacion")}>
                     <InputGroupAddon>
                       <MapPin className="h-4 w-4 text-muted-foreground" />
                     </InputGroupAddon>
@@ -258,10 +285,10 @@ export default function InformacionCorporativa({
                 <div className="grid gap-4 md:grid-cols-2">
                   {/* Detalles de ubicación */}
                   <div className="space-y-2">
-                    <Label htmlFor="ubicacion_detalles">
+                    <Label htmlFor="ubicacion_detalles" className={changes.ubicacion_detalles ? "text-primary" : ""}>
                       Detalles de Ubicación
                     </Label>
-                    <InputGroup>
+                    <InputGroup className={getInputClass("ubicacion_detalles")}>
                       <InputGroupAddon>
                         <InputGroupText className="text-xs">
                           <MapPinHouse className="h-4 w-4 text-muted-foreground" />
@@ -283,11 +310,11 @@ export default function InformacionCorporativa({
                   </div>
 
                   {/* URL de Google Maps */}
-                  <div className="space-y-2">
-                    <Label htmlFor="ubicacion_url">
+                  <div className="space-y-2" >
+                    <Label htmlFor="ubicacion_url" className={changes.ubicacion_url ? "text-primary" : ""}>
                       URL de Google Maps
                     </Label>
-                    <InputGroup>
+                    <InputGroup className={getInputClass("ubicacion_url")}>
                       <InputGroupAddon>
                         <Globe className="h-4 w-4 text-muted-foreground" />
                       </InputGroupAddon>
@@ -335,7 +362,7 @@ export default function InformacionCorporativa({
                     onImageRemove={() => handleFileRemove("logo")}
                     disabled={isSubmitting}
                     error={errors.logo}
-                    label="Logo de la Empresa"
+                    label="Logo de la Empresa"                  
                   />
 
                   <ImageUpload

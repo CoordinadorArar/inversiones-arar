@@ -28,7 +28,7 @@ export interface MenuItemLinkProps {
 export interface DynamicMenuItemProps {
   item: MenuParent;
   collapsed: boolean;
-  openGroup: string | null;
+  openGroups: string[];
   toggleGroup: (title: string) => void;
   openPopover: string | null;
   setOpenPopover: (title: string | null) => void;
@@ -40,7 +40,7 @@ export interface CollapsedMenuItemProps {
 }
 export interface ExpandedMenuItemProps {
   item: MenuParent;
-  openGroup: string | null;
+  openGroups: string[];
   toggleGroup: (title: string) => void;
 }
 
@@ -49,6 +49,6 @@ export interface ExpandedMenuItemProps {
  */
 export interface DashboardSidebarProps {
   menu: MenuParent[];
-  openGroup: string | null;
-  setOpenGroup: (groups: string | null) => void;
+  openGroups: string[];
+  setOpenGroups: (groups: string[] | ((prev: string[]) => string[])) => void;
 }

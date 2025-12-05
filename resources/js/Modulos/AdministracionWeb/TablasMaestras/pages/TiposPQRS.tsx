@@ -81,7 +81,8 @@ export default function TiposPQRS({ tipos: tiposIniciales, tabs, moduloNombre, p
         abreviatura: editingTipo.abreviatura,
       };
     }
-    return {}; // Siempre el mismo objeto vacío en modo crear
+    // Para modo crear, usa valores vacíos para que no marque cambios inicialmente
+    return { nombre: "", abreviatura: "" };
   }, [mode, editingTipo]);
 
 

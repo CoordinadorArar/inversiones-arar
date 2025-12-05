@@ -18,6 +18,7 @@ import {
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@/Components/ui/input-group";
 import { DeleteDialog } from "@/Components/DeleteDialog";
 import { ImageUpload } from "@/Components/ImageUpload";
+import { useFormChanges } from "@/hooks/use-form-changes";
 
 interface EmpresaFormProps {
     mode: "create" | "edit";
@@ -73,6 +74,14 @@ export function EmpresaForm({
         externalErrors,
     });
 
+    // Detecta cambios usando el hook
+    const changes = useFormChanges(initialData || {}, data);
+
+    // Función para estilos condicionales (resalta si cambió)
+    const getInputClass = (field: keyof typeof data) => {
+        return (changes[field] && mode == "edit" ? "border-primary/50" : errors[field] ? "border-destructive" : "");
+    };
+
     return (
         <>
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -81,7 +90,7 @@ export function EmpresaForm({
                     <div className="space-y-2">
                         <Label
                             htmlFor="id_siesa"
-                            className="flex items-center gap-2 after:ml-0.5 after:text-red-500 after:content-['*'] after:hidden data-[required=true]:after:block"
+                            className={`flex items-center gap-2 after:ml-0.5 after:text-red-500 after:content-['*'] after:hidden data-[required=true]:after:block ${changes.id_siesa && mode == "edit" ? "text-primary" : ""}`}
                             data-required={data.mostrar_en_header || data.mostrar_en_empresas}
                         >
                             ID Siesa
@@ -94,7 +103,7 @@ export function EmpresaForm({
                             onKeyDown={handleNumberKeyDown}
                             maxLength={EMPRESA_LIMITS.id_siesa}
                             disabled={disabled}
-                            className={errors.id_siesa ? "border-destructive" : ""}
+                            className={getInputClass('id_siesa')}
                             placeholder="ID en sistema Siesa"
                         />
                         <div className="relative">
@@ -108,7 +117,7 @@ export function EmpresaForm({
                     <div className="space-y-2">
                         <Label
                             htmlFor="razon_social"
-                            className='flex items-center gap-2 after:ml-0.5 after:text-red-500 after:content-["*"]'
+                            className={`flex items-center gap-2 after:ml-0.5 after:text-red-500 after:content-['*'] ${changes.razon_social && mode == "edit" ? "text-primary" : ""}`}
                         >
                             Razón Social
                         </Label>
@@ -119,7 +128,7 @@ export function EmpresaForm({
                             maxLength={EMPRESA_LIMITS.razon_social}
                             disabled={disabled}
                             onKeyDown={handleNumberTextKeyDown}
-                            className={errors.razon_social ? "border-destructive" : ""}
+                            className={getInputClass('razon_social')}
                             placeholder="Nombre legal de la empresa"
                         />
                         <div className="relative">
@@ -134,7 +143,11 @@ export function EmpresaForm({
                 {/* Siglas y Tipo Empresa */}
                 <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                        <Label htmlFor="siglas">Siglas (Opcional)</Label>
+                        <Label
+                            htmlFor="siglas"
+                            className={`${changes.siglas && mode == "edit" ? "text-primary" : ""}`}
+                        >
+                            Siglas (Opcional)</Label>
                         <Input
                             id="siglas"
                             value={data.siglas}
@@ -151,7 +164,7 @@ export function EmpresaForm({
                             }}
                             maxLength={EMPRESA_LIMITS.siglas}
                             disabled={disabled}
-                            className={errors.siglas ? "border-destructive" : ""}
+                            className={getInputClass('siglas')}
                             placeholder="Ej: ARAR"
                         />
                         <div className="relative">
@@ -165,7 +178,7 @@ export function EmpresaForm({
                     <div className="space-y-2">
                         <Label
                             htmlFor="tipo_empresa"
-                            className="flex items-center gap-2 after:ml-0.5 after:text-red-500 after:content-['*'] after:hidden data-[required=true]:after:block"
+                            className={`flex items-center gap-2 after:ml-0.5 after:text-red-500 after:content-['*'] after:hidden data-[required=true]:after:block ${changes.tipo_empresa && mode == "edit" ? "text-primary" : ""}`}
                             data-required={data.mostrar_en_empresas}
                         >
                             Tipo de Empresa
@@ -177,7 +190,7 @@ export function EmpresaForm({
                             onKeyDown={handleTextKeyDown}
                             maxLength={EMPRESA_LIMITS.tipo_empresa}
                             disabled={disabled}
-                            className={errors.tipo_empresa ? "border-destructive" : ""}
+                            className={getInputClass('tipo_empresa')}
                             placeholder="Ej: Holding Empresarial"
                         />
                         <div className="relative">
@@ -193,7 +206,7 @@ export function EmpresaForm({
                 <div className="space-y-2">
                     <Label
                         htmlFor="descripcion"
-                        className="flex items-center gap-2 after:ml-0.5 after:text-red-500 after:content-['*'] after:hidden data-[required=true]:after:block"
+                        className={`flex items-center gap-2 after:ml-0.5 after:text-red-500 after:content-['*'] after:hidden data-[required=true]:after:block ${changes.descripcion && mode == "edit" ? "text-primary" : ""}`}
                         data-required={data.mostrar_en_empresas}
                     >
                         Descripción
@@ -205,7 +218,7 @@ export function EmpresaForm({
                         maxLength={EMPRESA_LIMITS.descripcion}
                         disabled={disabled}
                         onKeyDown={handleMessagesKeyDown}
-                        className={errors.descripcion ? "border-destructive" : ""}
+                        className={getInputClass('descripcion')}
                         placeholder="Descripción breve de la empresa"
                         rows={3}
                     />
@@ -222,7 +235,7 @@ export function EmpresaForm({
                     <div className="space-y-2">
                         <Label
                             htmlFor="sitio_web"
-                            className="flex items-center gap-2 after:ml-0.5 after:text-red-500 after:content-['*'] after:hidden data-[required=true]:after:block"
+                            className={`flex items-center gap-2 after:ml-0.5 after:text-red-500 after:content-['*'] after:hidden data-[required=true]:after:block ${changes.sitio_web && mode == "edit" ? "text-primary" : ""}`}
                             data-required={data.mostrar_en_empresas}
                         >
                             Sitio Web
@@ -235,7 +248,7 @@ export function EmpresaForm({
                             maxLength={EMPRESA_LIMITS.sitio_web}
                             disabled={disabled}
                             onKeyDown={handleUrlKeyDown}
-                            className={errors.sitio_web ? "border-destructive" : ""}
+                            className={getInputClass('sitio_web')}
                             placeholder="https://ejemplo.com"
                         />
                         <div className="relative">
@@ -247,8 +260,12 @@ export function EmpresaForm({
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="dominio">Dominio de Correo (Opcional)</Label>
-                        <InputGroup>
+                        <Label
+                            htmlFor="dominio"
+                            className={`${changes.id_siesa && mode == "edit" ? "text-primary" : ""}`}
+                        >
+                            Dominio de Correo (Opcional)</Label>
+                        <InputGroup className={`${changes.dominio && mode == "edit" ? "has-[[data-slot=input-group-control]]:border-primary/50" : ""}`}>
                             <InputGroupAddon>
                                 <InputGroupText>correo@</InputGroupText>
                             </InputGroupAddon>
@@ -287,7 +304,7 @@ export function EmpresaForm({
                     onImageRemove={handleLogoRemove}
                     disabled={disabled}
                     error={errors.icono}
-                    label="Logo de la Empresa (Opcional)"                                        
+                    label="Logo de la Empresa (Opcional)"
                 />
 
                 {/* Switches */}

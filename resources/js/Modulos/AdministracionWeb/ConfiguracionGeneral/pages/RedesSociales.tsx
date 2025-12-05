@@ -6,17 +6,11 @@ import { ModuleLayout } from "@/Layouts/ModuleLayout";
 import { DashboardLayout } from "@/Layouts/DashboardLayout";
 import { router } from "@inertiajs/react";
 import { Save, Instagram, Facebook, Linkedin, Share2 } from "lucide-react";
-import { toast } from "sonner";
 import { handleUrlKeyDown } from "@/lib/keydownValidations";
 import { TabInterface } from "@/Types/tabInterface";
-import {
-    InputGroup,
-    InputGroupAddon,
-    InputGroupInput,
-    InputGroupText,
-} from "@/Components/ui/input-group";
 import InputError from "@/Components/InputError";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
 
 interface RedesSocialesProps {
     tabs: TabInterface[];
@@ -38,7 +32,9 @@ export default function RedesSociales({
     permisos,
     configuracion,
 }: RedesSocialesProps) {
-    const puedeEditar = !permisos.includes("editar");
+    const puedeEditar = permisos.includes("editar");
+
+    const { toast } = useToast();
 
     const [formData, setFormData] = useState({
         instagram: configuracion.rrss.instagram || "",
@@ -62,7 +58,11 @@ export default function RedesSociales({
         e.preventDefault();
 
         if (!puedeEditar) {
-            toast.error("No tienes permiso para editar las redes sociales");
+            toast({
+                title: "Error",
+                description: "No tienes permiso para editar las redes sociales.",
+                variant: 'destructive'
+            });
             return;
         }
 
@@ -91,10 +91,18 @@ export default function RedesSociales({
                 throw new Error(data.error || "Error al guardar");
             }
 
-            toast.success(data.message || "Redes sociales actualizadas correctamente");
-            router.reload({ only: ["configuracion"] });
+            toast({
+                title: "Redes Sociales Guardadas",
+                description: "Las redes sociales se han actualizado correctamente.",
+                variant: 'success'
+            });
+            router.reload();
         } catch (error: any) {
-            toast.error(error.message || "Error al guardar las redes sociales");
+            toast({
+                title: "Error",
+                description: error.message || "Error al guardar las redes sociales",
+                variant: 'destructive'
+            });            
         } finally {
             setIsSubmitting(false);
         }
