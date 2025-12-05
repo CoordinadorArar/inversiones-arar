@@ -11,15 +11,16 @@ use Inertia\Inertia;
 
 /**
  * Controlador para gestionar configuraciones generales del sistema.
- * Maneja dos pestañas: Información Corporativa y Redes Sociales.
- * 
+ * Maneja dos pestañas: Información Corporativa (contacto e imágenes) y Redes Sociales.
+ * Usa ConfiguracionService para obtener y actualizar configuraciones, integrándose con React via Inertia.
+ *
  * @author Yariangel Aray
  * @date 2025-12-04
  */
 class ConfiguracionController extends Controller
 {
     /**
-     * ID fijo del módulo Empresas (no cambia).
+     * ID fijo del módulo Configuración General (no cambia).
      * Usado para acceder a datos relacionados con el módulo.
      *
      * @var int
@@ -68,9 +69,10 @@ class ConfiguracionController extends Controller
     }
 
     /**
-     * Muestra la vista de Información Corporativa.
-     * 
-     * @return \Inertia\Response
+     * Muestra la vista de Información Corporativa en React via Inertia.
+     * Recupera configuraciones de contacto e imágenes, junto con pestañas, permisos y nombre del módulo.
+     *
+     * @return \Inertia\Response Respuesta de Inertia con la vista y datos necesarios.
      */
     public function informacionCorporativa()
     {
@@ -93,9 +95,10 @@ class ConfiguracionController extends Controller
     }
 
     /**
-     * Muestra la vista de Redes Sociales.
-     * 
-     * @return \Inertia\Response
+     * Muestra la vista de Redes Sociales en React via Inertia.
+     * Recupera configuraciones de redes sociales, junto con pestañas, permisos y nombre del módulo.
+     *
+     * @return \Inertia\Response Respuesta de Inertia con la vista y datos necesarios.
      */
     public function redesSociales()
     {
@@ -116,10 +119,11 @@ class ConfiguracionController extends Controller
     }
 
     /**
-     * Actualiza la información corporativa.
-     * 
-     * @param ConfiguracionRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * Actualiza la información corporativa (contacto e imágenes).
+     * Valida permisos, maneja subida de archivos (logo e icono) y actualiza configuraciones via ConfiguracionService.
+     *
+     * @param ConfiguracionRequest $request Solicitud con datos validados para actualizar.
+     * @return \Illuminate\Http\JsonResponse Respuesta JSON con mensaje de éxito o error.
      */
     public function updateInformacionCorporativa(ConfiguracionRequest $request)
     {
@@ -160,7 +164,7 @@ class ConfiguracionController extends Controller
 
                 $file = $request->file('logo');
                 $filename = 'logo-arar-' . time() . '.' . $file->getClientOriginalExtension();
-                $path = $file->storeAs('identidad', $filename, 'public');
+                $path = $file->storeAs('/identidad', $filename, 'public');
                 $updates['image.logo'] = $path;
             }
 
@@ -183,7 +187,6 @@ class ConfiguracionController extends Controller
             return response()->json([
                 'message' => 'Configuración actualizada correctamente'
             ], 200);
-
         } catch (\Exception $e) {
             \Log::error('Error al actualizar configuración corporativa: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString()
@@ -197,9 +200,10 @@ class ConfiguracionController extends Controller
 
     /**
      * Actualiza las redes sociales.
-     * 
-     * @param ConfiguracionRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * Valida permisos y actualiza configuraciones de redes sociales via ConfiguracionService.
+     *
+     * @param ConfiguracionRequest $request Solicitud con datos validados para actualizar.
+     * @return \Illuminate\Http\JsonResponse Respuesta JSON con mensaje de éxito o error.
      */
     public function updateRedesSociales(ConfiguracionRequest $request)
     {
@@ -234,7 +238,6 @@ class ConfiguracionController extends Controller
             return response()->json([
                 'message' => 'Redes sociales actualizadas correctamente'
             ], 200);
-
         } catch (\Exception $e) {
             \Log::error('Error al actualizar redes sociales: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString()

@@ -12,6 +12,8 @@ use Inertia\Inertia;
  * Controlador para gestionar empresas en el módulo de Administración Web.
  * Maneja vistas de listado y gestión, operaciones CRUD (crear, leer, actualizar, eliminar),
  * integrándose con React via Inertia y verificando permisos por rol y pestaña.
+ * 
+ * Maneja dos pestañas: Listado y Gestión
  *
  * @author Yariangel Aray
  * @date 2025-11-27

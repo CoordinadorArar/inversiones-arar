@@ -1,18 +1,14 @@
 /**
- * Componente EmpresaSwitches
+ * Componente EmpresaSwitches.
  * 
- * Renderiza los switches booleanos con descripciones y badges
- * de campos requeridos cuando se activan.
- * 
- * Props:
- * - data: Datos del formulario
- * - onChange: Callback para actualizar switches
- * - disabled: Deshabilitar todos los switches
+ * Renderiza switches booleanos para configuración de visibilidad de empresas:
+ * mostrar en header, empresas, portafolio y permitir PQRS.
+ * Muestra descripciones, badges de estado activo y campos requeridos cuando se activan.
+ * Usa componentes UI para switches y tooltips, integrándose con React para gestionar opciones.
  * 
  * @author Yariangel Aray
  * @date 2025-12-01
  */
-
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
@@ -25,17 +21,35 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+/**
+ * Interfaz para las props del componente EmpresaSwitches.
+ * Define los datos y callbacks necesarios para renderizar los switches.
+ * 
+ * @typedef {Object} EmpresaSwitchesProps
+ * @property {EmpresaFormData} data - Datos del formulario para determinar estado de switches.
+ * @property {(field: keyof EmpresaFormData, value: boolean) => void} onChange - Callback para actualizar switches.
+ * @property {boolean} [disabled] - Indica si los switches están deshabilitados.
+ */
 interface EmpresaSwitchesProps {
   data: EmpresaFormData;
   onChange: (field: keyof EmpresaFormData, value: boolean) => void;
   disabled?: boolean;
 }
 
+/**
+ * Componente EmpresaSwitches.
+ * 
+ * Renderiza los switches booleanos con descripciones y badges de campos requeridos cuando se activan.
+ * 
+ * @param {EmpresaSwitchesProps} props - Props del componente.
+ * @returns {JSX.Element} Elemento JSX renderizado.
+ */
 export function EmpresaSwitches({
   data,
   onChange,
   disabled = false,
 }: EmpresaSwitchesProps) {
+  // Lista de switches a renderizar: claves booleanas de visibilidad.
   const switches = [
     "mostrar_en_header",
     "mostrar_en_empresas",
@@ -45,8 +59,10 @@ export function EmpresaSwitches({
 
   return (
     <div className="space-y-4">
+      {/* Header de sección con título y tooltip informativo. */}
       <div className="flex items-center gap-2 mb-2">
         <h3 className="text-sm font-semibold">Configuración de Visibilidad</h3>
+        {/* Aquí se usa TooltipProvider y Tooltip para mostrar información sobre los ajustes. */}
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger>
@@ -62,6 +78,7 @@ export function EmpresaSwitches({
         </TooltipProvider>
       </div>
 
+      {/* Grid de switches: Renderiza cada switch en una card con descripción y estado. */}
       <div className="grid gap-4 md:grid-cols-2">
         {switches.map((switchKey) => {
           const config = SWITCH_DESCRIPTIONS[switchKey];
@@ -70,21 +87,22 @@ export function EmpresaSwitches({
           return (
             <div
               key={switchKey}
-              className={`p-4 rounded-lg border-2 transition-all ${
-                isActive
+              className={`p-4 rounded-lg border-2 transition-all ${isActive
                   ? "border-primary bg-primary/5"
                   : "border-border bg-card"
-              }`}
+                }`}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 space-y-2">
                   <div className="flex items-center gap-2">
+                    {/* Aquí se usa Label para el título del switch. */}
                     <Label
                       htmlFor={switchKey}
                       className="cursor-pointer m-0"
                     >
                       {config.label}
                     </Label>
+                    {/* Aquí se usa Badge para mostrar "Activo" si el switch está encendido. */}
                     {isActive && (
                       <Badge variant="default" className="text-xs">
                         Activo
@@ -96,7 +114,7 @@ export function EmpresaSwitches({
                     {config.description}
                   </p>
 
-                  {/* Mostrar campos requeridos si hay */}
+                  {/* Mostrar campos requeridos si hay: Lista badges de campos obligatorios cuando activo. */}
                   {isActive && config.requiredFields.length > 0 && (
                     <div className="pt-2 border-t">
                       <p className="text-xs font-medium text-primary mb-2">
@@ -104,19 +122,23 @@ export function EmpresaSwitches({
                       </p>
                       <div className="flex flex-wrap gap-1">
                         {config.requiredFields.map((field) => (
-                          <Badge
-                            key={field}
-                            variant="outline"
-                            className="text-xs bg-primary/20 border-primary/50"
-                          >
-                            {field.replace(/_/g, " ")}
-                          </Badge>
+                          <>
+                            {/* Aquí se usa Badge para cada campo requerido. */}
+                            <Badge
+                              key={field}
+                              variant="outline"
+                              className="text-xs bg-primary/20 border-primary/50"
+                            >
+                              {field.replace(/_/g, " ")}
+                            </Badge>
+                          </>
                         ))}
                       </div>
                     </div>
                   )}
                 </div>
 
+                {/* Aquí se usa Switch para el control booleano. */}
                 <Switch
                   id={switchKey}
                   checked={isActive}

@@ -16,11 +16,11 @@ import { TipoInterface } from "../types/tipoInterface";
  * Define los datos iniciales y permisos necesarios.
  * 
  * @typedef {Object} UseEstadoPQRSGestionProps
- * @property {TipoInterface[]} tiposIniciales - Lista inicial de tipos.
+ * @property {TipoInterface[]} estadosIniciales - Lista inicial de tipos.
  * @property {string[]} permisos - Lista de permisos del usuario.
  */
 interface UseEstadoPQRSGestionProps {
-  tiposIniciales: TipoInterface[];
+  estadosIniciales: TipoInterface[];
   permisos: string[];
 }
 
@@ -28,7 +28,7 @@ interface UseEstadoPQRSGestionProps {
  * Hook personalizado para gestionar tipos de identificación.
  * Usa el hook genérico con rutas específicas.
  */
-export function useEstadoPQRSGestion({ tiposIniciales, permisos }: UseEstadoPQRSGestionProps) {
+export function useEstadoPQRSGestion({ estadosIniciales:tiposIniciales, permisos }: UseEstadoPQRSGestionProps) {
   return useTipoGestion({
     tiposIniciales,
     permisos,

@@ -25,7 +25,7 @@ interface TipoFormProps {
   onCancel: () => void;
   externalErrors?: Record<string, string>;
   processing?: boolean;
-  placeholders?: {nombre:string; abreviatura:string};
+  placeholders?: { nombre: string; abreviatura: string };
 }
 
 export function TipoForm({
@@ -57,7 +57,13 @@ export function TipoForm({
 
   // Función para estilos condicionales (resalta si cambió)
   const getInputClass = (field: keyof typeof data) => {
-    return (changes[field] && mode == "edit" ? "border-primary/50" : errors[field] ? "border-destructive" : "");
+    return (changes[field] && mode == "edit"
+      ? "border-primary/50"
+      : "")
+      + " " +
+      (errors[field]
+        ? "border-destructive"
+        : "");
   };
 
   // Función para clase del label (resalta solo si cambió)
@@ -70,7 +76,7 @@ export function TipoForm({
       {/* Nombre */}
       <div className="space-y-2">
         <Label
-          htmlFor="nombre"          
+          htmlFor="nombre"
           className={getLabelClass("nombre")}
         >
           Nombre

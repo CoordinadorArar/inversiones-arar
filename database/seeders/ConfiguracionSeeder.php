@@ -25,7 +25,7 @@ class ConfiguracionSeeder extends Seeder
             ],
             [
                 'nombre' => 'contact.telefono',
-                'valor' => '607 698 5203'
+                'valor' => '6076985203'
             ],
             [
                 'nombre' => 'contact.ubicacion',

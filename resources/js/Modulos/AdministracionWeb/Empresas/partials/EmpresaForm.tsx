@@ -1,3 +1,14 @@
+/**
+ * Componente EmpresaForm.
+ * 
+ * Formulario principal para crear/editar empresas: maneja validaciones condicionales,
+ * estados bloqueados, subida de logo y envío de datos.
+ * Usa hook personalizado para lógica y componentes UI para inputs y switches.
+ * Se integra con React para gestionar empresas via Inertia.
+ * 
+ * @author Yariangel Aray
+ * @date 2025-11-28
+ */
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,19 +18,25 @@ import { Save, Trash2, X, Plus } from "lucide-react";
 import { EmpresaFormData, EMPRESA_LIMITS } from "../types/empresaForm.types";
 import { EmpresaSwitches } from "./EmpresaSwitches";
 import { useEmpresaForm } from "../hooks/useEmpresaForm";
-import {
-    handleTextKeyDown,
-    handleNumberKeyDown,
-    handleNumberTextKeyDown,
-    handleMessagesKeyDown,
-    handleUrlKeyDown,
-    handleDominioKeyDown,
-} from "@/lib/keydownValidations";
+import { handleTextKeyDown, handleNumberKeyDown, handleNumberTextKeyDown, handleMessagesKeyDown, handleUrlKeyDown, handleDominioKeyDown } from "@/lib/keydownValidations";
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@/Components/ui/input-group";
 import { DeleteDialog } from "@/Components/DeleteDialog";
 import { ImageUpload } from "@/Components/ImageUpload";
 import { useFormChanges } from "@/hooks/use-form-changes";
 
+/**
+ * Interfaz para las props del componente EmpresaForm.
+ * Define los parámetros necesarios para configurar el formulario.
+ * 
+ * @typedef {Object} EmpresaFormProps
+ * @property {"create" | "edit"} mode - Modo del formulario (crear o editar).
+ * @property {Partial<EmpresaFormData>} [initialData] - Datos iniciales opcionales para prellenar.
+ * @property {boolean} [disabled] - Indica si el formulario está deshabilitado.
+ * @property {(data: EmpresaFormData) => Promise<void>} onSubmit - Función a llamar al enviar datos válidos.
+ * @property {() => Promise<void>} [onDelete] - Función opcional a llamar para eliminar (solo en modo edit).
+ * @property {() => void} onCancel - Función a llamar al cancelar.
+ * @property {Record<string, string>} [externalErrors] - Errores externos opcionales.
+ */
 interface EmpresaFormProps {
     mode: "create" | "edit";
     initialData?: Partial<EmpresaFormData>;
@@ -29,16 +46,14 @@ interface EmpresaFormProps {
     onCancel: () => void;
     externalErrors?: Record<string, string>;
 }
-
 /**
  * Componente EmpresaForm.
  * 
  * Formulario principal para crear/editar empresas.
  * Maneja validaciones condicionales, estados bloqueados y envío de datos.
  * 
- * @author Yariangel Aray 
- 
- * @date 2025-11-28
+ * @param {EmpresaFormProps} props - Props del componente.
+ * @returns {JSX.Element} Elemento JSX renderizado.
  */
 export function EmpresaForm({
     mode,
@@ -50,8 +65,7 @@ export function EmpresaForm({
     externalErrors = {},
 }: EmpresaFormProps) {
 
-    // Hook personalizado que maneja toda la lógica del formulario: estado, validaciones, envío y eliminación.
-
+    // Aquí se usa el hook useEmpresaForm para manejar toda la lógica del formulario: estado, validaciones, envío y eliminación.
     const {
         data,
         errors,
@@ -74,18 +88,24 @@ export function EmpresaForm({
         externalErrors,
     });
 
-    // Detecta cambios usando el hook
+    // Aquí se usa useFormChanges para detectar cambios en el formulario y resaltar campos modificados.
     const changes = useFormChanges(initialData || {}, data);
 
-    // Función para estilos condicionales (resalta si cambió)
+    // Función para estilos condicionales: resalta si cambió o hay error.
     const getInputClass = (field: keyof typeof data) => {
-        return (changes[field] && mode == "edit" ? "border-primary/50" : errors[field] ? "border-destructive" : "");
+        return (changes[field] && mode == "edit"
+            ? "border-primary/50"
+            : "")
+            + " " +
+            (errors[field]
+                ? "border-destructive"
+                : "");
     };
 
     return (
         <>
             <form onSubmit={handleSubmit} className="space-y-6">
-                {/* ID Siesa y Razón Social */}
+                {/* ID Siesa y Razón Social: Grid con dos inputs principales. */}
                 <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                         <Label
@@ -95,6 +115,7 @@ export function EmpresaForm({
                         >
                             ID Siesa
                         </Label>
+                        {/* Aquí se usa Input para el campo ID Siesa con validaciones y contador de caracteres. */}
                         <Input
                             id="id_siesa"
                             ref={firstInputRef}
@@ -121,6 +142,7 @@ export function EmpresaForm({
                         >
                             Razón Social
                         </Label>
+                        {/* Aquí se usa Input para el campo Razón Social con validaciones y contador. */}
                         <Input
                             id="razon_social"
                             value={data.razon_social}
@@ -140,7 +162,7 @@ export function EmpresaForm({
                     </div>
                 </div>
 
-                {/* Siglas y Tipo Empresa */}
+                {/* Siglas y Tipo Empresa: Grid con inputs opcionales y requeridos. */}
                 <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                         <Label
@@ -148,6 +170,7 @@ export function EmpresaForm({
                             className={`${changes.siglas && mode == "edit" ? "text-primary" : ""}`}
                         >
                             Siglas (Opcional)</Label>
+                        {/* Aquí se usa Input para siglas con transformación a mayúsculas y validaciones. */}
                         <Input
                             id="siglas"
                             value={data.siglas}
@@ -183,6 +206,7 @@ export function EmpresaForm({
                         >
                             Tipo de Empresa
                         </Label>
+                        {/* Aquí se usa Input para tipo de empresa con validaciones y contador. */}
                         <Input
                             id="tipo_empresa"
                             value={data.tipo_empresa}
@@ -202,7 +226,7 @@ export function EmpresaForm({
                     </div>
                 </div>
 
-                {/* Descripción */}
+                {/* Descripción: Textarea para descripción con validaciones. */}
                 <div className="space-y-2">
                     <Label
                         htmlFor="descripcion"
@@ -211,6 +235,7 @@ export function EmpresaForm({
                     >
                         Descripción
                     </Label>
+                    {/* Aquí se usa Textarea para descripción con contador de caracteres. */}
                     <Textarea
                         id="descripcion"
                         value={data.descripcion}
@@ -230,7 +255,7 @@ export function EmpresaForm({
                     </div>
                 </div>
 
-                {/* Sitio Web y Dominio */}
+                {/* Sitio Web y Dominio: Grid con inputs para URLs. */}
                 <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                         <Label
@@ -240,6 +265,7 @@ export function EmpresaForm({
                         >
                             Sitio Web
                         </Label>
+                        {/* Aquí se usa Input para sitio web con validaciones de URL. */}
                         <Input
                             id="sitio_web"
                             type="url"
@@ -262,9 +288,10 @@ export function EmpresaForm({
                     <div className="space-y-2">
                         <Label
                             htmlFor="dominio"
-                            className={`${changes.id_siesa && mode == "edit" ? "text-primary" : ""}`}
+                            className={`${changes.dominio && mode == "edit" ? "text-primary" : ""}`}
                         >
                             Dominio de Correo (Opcional)</Label>
+                        {/* Aquí se usa InputGroup para dominio con prefijo "correo@". */}
                         <InputGroup className={`${changes.dominio && mode == "edit" ? "has-[[data-slot=input-group-control]]:border-primary/50" : ""}`}>
                             <InputGroupAddon>
                                 <InputGroupText>correo@</InputGroupText>
@@ -289,32 +316,24 @@ export function EmpresaForm({
                     </div>
                 </div>
 
-                {/* Logo Upload */}
-                {/* <EmpresaLogoUpload
-                    logoPreview={data.logo_preview}
-                    onLogoChange={handleLogoChange}
-                    onLogoRemove={handleLogoRemove}
-                    disabled={disabled}
-                    error={errors.logo}
-                /> */}
-
+                {/* Logo Upload: Sección para subir logo de la empresa. */}
                 <ImageUpload
                     preview={data.logo_preview}
                     onImageChange={handleLogoChange}
                     onImageRemove={handleLogoRemove}
                     disabled={disabled}
-                    error={errors.icono}
+                    error={errors.logo}
                     label="Logo de la Empresa (Opcional)"
                 />
 
-                {/* Switches */}
+                {/* Switches: Componente para opciones booleanas como mostrar en header, etc. */}
                 <EmpresaSwitches
                     data={data}
                     onChange={handleChange}
                     disabled={disabled}
                 />
 
-                {/* Botones de acción */}
+                {/* Botones de acción: Eliminar, Cancelar y Guardar/Crear. */}
                 <div className="flex flex-wrap gap-3 pt-4 border-t">
                     {!disabled && (
                         <>
@@ -360,7 +379,7 @@ export function EmpresaForm({
                 </div>
             </form>
 
-            {/* Dialog de confirmación de eliminación */}
+            {/* Dialog de confirmación de eliminación: Usa DeleteDialog para confirmar eliminación. */}
             <DeleteDialog
                 open={showDeleteDialog}
                 onOpenChange={handleDeleteCancel}

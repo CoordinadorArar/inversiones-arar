@@ -1,13 +1,10 @@
 /**
- * Página EmpresaGestion
+ * Página EmpresaGestion.
  * 
- * Gestión completa de empresas con:
- * - Select con búsqueda para seleccionar empresa a editar
- * - Botón para crear nueva empresa
- * - Formulario que se habilita/deshabilita según la acción
- * - Modo crear/editar con validaciones condicionales
- * 
- * Lógica separada en useEmpresaGestion hook
+ * Gestión completa de empresas: select con búsqueda para seleccionar empresa a editar,
+ * botón para crear nueva, formulario que se habilita/deshabilita según acción y permisos.
+ * Modo crear/editar con validaciones condicionales, usando hook personalizado para lógica.
+ * Se integra con React via Inertia para mostrar y editar empresas.
  * 
  * @author Yariangel Aray
  * @date 2025-12-01
@@ -27,13 +24,30 @@ import { useMemo } from "react";
 import HelpManualButton from "@/Components/HelpManualButton";
 import { TabInterface } from "@/Types/tabInterface";
 
+/**
+ * Interfaz para las props del componente EmpresaGestion.
+ * Define la estructura de datos pasados desde el backend via Inertia.
+ * 
+ * @typedef {Object} EmpresaGestionProps
+ * @property {TabInterface[]} tabs - Pestañas accesibles del módulo.
+ * @property {EmpresaInterface[]} empresas - Lista de empresas disponibles.
+ * @property {string} moduloNombre - Nombre del módulo para el header.
+ * @property {string[]} permisos - Permisos del usuario para la pestaña.
+ */
 interface EmpresaGestionProps {
   tabs: TabInterface[];
   empresas: EmpresaInterface[];
   moduloNombre: string;
   permisos: string[];
 }
-
+/**
+ * Componente principal para la página de Gestión de Empresas.
+ * Renderiza select para elegir empresa, botón para crear nueva y formulario condicional,
+ * manejando estado via hook personalizado y permisos.
+ * 
+ * @param {EmpresaGestionProps} props - Props del componente.
+ * @returns {JSX.Element} Elemento JSX renderizado.
+ */
 export default function EmpresaGestion({
   empresas: empresasBack,
   tabs,
@@ -41,6 +55,7 @@ export default function EmpresaGestion({
   permisos
 }: EmpresaGestionProps) {
 
+  // Aquí se usa el hook useEmpresaGestion para manejar estado, permisos y operaciones CRUD.
   const {
     selectedEmpresaId,
     mode,
@@ -61,6 +76,7 @@ export default function EmpresaGestion({
     permisos
   });
 
+  // Aquí se usa useMemo para calcular datos iniciales del formulario basados en modo y empresa seleccionada.
   const formInitialData = useMemo(() => {
     if (mode === "edit" && selectedEmpresa) {
       return {
@@ -84,6 +100,7 @@ export default function EmpresaGestion({
   }, [mode, selectedEmpresa]);
 
   return (
+    // Aquí se usa ModuleLayout para envolver la página con navegación de pestañas y header del módulo.
     <ModuleLayout
       moduloNombre={moduloNombre}
       tabs={tabs}
@@ -93,6 +110,7 @@ export default function EmpresaGestion({
         <CardHeader>
           <CardTitle className="flex items-center gap-5">
             Gestión de Empresas
+            {/* Aquí se incluye HelpManualButton para acceder al manual de gestión de empresas. */}
             <HelpManualButton
               url="/docs/Manual-Empresas-Gestion.pdf"
               variant="muted"
@@ -101,7 +119,7 @@ export default function EmpresaGestion({
         </CardHeader>
 
         <CardContent className="flex-1 flex flex-col space-y-6">
-          {/* Sección de selección */}
+          {/* Sección de selección: Contiene select para elegir empresa y botón para crear nueva. */}
           <div>
             <div className={`grid gap-4 items-end${puedeCrear ? ' md:grid-cols-[1fr_auto]' : ''}`}>
               {/* Select de empresas */}
@@ -109,14 +127,17 @@ export default function EmpresaGestion({
                 <Label>Seleccionar empresa para editar</Label>
 
                 {puedeEditar ? (
-                  <SearchableSelect
-                    options={empresaOptions}
-                    value={selectedEmpresaId || undefined}
-                    onValueChange={handleSelectEmpresa}
-                    placeholder="Buscar empresa..."
-                    searchPlaceholder="Escribir para buscar..."
-                    emptyText="No se encontraron empresas"
-                  />
+                  <>
+                    {/* Aquí se usa SearchableSelect para buscar y seleccionar empresa a editar. */}
+                    <SearchableSelect
+                      options={empresaOptions}
+                      value={selectedEmpresaId || ""}
+                      onValueChange={handleSelectEmpresa}
+                      placeholder="Buscar empresa..."
+                      searchPlaceholder="Escribir para buscar..."
+                      emptyText="No se encontraron empresas"
+                    />
+                  </>
                 ) : (
                   <div className="p-3 rounded-lg border border-destructive/50 bg-destructive/10 w-full">
                     <p className="text-sm text-destructive">
@@ -139,7 +160,7 @@ export default function EmpresaGestion({
               )}
             </div>
 
-            {/* Indicador de modo */}
+            {/* Indicador de modo: Muestra si está en crear o editando una empresa específica. */}
             {mode !== "idle" && (
               <div className="mt-4 p-3 rounded-lg bg-primary/10 border border-primary/20">
                 <p className="text-sm font-medium text-primary">
@@ -159,26 +180,29 @@ export default function EmpresaGestion({
             )}
           </div>
 
-          {/* Formulario */}
+          {/* Formulario: Se habilita/deshabilita según permisos y modo. */}
           <div className="flex-1 relative">
             <div
               className={`transition-opacity duration-300 ${isFormDisabled ? "opacity-50 pointer-events-none" : ""
                 }`}
             >
               {(puedeCrear || puedeEditar) && (
-                <EmpresaForm
-                  mode={mode === "create" ? "create" : "edit"}
-                  initialData={formInitialData}
-                  disabled={isFormDisabled}
-                  onSubmit={handleSubmit}
-                  onDelete={mode === "edit" && puedeEliminar ? handleDelete : undefined}
-                  onCancel={handleCancel}
-                  externalErrors={formErrors}
-                />
+                <>
+                  {/* Aquí se usa EmpresaForm para renderizar el formulario de empresa con validaciones. */}
+                  < EmpresaForm
+                    mode={mode === "create" ? "create" : "edit"}
+                    initialData={formInitialData}
+                    disabled={isFormDisabled}
+                    onSubmit={handleSubmit}
+                    onDelete={mode === "edit" && puedeEliminar ? handleDelete : undefined}
+                    onCancel={handleCancel}
+                    externalErrors={formErrors}
+                  />
+                </>
               )}
             </div>
 
-            {/* Mensaje cuando está bloqueado */}
+            {/* Mensaje cuando está bloqueado: Muestra instrucciones o mensaje de permisos. */}
             {isFormDisabled && (
               <div className="absolute top-0 left-1/2 -translate-x-1/2 flex items-center justify-center pointer-events-none">
                 <div className="bg-background/90 p-6 rounded-lg border-2 border-dashed border-muted-foreground/20 text-center sm:max-w-sm">
@@ -206,6 +230,13 @@ export default function EmpresaGestion({
   );
 }
 
+/**
+ * Layout del componente: Envuelve la página en DashboardLayout con header dinámico.
+ * Se usa para renderizar el componente dentro del layout principal.
+ * 
+ * @param {any} page - Página a renderizar.
+ * @returns {JSX.Element} Elemento JSX con layout aplicado.
+ */
 EmpresaGestion.layout = (page) => (
   <DashboardLayout header={page.props.moduloNombre} children={page} />
 );

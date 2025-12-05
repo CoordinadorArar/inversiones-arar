@@ -8,18 +8,20 @@ use Illuminate\Support\Facades\Cache;
 
 /**
  * Servicio para gestionar configuraciones del sistema.
- * Permite obtener valores agrupados por prefijo con caché.
- * 
+ * Permite obtener valores agrupados por prefijo con caché para mejorar rendimiento.
+ * Usado en ConfiguracionController para recuperar y actualizar configuraciones.
+ *
  * @author Yariangel Aray
  * @date 2025-12-04
  */
 class ConfiguracionService
 {
     /**
-     * Obtiene todas las configuraciones agrupadas por prefijo.
-     * Ejemplo: contact.email -> ['contact' => ['email' => '...']]
-     * 
-     * @return Collection
+     * Obtiene todas las configuraciones agrupadas por nombre.
+     * Usa caché por 1 hora para optimizar consultas.
+     * Ejemplo: ['contact.email' => '...', 'rrss.instagram' => '...']
+     *
+     * @return Collection Colección de configuraciones con nombre como clave.
      */
     public static function getAll(): Collection
     {
@@ -31,11 +33,12 @@ class ConfiguracionService
     }
 
     /**
-     * Obtiene configuraciones de un grupo específico.
+     * Obtiene configuraciones de un grupo específico por prefijo.
+     * Filtra y estructura las configs en un array anidado.
      * Ejemplo: getGroup('contact') -> ['email' => '...', 'telefono' => '...']
-     * 
-     * @param string $prefix Prefijo del grupo (contact, rrss, image)
-     * @return array
+     *
+     * @param string $prefix Prefijo del grupo (ej. 'contact', 'rrss', 'image').
+     * @return array Array asociativo con sub-claves del grupo.
      */
     public static function getGroup(string $prefix): array
     {
@@ -54,10 +57,11 @@ class ConfiguracionService
 
     /**
      * Obtiene un valor de configuración específico.
-     * 
-     * @param string $key Nombre completo de la config
-     * @param mixed $default Valor por defecto
-     * @return mixed
+     * Retorna valor por defecto si no existe.
+     *
+     * @param string $key Nombre completo de la configuración (ej. 'contact.email').
+     * @param mixed $default Valor por defecto si no se encuentra.
+     * @return mixed Valor de la configuración o defecto.
      */
     public static function get(string $key, $default = null)
     {
@@ -65,11 +69,11 @@ class ConfiguracionService
     }
 
     /**
-     * Actualiza múltiples configuraciones.
-     * Limpia el caché después de actualizar.
-     * 
-     * @param array $configs Array con nombre => valor
-     * @return bool
+     * Actualiza múltiples configuraciones en la base de datos.
+     * Limpia el caché después de actualizar para reflejar cambios.
+     *
+     * @param array $configs Array asociativo con nombre => valor.
+     * @return bool True si se actualizaron correctamente, false en caso de error.
      */
     public static function updateMultiple(array $configs): bool
     {
@@ -90,6 +94,7 @@ class ConfiguracionService
 
     /**
      * Limpia el caché de configuraciones.
+     * Útil para forzar recarga de configs después de cambios manuales.
      */
     public static function clearCache(): void
     {

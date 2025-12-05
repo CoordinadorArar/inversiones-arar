@@ -21,29 +21,41 @@ class TipoPqrsController extends Controller
 {
     /**
      * ID fijo del módulo Tablas Maestras (no cambia).
+     * Usado para acceder a datos relacionados con el módulo.
+     *
+     * @var int
      */
     protected int $moduloId = 8;
 
     /**
      * ID fijo de la pestaña Tipos de PQRS (no cambia).
+     * Usado para verificar permisos específicos de la pestaña.
+     *
+     * @var int
      */
     protected int $pestanaId = 6;
 
     /**
      * Rol del usuario autenticado (cargado en constructor).
      * Contiene el objeto rol para acceder a permisos y pestañas.
+     *
+     * @var mixed
      */
     protected $rol;
 
     /**
      * Pestañas accesibles del módulo para el rol (array de pestañas).
      * Lista de pestañas que el usuario puede ver según su rol.
+     *
+     * @var mixed
      */
     protected $tabs;
 
     /**
      * Nombre del módulo (para pasar a vistas).
      * Nombre del módulo obtenido de la base de datos, usado en las vistas de Inertia.
+     *
+     * @var mixed
      */
     protected $moduloNombre;
 
@@ -83,7 +95,11 @@ class TipoPqrsController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Crea un nuevo tipo de PQRS en la base de datos.
+     * Valida permisos, datos con TipoPqrsRequest y maneja errores.
+     *
+     * @param TipoPqrsRequest $request Solicitud con datos validados para crear el tipo.
+     * @return \Illuminate\Http\JsonResponse Respuesta JSON con mensaje de éxito o error.
      */
     public function store(TipoPqrsRequest $request)
     {
@@ -91,7 +107,7 @@ class TipoPqrsController extends Controller
             // Verificar permiso
             if (!$this->rol->tienePermisoPestana($this->pestanaId, 'crear')) {
                 return response()->json([
-                    'error' => 'No tienes permiso para crear tipos de pqrs'
+                    'error' => 'No tienes permiso para crear tipos de PQRS'
                 ], 403);
             }
 
@@ -101,19 +117,24 @@ class TipoPqrsController extends Controller
             $tipo = TipoPqrs::create($validated);
 
             return response()->json([
-                'message' => 'Tipo de pqrs creado correctamente',
+                'message' => 'Tipo de PQRS creado correctamente',
                 'tipo' => $tipo,
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Error al crear el tipo de pqrs',
+                'error' => 'Error al crear el tipo de PQRS',
                 'message' => $e->getMessage(),
             ], 500);
         }
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualiza un tipo de PQRS existente en la base de datos.
+     * Valida permisos, datos con TipoPqrsRequest y maneja errores.
+     *
+     * @param TipoPqrsRequest $request Solicitud con datos validados para actualizar.
+     * @param int $id ID del tipo de PQRS a actualizar.
+     * @return \Illuminate\Http\JsonResponse Respuesta JSON con mensaje de éxito o error.
      */
     public function update(TipoPqrsRequest $request, int $id)
     {
@@ -121,7 +142,7 @@ class TipoPqrsController extends Controller
             // Verificar permiso
             if (!$this->rol->tienePermisoPestana($this->pestanaId, 'crear')) {
                 return response()->json([
-                    'error' => 'No tienes permiso para editar tipos de pqrs'
+                    'error' => 'No tienes permiso para editar tipos de PQRS'
                 ], 403);
             }
 
@@ -133,19 +154,23 @@ class TipoPqrsController extends Controller
             $tipoPqrs->update($validated);
 
             return response()->json([
-                'message' => 'Tipo de pqrs actualizado correctamente',
+                'message' => 'Tipo de PQRS actualizado correctamente',
                 'tipo' => $tipoPqrs->fresh(),
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Error al actualizar el tipo de pqrs',
+                'error' => 'Error al actualizar el tipo de PQRS',
                 'message' => $e->getMessage(),
             ], 500);
         }
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Elimina un tipo de PQRS de la base de datos (soft delete).
+     * Valida permisos y maneja errores.
+     *
+     * @param int $id ID del tipo de PQRS a eliminar.
+     * @return \Illuminate\Http\JsonResponse Respuesta JSON con mensaje de éxito o error.
      */
     public function destroy(int $id)
     {
@@ -153,7 +178,7 @@ class TipoPqrsController extends Controller
             // Verificar permiso
             if (!$this->rol->tienePermisoPestana($this->pestanaId, 'eliminar')) {
                 return response()->json([
-                    'error' => 'No tienes permiso para eliminar tipos de pqrs'
+                    'error' => 'No tienes permiso para eliminar tipos de PQRS'
                 ], 403);
             }
 
@@ -162,12 +187,12 @@ class TipoPqrsController extends Controller
             $tipoPqrs->delete();
 
             return response()->json([
-                'message' => 'Tipo de pqrs eliminado correctamente',
+                'message' => 'Tipo de PQRS eliminado correctamente',
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Error al eliminar el tipo de pqrs',
+                'error' => 'Error al eliminar el tipo de PQRS',
                 'message' => $e->getMessage(),
             ], 500);
         }

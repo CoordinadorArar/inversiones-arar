@@ -1,48 +1,55 @@
-import { useState } from "react";
+/**
+ * Página InformacionCorporativa.
+ * 
+ * Gestión de información corporativa: contacto, ubicación e identidad visual.
+ * Renderiza formulario con secciones para contacto e imágenes, usando hook personalizado para lógica.
+ * Se integra con React via Inertia para mostrar y editar configuraciones.
+ * 
+ * @author Yariangel Aray
+ * @date 2025-12-04
+ */
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { Button } from "@/Components/ui/button";
 import { Label } from "@/Components/ui/label";
 import { ModuleLayout } from "@/Layouts/ModuleLayout";
 import { DashboardLayout } from "@/Layouts/DashboardLayout";
-import { router } from "@inertiajs/react";
 import { Save, MapPin, Phone, Mail, Image, Globe, MapPinHouse } from "lucide-react";
-import {
-  handleEmailKeyDown,
-  handleNumberKeyDown,
-  handleNumberTextKeyDown,
-  handleUrlKeyDown
-} from "@/lib/keydownValidations";
+import { handleEmailKeyDown, handleNumberKeyDown, handleNumberTextKeyDown, handleUrlKeyDown } from "@/lib/keydownValidations";
 import { TabInterface } from "@/Types/tabInterface";
 import { ImageUpload } from "@/Components/ImageUpload";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-  InputGroupText
-} from "@/Components/ui/input-group";
+import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@/Components/ui/input-group";
 import InputError from "@/Components/InputError";
-import { useToast } from "@/hooks/use-toast";
 import { useFormChanges } from "@/hooks/use-form-changes";
+import { ConfiguracionContacto, ConfiguracionImages } from "../types/configuracionInterface";
+import { useInformacionCorporativa } from "../hooks/useInformacionCorporativa";
 
+/**
+ * Interfaz para las props del componente InformacionCorporativa.
+ * Define la estructura de datos pasados desde el backend via Inertia.
+ * 
+ * @typedef {Object} InformacionCorporativaProps
+ * @property {TabInterface[]} tabs - Pestañas accesibles del módulo.
+ * @property {string} moduloNombre - Nombre del módulo para el header.
+ * @property {string[]} permisos - Permisos del usuario para la pestaña.
+ * @property {{contact: ConfiguracionContacto, images: ConfiguracionImages}} configuracion - Datos de configuración corporativa.
+ */
 interface InformacionCorporativaProps {
   tabs: TabInterface[];
   moduloNombre: string;
   permisos: string[];
   configuracion: {
-    contact: {
-      email?: string;
-      telefono?: string;
-      ubicacion?: string;
-      "ubicacion.detalles"?: string;
-      "ubicacion.url"?: string;
-    };
-    images: {
-      logo?: string;
-      icono?: string;
-    };
+    contact: ConfiguracionContacto;
+    images: ConfiguracionImages;
   };
 }
 
+/**
+ * Componente principal para la página de Información Corporativa.
+ * Renderiza formulario con secciones de contacto e identidad visual, manejando estado via hook personalizado.
+ * 
+ * @param {InformacionCorporativaProps} props - Props del componente.
+ * @returns {JSX.Element} Elemento JSX renderizado.
+ */
 export default function InformacionCorporativa({
   tabs,
   moduloNombre,
@@ -51,129 +58,46 @@ export default function InformacionCorporativa({
 }: InformacionCorporativaProps) {
   const puedeEditar = permisos.includes("editar");
 
-  const { toast } = useToast();
+  // Aquí se usa el hook useInformacionCorporativa para manejar estado, validaciones y envío del formulario.
+  const {
+    formData,
+    previews,
+    errors,
+    isSubmitting,
+    handleChange,
+    handleFileChange,
+    handleFileRemove,
+    handleSubmit,
+  } = useInformacionCorporativa({
+    configuracion,
+    puedeEditar,
+  });
 
-  // Valores iniciales (para comparar cambios)
-  const [initialFormData, setInitialFormData] = useState({
+  // Aquí se usa useFormChanges para detectar cambios en el formulario y resaltar campos modificados.
+  const initialData = {
     email: configuracion.contact.email || "",
     telefono: configuracion.contact.telefono || "",
     ubicacion: configuracion.contact.ubicacion || "",
     ubicacion_detalles: configuracion.contact["ubicacion.detalles"] || "",
     ubicacion_url: configuracion.contact["ubicacion.url"] || "",
-    logo: null as File | null,
-    icono: null as File | null,
-  });
-
-  // Estado actual del formulario
-  const [formData, setFormData] = useState(initialFormData);
-
-  const [previews, setPreviews] = useState({
-    logo: configuracion.images.logo || null,
-    icono: configuracion.images.icono || null,
-  });
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
-
-  // Detecta cambios usando el hook
-  const changes = useFormChanges(initialFormData, formData);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
-    }
+    logo: null,
+    icono: null,
   };
+  const changes = useFormChanges(initialData, formData);
 
-  const handleFileChange = (file: File, field: "logo" | "icono") => {
-    setFormData((prev) => ({ ...prev, [field]: file }));
-    setPreviews((prev) => ({
-      ...prev,
-      [field]: URL.createObjectURL(file),
-    }));
-    if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: "" }));
-    }
-  };
-
-  const handleFileRemove = (field: "logo" | "icono") => {
-    setFormData((prev) => ({ ...prev, [field]: null }));
-    setPreviews((prev) => ({ ...prev, [field]: null }));
-    if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: "" }));
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!puedeEditar) {
-      toast({
-        title: "Error",
-        description: "No tienes permiso para editar la configuración.",
-        variant: 'destructive'
-      });
-      return;
-    }
-
-    setIsSubmitting(true);
-    setErrors({});
-
-    const formDataToSend = new FormData();
-    Object.entries(formData).forEach(([key, value]) => {
-      if (value !== null && value !== "") {
-        if (value instanceof File) {
-          formDataToSend.append(key, value);
-        } else {
-          formDataToSend.append(key, value as string);
-        }
-      }
-    });
-
-    try {
-      // const response = await fetch(route("configuracion.update-corporativa"), {
-      //   method: "POST",
-      //   headers: {
-      //     "X-CSRF-TOKEN": document
-      //       .querySelector('meta[name="csrf-token"]')
-      //       ?.getAttribute("content") || "",
-      //   },
-      //   body: formDataToSend,
-      // });
-
-      // const data = await response.json();
-
-      // if (!response.ok) {
-      //   if (data.errors) {
-      //     setErrors(data.errors);
-      //   }
-      //   throw new Error(data.error || "Error al guardar");
-      // }
-
-      // toast({
-      //   title: "Información Guardada",
-      //   description: "La configuración se ha guardado correctamente.",
-      //   variant: 'success'
-      // });
-      // router.reload();
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message || "Error al guardar la configuración",
-        variant: 'destructive'
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  // Función para estilos condicionales (resalta si cambió)
+  // Función para estilos condicionales: resalta si cambió o hay error.
   const getInputClass = (field: keyof typeof formData) => {
-    return changes[field] ? "has-[[data-slot=input-group-control]]:border-primary/50" : errors[field] ? "border-destructive" : "";
+    return (changes[field]
+      ? "has-[[data-slot=input-group-control]]:border-primary/50"
+      : "")
+      + " " +
+      (errors[field]
+        ? "has-[[data-slot=input-group-control]]:!border-destructive has-[[data-slot=input-group-control]]:!border-2"
+        : "");
   };
 
   return (
+    // Aquí se usa ModuleLayout para envolver la página con navegación de pestañas y header del módulo.
     <ModuleLayout
       moduloNombre={moduloNombre}
       tabs={tabs}
@@ -186,6 +110,7 @@ export default function InformacionCorporativa({
 
         <CardContent>
           {!puedeEditar ? (
+            // Aquí se muestra un mensaje si el usuario no tiene permisos para editar.
             <div className="p-4 rounded-lg border border-destructive/50 bg-destructive/10">
               <p className="text-sm text-destructive font-medium">
                 No tienes permiso para editar la información corporativa
@@ -218,6 +143,7 @@ export default function InformacionCorporativa({
                   <div className="space-y-2">
                     <Label htmlFor="email" className={changes.email ? "text-primary" : ""}>Correo Electrónico</Label>
 
+                    {/* Aquí se usa InputGroup para el campo de email con ícono y validaciones. */}
                     <InputGroup className={getInputClass("email")}>
                       <InputGroupAddon>
                         <Mail className="h-4 w-4 text-muted-foreground" />
@@ -227,10 +153,10 @@ export default function InformacionCorporativa({
                         name="email"
                         type="email"
                         value={formData.email}
-                        onChange={handleInputChange}
+                        onChange={(e) => handleChange("email", e.target.value)}
                         onKeyDown={handleEmailKeyDown}
                         placeholder="ejemplo@empresa.com"
-                        disabled={isSubmitting}                        
+                        disabled={isSubmitting}
                       />
                     </InputGroup>
                     <InputError message={errors.email} />
@@ -239,6 +165,7 @@ export default function InformacionCorporativa({
                   {/* Teléfono */}
                   <div className="space-y-2">
                     <Label htmlFor="telefono" className={changes.telefono ? "text-primary" : ""}>Teléfono</Label>
+                    {/* Aquí se usa InputGroup para el campo de teléfono con ícono y validaciones. */}
                     <InputGroup className={getInputClass("telefono")}>
                       <InputGroupAddon>
                         <Phone className="h-4 w-4 text-muted-foreground" />
@@ -248,9 +175,9 @@ export default function InformacionCorporativa({
                         name="telefono"
                         type="text"
                         value={formData.telefono}
-                        onChange={handleInputChange}
+                        onChange={(e) => handleChange("telefono", e.target.value)}
                         onKeyDown={handleNumberKeyDown}
-                        placeholder="607 698 5203"
+                        placeholder="6076985203"
                         disabled={isSubmitting}
                         className={errors.telefono ? "border-destructive" : ""}
                       />
@@ -262,6 +189,7 @@ export default function InformacionCorporativa({
                 {/* Ubicación principal (full width) */}
                 <div className="space-y-2">
                   <Label htmlFor="ubicacion" className={changes.ubicacion ? "text-primary" : ""}>Ubicación</Label>
+                  {/* Aquí se usa InputGroup para el campo de ubicación con ícono y validaciones. */}
                   <InputGroup className={getInputClass("ubicacion")}>
                     <InputGroupAddon>
                       <MapPin className="h-4 w-4 text-muted-foreground" />
@@ -271,7 +199,7 @@ export default function InformacionCorporativa({
                       name="ubicacion"
                       type="text"
                       value={formData.ubicacion}
-                      onChange={handleInputChange}
+                      onChange={(e) => handleChange("ubicacion", e.target.value)}
                       onKeyDown={handleNumberTextKeyDown}
                       placeholder="Ecoparque Natura · Floridablanca, Colombia"
                       disabled={isSubmitting}
@@ -288,6 +216,7 @@ export default function InformacionCorporativa({
                     <Label htmlFor="ubicacion_detalles" className={changes.ubicacion_detalles ? "text-primary" : ""}>
                       Detalles de Ubicación
                     </Label>
+                    {/* Aquí se usa InputGroup para detalles de ubicación con ícono y validaciones. */}
                     <InputGroup className={getInputClass("ubicacion_detalles")}>
                       <InputGroupAddon>
                         <InputGroupText className="text-xs">
@@ -299,7 +228,7 @@ export default function InformacionCorporativa({
                         name="ubicacion_detalles"
                         type="text"
                         value={formData.ubicacion_detalles}
-                        onChange={handleInputChange}
+                        onChange={(e) => handleChange("ubicacion_detalles", e.target.value)}
                         onKeyDown={handleNumberTextKeyDown}
                         placeholder="Km 2 • Torre Uno • Oficina 206"
                         disabled={isSubmitting}
@@ -314,6 +243,7 @@ export default function InformacionCorporativa({
                     <Label htmlFor="ubicacion_url" className={changes.ubicacion_url ? "text-primary" : ""}>
                       URL de Google Maps
                     </Label>
+                    {/* Aquí se usa InputGroup para URL de ubicación con ícono y validaciones. */}
                     <InputGroup className={getInputClass("ubicacion_url")}>
                       <InputGroupAddon>
                         <Globe className="h-4 w-4 text-muted-foreground" />
@@ -323,7 +253,7 @@ export default function InformacionCorporativa({
                         name="ubicacion_url"
                         type="url"
                         value={formData.ubicacion_url}
-                        onChange={handleInputChange}
+                        onChange={(e) => handleChange("ubicacion_url", e.target.value)}
                         onKeyDown={handleUrlKeyDown}
                         placeholder="https://maps.app.goo.gl/..."
                         disabled={isSubmitting}
@@ -356,15 +286,17 @@ export default function InformacionCorporativa({
 
                 {/* Grid de uploads */}
                 <div className="grid gap-6 md:grid-cols-2 pt-2">
+                  {/* Aquí se usa ImageUpload para subir y gestionar el logo. */}
                   <ImageUpload
                     preview={previews.logo}
                     onImageChange={(file) => handleFileChange(file, "logo")}
                     onImageRemove={() => handleFileRemove("logo")}
                     disabled={isSubmitting}
                     error={errors.logo}
-                    label="Logo de la Empresa"                  
+                    label="Logo de la Empresa"
                   />
 
+                  {/* Aquí se usa ImageUpload para subir y gestionar el icono. */}
                   <ImageUpload
                     preview={previews.icono}
                     onImageChange={(file) => handleFileChange(file, "icono")}
@@ -399,6 +331,13 @@ export default function InformacionCorporativa({
   );
 }
 
+/**
+ * Layout del componente: Envuelve la página en DashboardLayout con header dinámico.
+ * Se usa para renderizar el componente dentro del layout principal.
+ * 
+ * @param {any} page - Página a renderizar.
+ * @returns {JSX.Element} Elemento JSX con layout aplicado.
+ */
 InformacionCorporativa.layout = (page: any) => (
   <DashboardLayout header={page.props.moduloNombre} children={page} />
 );

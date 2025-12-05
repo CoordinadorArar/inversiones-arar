@@ -1,31 +1,52 @@
-import { useState } from "react";
+/**
+ * Página RedesSociales.
+ * 
+ * Gestión de enlaces a redes sociales de la empresa.
+ * Renderiza formulario con cards para cada red social, usando hook personalizado para lógica.
+ * Se integra con React via Inertia para mostrar y editar configuraciones.
+ * 
+ * @author Yariangel Aray
+ * @date 2025-12-04
+ */
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { Button } from "@/Components/ui/button";
 import { Label } from "@/Components/ui/label";
 import { ModuleLayout } from "@/Layouts/ModuleLayout";
 import { DashboardLayout } from "@/Layouts/DashboardLayout";
-import { router } from "@inertiajs/react";
-import { Save, Instagram, Facebook, Linkedin, Share2 } from "lucide-react";
+import { Save, Instagram, Facebook, Linkedin } from "lucide-react";
 import { handleUrlKeyDown } from "@/lib/keydownValidations";
 import { TabInterface } from "@/Types/tabInterface";
 import InputError from "@/Components/InputError";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
+import { ConfiguracionRRSS } from "../types/configuracionInterface";
+import { useRedesSociales } from "../hooks/useRedesSociales";
 
-interface RedesSocialesProps {
+/**
+ * Interfaz para las props del componente RedesSociales.
+ * Define la estructura de datos pasados desde el backend via Inertia.
+ * 
+ * @typedef {Object} RedesSocialesProps
+ * @property {TabInterface[]} tabs - Pestañas accesibles del módulo.
+ * @property {string} moduloNombre - Nombre del módulo para el header.
+ * @property {string[]} permisos - Permisos del usuario para la pestaña.
+ * @property {{rrss: ConfiguracionRRSS}} configuracion - Datos de configuración de redes sociales.
+ */
+export interface RedesSocialesProps {
     tabs: TabInterface[];
     moduloNombre: string;
     permisos: string[];
     configuracion: {
-        rrss: {
-            instagram?: string;
-            facebook?: string;
-            x?: string;
-            linkedin?: string;
-        };
+        rrss: ConfiguracionRRSS;
     };
 }
-
+/**
+ * Componente principal para la página de Redes Sociales.
+ * Renderiza formulario con cards para cada red social, manejando estado via hook personalizado.
+ * Incluye preview de enlaces configurados.
+ * 
+ * @param {RedesSocialesProps} props - Props del componente.
+ * @returns {JSX.Element} Elemento JSX renderizado.
+ */
 export default function RedesSociales({
     tabs,
     moduloNombre,
@@ -34,96 +55,33 @@ export default function RedesSociales({
 }: RedesSocialesProps) {
     const puedeEditar = permisos.includes("editar");
 
-    const { toast } = useToast();
-
-    const [formData, setFormData] = useState({
-        instagram: configuracion.rrss.instagram || "",
-        facebook: configuracion.rrss.facebook || "",
-        x: configuracion.rrss.x || "",
-        linkedin: configuracion.rrss.linkedin || "",
+    // Aquí se usa el hook useRedesSociales para manejar estado, validaciones y envío del formulario.
+    const {
+        formData,
+        errors, isSubmitting,
+        handleChange,
+        handleSubmit
+    } = useRedesSociales({
+        configuracion,
+        puedeEditar,
     });
 
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [errors, setErrors] = useState<Record<string, string>>({});
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
-        if (errors[name]) {
-            setErrors((prev) => ({ ...prev, [name]: "" }));
-        }
-    };
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        if (!puedeEditar) {
-            toast({
-                title: "Error",
-                description: "No tienes permiso para editar las redes sociales.",
-                variant: 'destructive'
-            });
-            return;
-        }
-
-        setIsSubmitting(true);
-        setErrors({});
-
-        try {
-            const response = await fetch(route("configuracion.update-redes"), {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN":
-                        document
-                            .querySelector('meta[name="csrf-token"]')
-                            ?.getAttribute("content") || "",
-                },
-                body: JSON.stringify(formData),
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                if (data.errors) {
-                    setErrors(data.errors);
-                }
-                throw new Error(data.error || "Error al guardar");
-            }
-
-            toast({
-                title: "Redes Sociales Guardadas",
-                description: "Las redes sociales se han actualizado correctamente.",
-                variant: 'success'
-            });
-            router.reload();
-        } catch (error: any) {
-            toast({
-                title: "Error",
-                description: error.message || "Error al guardar las redes sociales",
-                variant: 'destructive'
-            });            
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
-    // Configuración de redes sociales con colores y metadata
+    // Configuración de redes sociales con metadata: define íconos, placeholders y nombres.
     const socialNetworks = [
         {
-            id: "instagram",
+            id: "instagram" as const,
             name: "Instagram",
             icon: Instagram,
             placeholder: "https://www.instagram.com/...",
         },
         {
-            id: "facebook",
+            id: "facebook" as const,
             name: "Facebook",
             icon: Facebook,
             placeholder: "https://www.facebook.com/...",
         },
         {
-            id: "x",
+            id: "x" as const,
             name: "X (Twitter)",
             icon: (props: any) => (
                 <svg {...props} viewBox="0 0 24 24" fill="currentColor">
@@ -133,7 +91,7 @@ export default function RedesSociales({
             placeholder: "https://x.com/...",
         },
         {
-            id: "linkedin",
+            id: "linkedin" as const,
             name: "LinkedIn",
             icon: Linkedin,
             placeholder: "https://linkedin.com/company/...",
@@ -141,6 +99,7 @@ export default function RedesSociales({
     ];
 
     return (
+        // Aquí se usa ModuleLayout para envolver la página con navegación de pestañas y header del módulo.
         <ModuleLayout
             moduloNombre={moduloNombre}
             tabs={tabs}
@@ -156,14 +115,15 @@ export default function RedesSociales({
 
                 <CardContent>
                     {!puedeEditar ? (
+                        // Aquí se muestra un mensaje si el usuario no tiene permisos para editar.
                         <div className="p-4 rounded-lg border border-destructive/50 bg-destructive/10">
                             <p className="text-sm text-destructive font-medium">
                                 No tienes permiso para editar las redes sociales
                             </p>
                         </div>
                     ) : (
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            {/* Grid de redes sociales con cards */}
+                        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+                            {/* Grid de redes sociales con cards: Renderiza una card por cada red social. */}
                             <div className="grid gap-4 sm:grid-cols-2 pt-2">
                                 {socialNetworks.map((network) => {
                                     const Icon = network.icon;
@@ -203,13 +163,13 @@ export default function RedesSociales({
                                                         )}
                                                     </div>
                                                 </div>
-                                                {/* Input con prefijo */}
+                                                {/* Aquí se usa Input para el campo de URL de la red social. */}
                                                 <Input
                                                     id={network.id}
                                                     name={network.id}
                                                     type="url"
                                                     value={formData[network.id as keyof typeof formData]}
-                                                    onChange={handleInputChange}
+                                                    onChange={(e) => handleChange(network.id, e.target.value)}
                                                     onKeyDown={handleUrlKeyDown}
                                                     placeholder={network.placeholder}
                                                     disabled={isSubmitting}
@@ -223,7 +183,7 @@ export default function RedesSociales({
                                 })}
                             </div>
 
-                            {/* Preview de enlaces configurados */}
+                            {/* Preview de enlaces configurados: Muestra enlaces activos como badges. */}
                             {Object.values(formData).some((value) => value) && (
                                 <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
                                     <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
@@ -268,6 +228,13 @@ export default function RedesSociales({
     );
 }
 
+/**
+ * Layout del componente: Envuelve la página en DashboardLayout con header dinámico.
+ * Se usa para renderizar el componente dentro del layout principal.
+ * 
+ * @param {any} page - Página a renderizar.
+ * @returns {JSX.Element} Elemento JSX con layout aplicado.
+ */
 RedesSociales.layout = (page: any) => (
     <DashboardLayout header={page.props.moduloNombre} children={page} />
 );

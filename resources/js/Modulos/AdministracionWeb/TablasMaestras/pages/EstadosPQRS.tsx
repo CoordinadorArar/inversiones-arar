@@ -22,6 +22,7 @@ import { useTipoPQRSGestion } from "../hooks/useTipoPQRSGestion";
 import { useMemo } from "react";
 import { Info, InfoIcon } from "lucide-react";
 import { TabInterface } from "@/Types/tabInterface";
+import { useEstadoPQRSGestion } from "../hooks/useEstadoPQRSGestion";
 
 /**
  * Interfaz para las props del componente EstadosPQRS.
@@ -29,19 +30,19 @@ import { TabInterface } from "@/Types/tabInterface";
  */
 interface EstadosPQRSProps {
   tabs: TabInterface[];
-  tipos: TipoInterface[];
+  estados: TipoInterface[];
   moduloNombre: string;
   permisos: string[];
 }
 
 /**
  * Componente principal para la página de Estados de PQRS.
- * Renderiza la tabla de tipos y el formulario lateral condicionalmente, manejando estados via hook personalizado.
+ * Renderiza la tabla de estados y el formulario lateral condicionalmente, manejando estados via hook personalizado.
  */
-export default function EstadosPQRS({ tipos: tiposIniciales, tabs, moduloNombre, permisos }: EstadosPQRSProps) {
+export default function EstadosPQRS({ estados: estadosIniciales, tabs, moduloNombre, permisos }: EstadosPQRSProps) {
 
   // Aquí se usa el hook useTipoGestion para manejar estados y lógica de CRUD (crear, editar, eliminar).
-  // Devuelve estados como tipos, mode, permisos, y funciones para manejar eventos.
+  // Devuelve estados como estados, mode, permisos, y funciones para manejar eventos.
   const {
     tipos,
     mode,
@@ -60,8 +61,8 @@ export default function EstadosPQRS({ tipos: tiposIniciales, tabs, moduloNombre,
     handleDeleteClick,
     handleCancelDelete,
     handleConfirmDelete,
-  } = useTipoPQRSGestion({
-    tiposIniciales,
+  } = useEstadoPQRSGestion({
+    estadosIniciales,
     permisos,
   });
 
