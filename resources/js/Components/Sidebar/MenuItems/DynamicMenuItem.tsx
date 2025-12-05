@@ -52,7 +52,7 @@ import { SidebarMenuButton } from "@/components/ui/sidebar";
 export const DynamicMenuItem = ({
   item,
   collapsed,
-  openGroups,
+  openGroup,
   toggleGroup,
   openPopover,
   setOpenPopover
@@ -86,7 +86,7 @@ export const DynamicMenuItem = ({
   return (
     <ExpandedMenuItemWithSubitems
       item={item}
-      openGroups={openGroups}
+      openGroup={openGroup}
       toggleGroup={toggleGroup}
     />
   );
@@ -180,7 +180,7 @@ const CollapsedMenuItemWithSubitems = ({
  */
 const ExpandedMenuItemWithSubitems = ({
   item,
-  openGroups,
+  openGroup,
   toggleGroup
 }: ExpandedMenuItemProps) => {
   // Hook para detectar si el item tiene un hijo activo.
@@ -189,7 +189,7 @@ const ExpandedMenuItemWithSubitems = ({
   // Render: Collapsible con trigger (botón con ícono/título/flecha) y content (subitems).
   return (
     <Collapsible
-      open={openGroups.includes(item.title)}  // Abre si grupo está en openGroups.
+      open={openGroup === item.title}
       onOpenChange={() => toggleGroup(item.title)}  // Toggle al cambiar.
     >
       {/* Trigger: Botón que abre/cierra el collapsible. */}
@@ -205,7 +205,7 @@ const ExpandedMenuItemWithSubitems = ({
           <ChevronDown
             className={cn(
               "h-4 w-4 transition-transform duration-300",
-              openGroups.includes(item.title) && "rotate-180"  // Rota flecha al abrir.
+              openGroup === item.title && "rotate-180"  // Rota flecha al abrir.
             )}
           />
         </SidebarMenuButton>

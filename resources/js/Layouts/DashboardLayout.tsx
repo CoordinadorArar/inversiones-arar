@@ -42,23 +42,22 @@ export function DashboardLayout({ children, header }: DashboardLayoutProps) {
   const user = usePage().props.auth.user;
 
   // Estado inicial: Solo el primer grupo con items abierto (o ninguno)
-  const [openGroups, setOpenGroups] = useState<string[]>(() => {
-    const stored = localStorage.getItem('sidebar-open-groups');
+  const [openGroup, setOpenGroup] = useState<string | null>(() => {
+    const stored = localStorage.getItem('sidebar-open-group');
+
     if (stored) {
-      const parsed = JSON.parse(stored);
-      // Asegurar que solo haya uno abierto
-      return parsed.length > 0 ? [parsed[0]] : [];
+      return stored;
     }
 
-    // Por defecto, ninguno abierto (o el primero con items)
+    // Por defecto, el primero con items (o null)
     const firstWithItems = menu.find(item => (item.items ?? []).length > 0);
-    return firstWithItems ? [firstWithItems.title] : [];
+    return firstWithItems?.title ?? null;
   });
 
   // Guardar en localStorage cada vez que openGroups cambie.
   useEffect(() => {
-    localStorage.setItem('sidebar-open-groups', JSON.stringify(openGroups));
-  }, [openGroups]);
+    localStorage.setItem('sidebar-open-group', JSON.stringify(openGroup));
+  }, [openGroup]);
 
   // Render: SidebarProvider envuelve todo para estado global.
   return (
@@ -68,8 +67,8 @@ export function DashboardLayout({ children, header }: DashboardLayoutProps) {
         {/* Sidebar: Pasa menu, estado de grupos abiertos y setter. */}
         <DashboardSidebar
           menu={menu}
-          openGroups={openGroups}
-          setOpenGroups={setOpenGroups}
+          openGroup={openGroup}
+          setOpenGroup={setOpenGroup}
         />
 
         {/* Contenedor principal: flex col. */}
