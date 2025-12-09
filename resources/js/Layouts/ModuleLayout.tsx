@@ -17,7 +17,6 @@
  * - Flex layout: Tabs arriba, contenido abajo con flex-1.
  * 
  * @author Yariangel Aray - Layout modular para pestañas.
- 
  * @date 2025-11-26
  */
 
@@ -26,19 +25,14 @@ import { ReactNode } from "react";
 import { Head, Link } from "@inertiajs/react";
 import { cn } from "@/lib/utils";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TabInterface } from "@/Types/tabInterface";
 
-// Interface para una pestaña.
-interface Tab {
-    id: number;     // ID único de la pestaña.
-    nombre: string; // Nombre visible de la pestaña.
-    ruta: string;   // Ruta para navegación (ej. "/listado").
-}
 
 // Interface para props del componente.
 interface ModuleLayoutProps {
     children: ReactNode;     // Contenido a renderizar (flex-1).
     moduloNombre: string;    // Nombre del módulo para título de página.
-    tabs: Tab[];             // Array de pestañas disponibles.
+    tabs: TabInterface[];             // Array de pestañas disponibles.
     activeTab?: string;      // Ruta de la pestaña activa (opcional).
 }
 
@@ -49,6 +43,36 @@ export function ModuleLayout({
     tabs,
     activeTab
 }: ModuleLayoutProps) {
+
+    /**
+         * Helper: Determina si un tab está activo
+         * Compara exactamente O si activeTab empieza con la ruta del tab
+         * 
+         * Ejemplos:
+         * - Tab "/gestion" está activo si activeTab es "/gestion" o "/gestion/crear"
+         * - Tab "/listado" está activo solo si activeTab es "/listado"
+         */
+    const isTabActive = (tabRoute: string): boolean => {
+        if (!activeTab) return false;
+
+        // Comparación exacta
+        if (activeTab === tabRoute) return true;
+
+        // Si activeTab empieza con la ruta del tab + "/"
+        // Ejemplo: activeTab="/gestion/crear" empieza con "/gestion/"
+        return activeTab.startsWith(tabRoute + '/');
+    };
+
+    /**
+     * Helper: Obtiene el valor del tab activo para Tabs
+     * Necesario porque Tabs necesita un value exacto de la lista
+     */
+    const getActiveTabValue = (): string | undefined => {
+        // Buscar el tab cuya ruta coincida con activeTab o sea prefijo de activeTab
+        const matchedTab = tabs.find(tab => isTabActive(tab.ruta));
+        return matchedTab?.ruta;
+    };
+
     // Render: Fragment con Head y Tabs.
     return (
         <>
@@ -56,7 +80,11 @@ export function ModuleLayout({
             <Head title={moduloNombre} />
 
             {/* Tabs: Contenedor principal con flex col, overflow hidden. */}
-            <Tabs value={activeTab} className="w-full h-full flex flex-col over">
+            {/* 
+              value debe ser la ruta del TAB, no la ruta actual
+              Por eso usamos getActiveTabValue()
+            */}
+            <Tabs value={getActiveTabValue()} className="w-full h-full flex flex-col over">
                 {/* Contenedor de TabsList con scroll horizontal en mobile. */}
                 <div className="overflow-x-auto pb-2 -mx-3 sm:mx-0">
                     {/* TabsList: w-max en mobile (scroll), w-full en desktop, gap entre triggers. */}
@@ -70,10 +98,6 @@ export function ModuleLayout({
                                         "relative px-4 py-2 transition-all duration-200",
                                         "data-[state=active]:text-primary data-[state=active]:font-bold",
                                         "hover:bg-gray-400/5 hover:text-foreground",
-
-                                        // underline animado                                        
-                                        "after:rounded-full after:bg-primary after:scale-x-0 after:transition-transform after:duration-300",
-                                        activeTab === tab.ruta && "after:scale-x-100"
                                     )}
                                     onClick={e => {
                                         // Previene navegación si ya está activo (evita recarga).

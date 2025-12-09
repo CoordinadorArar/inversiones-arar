@@ -19,13 +19,25 @@ import { ModuleLayout } from "@/Layouts/ModuleLayout";
 import { DashboardLayout } from "@/Layouts/DashboardLayout";
 import { SearchableSelect } from "@/Components/SearchableSelect";
 import { Button } from "@/Components/ui/button";
-import { FilePlus, Pencil, Plus, Lock, Unlock } from "lucide-react";
+import { FilePlus, Pencil, Plus, Lock, Unlock, AlertCircle } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { useUsuarioGestion } from "../hooks/useUsuarioGestion";
-import { useMemo } from "react";
-import { UsuarioGestionProps } from "../types/usuarioInterface";
+import { useEffect, useMemo, useState } from "react";
 import { USUARIO_INITIAL_DATA } from "../types/usuarioForm.types";
 import { UsuarioForm } from "../partials/UsuarioForm";
+import { TabInterface } from "@/Types/tabInterface";
+import { RolInterface, UsuarioInterface } from "../types/usuarioInterface";
+
+export interface UsuarioGestionProps {
+  tabs: TabInterface[];
+  usuarios: UsuarioInterface[];
+  roles: RolInterface[];
+  moduloNombre: string;
+  permisos: string[];
+  initialMode?: 'idle' | 'create' | 'edit'; // Modo inicial desde URL
+  initialUsuarioId?: number | null; // ID de empresa si viene desde URL
+  error?: string | null;
+}
 
 export default function UsuariosGestion({
   usuarios: usuariosBack,
@@ -33,6 +45,9 @@ export default function UsuariosGestion({
   moduloNombre,
   permisos,
   roles,
+  initialMode = 'idle',
+  initialUsuarioId = null,
+  error
 }: UsuarioGestionProps) {
   const {
     selectedUsuarioId,
@@ -56,6 +71,8 @@ export default function UsuariosGestion({
     usuariosIniciales: usuariosBack,
     roles,
     permisos,
+    initialMode,
+    initialUsuarioId,
   });
 
   // Datos iniciales del formulario según modo
@@ -72,6 +89,25 @@ export default function UsuariosGestion({
     return USUARIO_INITIAL_DATA;
   }, [mode, selectedUsuario]);
 
+  // Mantiene cualquier error que venga del backend
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // Cuando cambie la prop `error` (del backend), actualiza el mensaje
+  useEffect(() => {
+    setErrorMessage(error ?? null);
+  }, [error]);
+
+  // Si el usuario cambia algo -> limpia error
+  useEffect(() => {
+    const userInteracted =
+      (selectedUsuarioId && selectedUsuarioId !== initialUsuarioId) ||
+      mode === "create";
+
+    if (userInteracted) {
+      setErrorMessage(null);
+    }
+  }, [selectedUsuarioId, mode, initialUsuarioId]);
+
   return (
     <ModuleLayout
       moduloNombre={moduloNombre}
@@ -87,9 +123,8 @@ export default function UsuariosGestion({
           {/* Sección de selección */}
           <div>
             <div
-              className={`grid gap-4 items-end${
-                puedeCrear ? " md:grid-cols-[1fr_auto]" : ""
-              }`}
+              className={`grid gap-4 items-end${puedeCrear ? " md:grid-cols-[1fr_auto]" : ""
+                }`}
             >
               {/* Select de usuarios */}
               <div>
@@ -125,6 +160,16 @@ export default function UsuariosGestion({
                 </Button>
               )}
             </div>
+
+            {/* Muestra error si existe */}
+            {errorMessage && (
+              <div className="p-3 rounded-lg border text-destructive border-destructive/50 bg-destructive/10 w-full mt-4 flex gap-2 items-center">
+                <AlertCircle className="h-4 w-4" />
+                <p className="text-sm">
+                  {errorMessage}
+                </p>
+              </div>
+            )}
 
             {/* Indicador de modo */}
             {mode !== "idle" && (
@@ -168,9 +213,8 @@ export default function UsuariosGestion({
           {/* Formulario */}
           <div className="flex-1 relative">
             <div
-              className={`transition-opacity duration-300 ${
-                isFormDisabled ? "opacity-50 pointer-events-none" : ""
-              }`}
+              className={`transition-opacity duration-300 ${isFormDisabled ? "opacity-50 pointer-events-none" : ""
+                }`}
             >
               {(puedeCrear || puedeEditar) && (
                 <UsuarioForm

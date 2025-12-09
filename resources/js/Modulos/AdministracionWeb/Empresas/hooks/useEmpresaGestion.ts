@@ -1,5 +1,5 @@
 /**
- * Hook useEmpresaGestion
+ * Hook useEmpresaGestion.
  * 
  * Maneja toda la lógica de estado y operaciones CRUD para la gestión de empresas.
  * Incluye permisos, selección, modos, envío con fetch, eliminación y navegación por URL.
@@ -39,17 +39,11 @@ export function useEmpresaGestion({
 }: UseEmpresaGestionProps) {
   const { toast } = useToast();  // Hook para mostrar notificaciones.
 
-  // ============================================================================
-  // VERIFICACIÓN DE PERMISOS
-  // ============================================================================
   // Verifica permisos basados en el array proporcionado.
   const puedeCrear = permisos.includes("crear");  // Permiso para crear empresas.
   const puedeEditar = permisos.includes("editar");  // Permiso para editar.
   const puedeEliminar = permisos.includes("eliminar");  // Permiso para eliminar.
 
-  // ============================================================================
-  // ESTADOS PRINCIPALES
-  // ============================================================================
   // ID de la empresa seleccionada (null si ninguna).
   const [selectedEmpresaId, setSelectedEmpresaId] = useState<number | null>(initialEmpresaId);
 
@@ -62,40 +56,46 @@ export function useEmpresaGestion({
   // Errores del formulario (del backend).
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
-  // ============================================================================
-  // EFECTO: Sincronizar con cambios de navegación del navegador
-  // ============================================================================
+  // Efecto: Sincronizar el estado del hook con los cambios de navegación del navegador (back/forward).
+  // Esto asegura que si el usuario navega usando los botones del navegador, el estado se actualice correctamente.
   useEffect(() => {
+    // Función que maneja el evento 'popstate' (cuando cambia el historial de navegación).
     const handlePopState = () => {
-      // Cuando el usuario usa back/forward, sincronizar el estado con la URL
+      // Obtiene la ruta actual de la URL.
       const path = window.location.pathname;
 
+      // Si la URL incluye '/crear', cambia al modo de creación.
       if (path.includes('/crear')) {
-        setMode('create');
-        setSelectedEmpresaId(null);
-        setFormErrors({});
-      } else if (path.includes('/editar/')) {
-        const idMatch = path.match(/\/editar\/(\d+)/);
+        setMode('create');  // Establece modo crear.
+        setSelectedEmpresaId(null);  // Limpia selección de empresa.
+        setFormErrors({});  // Limpia errores del formulario.
+      }
+      // Si la URL incluye '/gestion/' seguido de un ID, cambia al modo de edición con ese ID.
+      else if (path.includes('/gestion/')) {
+        // Usa regex para extraer el ID numérico de la URL (ej. /gestion/123).
+        const idMatch = path.match(/\/gestion\/(\d+)/);
         if (idMatch) {
-          const id = Number(idMatch[1]);
-          setMode('edit');
-          setSelectedEmpresaId(id);
-          setFormErrors({});
+          const id = Number(idMatch[1]);  // Convierte el ID a número.
+          setMode('edit');  // Establece modo editar.
+          setSelectedEmpresaId(id);  // Selecciona la empresa por ID.
+          setFormErrors({});  // Limpia errores.
         }
-      } else {
-        setMode('idle');
-        setSelectedEmpresaId(null);
-        setFormErrors({});
+      }
+      // Si no coincide con crear o editar, vuelve al modo idle (sin acción).
+      else {
+        setMode('idle');  // Modo inactivo.
+        setSelectedEmpresaId(null);  // Sin empresa seleccionada.
+        setFormErrors({});  // Limpia errores.
       }
     };
 
+    // Agrega el listener para el evento 'popstate'.
     window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, []);
 
-  // ============================================================================
-  // DATOS DERIVADOS
-  // ============================================================================
+    // Cleanup: Remueve el listener cuando el componente se desmonta o el efecto se vuelve a ejecutar.
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);  // Array vacío: el efecto solo se ejecuta una vez al montar el componente.
+
   // Opciones para el select de búsqueda: mapea empresas a formato requerido.
   const empresaOptions: SearchableSelectOption[] = empresas.map((emp) => ({
     value: emp.id,
@@ -108,16 +108,10 @@ export function useEmpresaGestion({
   // Si el formulario está deshabilitado: solo en modo "idle".
   const isFormDisabled = mode === "idle";
 
-  // ============================================================================
-  // FUNCIÓN: Navegar y actualizar URL
-  // ============================================================================
+  // Función: Navegar y actualizar URL.
   const navigateTo = (url: string, state: any = {}) => {
     window.history.pushState(state, '', url);
   };
-
-  // ============================================================================
-  // HANDLERS (Manejadores de eventos)
-  // ============================================================================
 
   /**
    * Handler: Selecciona una empresa para editar.
@@ -343,9 +337,6 @@ export function useEmpresaGestion({
     }
   };
 
-  // ============================================================================
-  // RETORNO DEL HOOK
-  // ============================================================================
   // Devuelve estados, permisos y handlers para el componente padre.
   return {
     // Estados para renderizar UI.

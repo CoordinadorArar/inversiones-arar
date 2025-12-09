@@ -14,7 +14,16 @@ import { ModuleLayout } from "@/Layouts/ModuleLayout";
 import { DashboardLayout } from "@/Layouts/DashboardLayout";
 import { DataTable } from "@/Components/ui/data-table";
 import { UsuarioColumns, UsuarioInactiveColumns } from "../usuarioColumns";
-import { UsuarioListadoProps } from "../types/usuarioInterface";
+import { TabInterface } from "@/Types/tabInterface";
+import { RolInterface, UsuarioInterface } from "../types/usuarioInterface";
+
+export interface UsuarioListadoProps {
+  tabs: TabInterface[];
+  usuarios: UsuarioInterface[];
+  roles: RolInterface[];
+  moduloNombre: string;
+  permisos: string[];
+}
 
 export default function UsuariosListado({
   usuarios,

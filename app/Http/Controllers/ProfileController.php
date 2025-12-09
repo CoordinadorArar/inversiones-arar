@@ -24,7 +24,7 @@ class ProfileController extends Controller
         $user->datos_completos = $user->datosCompletos();
 
         return Inertia::render('Profile/Profile', [
-            'dominios' => EmpresaWeb::pluck('dominio')->filter()->values(),
+            'dominios' => (new EmpresaWebController())->getDominiosCacheados(), // Dominios cacheados.
             'status' => session('status'),
             'user' => $user,
         ]);

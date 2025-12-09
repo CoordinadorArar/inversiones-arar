@@ -29,11 +29,11 @@ Route::middleware('auth')->group(function () {
     // Ruta base: Redirige dinámicamente al primer módulo hijo accesible para el usuario.
     // Usa ModuloRedirectController para chequear permisos y redirigir.
     // ===================================================================
-    Route::get('/'.$moduloPadre, function () use ($moduloPadre) {
+    Route::get('/' . $moduloPadre, function () use ($moduloPadre) {
         // Llama al método redirectToFirstAccessible con la ruta base.
         // Ej: Si usuario tiene acceso a 'usuarios', redirige a /seguridad-acceso/usuarios.
         return app(ModuloRedirectController::class)
-            ->redirectToFirstAccessible('/'.$moduloPadre);
+            ->redirectToFirstAccessible('/' . $moduloPadre);
     });
 
     // Prefijo para subrutas del módulo padre.
@@ -45,10 +45,10 @@ Route::middleware('auth')->group(function () {
         // MÓDULO HIJO: Usuarios
         // Ruta: Redirige a la primera pestaña accesible dentro de Usuarios.
         // ===============================================================
-        Route::get('/'.$modulosHijos[0], function () use ($modulosHijos) {
+        Route::get('/' . $modulosHijos[0], function () use ($modulosHijos) {
             // Redirige a primera pestaña accesible (ej. /listado si tiene permiso).
             return app(ModuloRedirectController::class)
-                ->redirectToFirstAccessible('/'.$modulosHijos[0]);
+                ->redirectToFirstAccessible('/' . $modulosHijos[0]);
         });
 
         // Grupo de pestañas para Usuarios (prefijo /seguridad-acceso/usuarios).
@@ -56,25 +56,49 @@ Route::middleware('auth')->group(function () {
 
             // --- VISTAS ---
 
-            // Pestaña: Listado de empresas.
+            // Pestaña: Listado de usuarios.
             // Middleware: pestana.access:1 (ID de la pestaña en DB) para validar acceso.
             Route::get('/listado', [UsuarioController::class, 'index'])
+                ->name('usuario.listado')
                 ->middleware('pestana.access:8');
 
-            // Pestaña: Gestión de empresas (crear/editar).
+            // Pestaña: Gestión de usuarios (crear/editar).
             Route::get('/gestion', [UsuarioController::class, 'gestion'])
+                ->name('usuario.gestion')
                 ->middleware('pestana.access:9');
 
-            // // --- CRUD ---
-            // // Mantienen el prefijo /gestion, pero se separan para mayor claridad.
-            // Route::prefix('gestion')->group(function () {
-            //     // Acción: Crear empresa (POST).
-            //     Route::post('/', [EmpresaWebController::class, 'store'])->name('empresa.store');
-            //     // Acción: Actualizar empresa (PUT con ID).
-            //     Route::put('/{id}', [EmpresaWebController::class, 'update'])->name('empresa.update');
-            //     // Acción: Eliminar empresa (DELETE con ID).
-            //     Route::delete('/{id}', [EmpresaWebController::class, 'destroy'])->name('empresa.destroy');
-            // });
+            // Pestaña: Gestión - Modo crear (URL amigable).
+            Route::get('/gestion/crear', [UsuarioController::class, 'create'])
+                ->name('usuario.create')
+                ->middleware('pestana.access:9');
+
+            // Pestaña: Gestión - Modo editar (URL amigable con ID).
+            Route::get('/gestion/{id}', [UsuarioController::class, 'edit'])
+                ->name('usuario.edit')
+                ->middleware('pestana.access:9');
+
+            // Pestaña: Gestión - Modo editar (URL amigable con ID).
+            Route::get('/buscar-documentos', [UsuarioController::class, 'buscarDocumentos'])
+                ->name('usuario.buscar-documentos');
+
+            // --- CRUD ---
+            // Mantienen el prefijo /gestion, pero se separan para mayor claridad.
+            Route::prefix('gestion')->group(function () {
+                // Acción: Crear usuario (POST).
+                Route::post('/', [UsuarioController::class, 'store'])->name('usuario.store');
+                // Acción: Actualizar usuario (PUT con ID).
+                Route::put('/{id}', [UsuarioController::class, 'update'])->name('usuario.update');
+                // Acción: Eliminar usuario (DELETE con ID).                
+                Route::delete('/{id}', [UsuarioController::class, 'destroy'])->name('usuario.destroy');
+
+                // Acción: Bloquear usuario
+                Route::put('/bloquear/{id}', [UsuarioController::class, 'bloquear'])->name('usuario.bloquear');
+                // Acción: Desbloquear usuario
+                Route::put('/desbloquear/{id}', [UsuarioController::class, 'desbloquear'])->name('usuario.desbloquear');
+
+                // Acción: Eliminar usuario
+                Route::put('/restaurar-password/{id}', [UsuarioController::class, 'restaurarPassword'])->name('usuario.restaurar-password');
+            });
         });
     });
 });

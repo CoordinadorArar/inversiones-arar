@@ -64,7 +64,7 @@ export function SearchableSelect({
   const [open, setOpen] = useState(false);
 
   // Encontrar la opción seleccionada
-  const selectedOption = options.find((option) => option.value === value);
+  const selectedOption = options.find((option) => option.value == value);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -106,7 +106,7 @@ export function SearchableSelect({
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === option.value ? "opacity-100" : "opacity-0"
+                      value == option.value ? "opacity-100" : "opacity-0"
                     )}
                   />
                   {option.label}

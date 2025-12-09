@@ -115,7 +115,6 @@ export default function EmpresaGestion({
   useEffect(() => {
     setErrorMessage(error ?? null);
   }, [error]);
-  console.log(error, errorMessage)
 
   // Si el usuario cambia algo -> limpia error
   useEffect(() => {

@@ -36,7 +36,6 @@ export function useUsuarioForm({
   externalErrors = {},
 }: UseUsuarioFormProps) {
   const { toast } = useToast();
-  const firstInputRef = useRef<HTMLInputElement>(null);
 
   // Estado del formulario
   const [data, setData] = useState<UsuarioFormData>({
@@ -62,17 +61,10 @@ export function useUsuarioForm({
     }
   }, [initialData]);
 
-  // Focus en primer input al montar
-  useEffect(() => {
-    if (!disabled && firstInputRef.current) {
-      firstInputRef.current.focus();
-    }
-  }, [disabled]);
-
   // Handler para cambios en campos
   const handleChange = (field: keyof UsuarioFormData, value: any) => {
     setData((prev) => ({ ...prev, [field]: value }));
-    
+
     // Limpiar error del campo
     if (errors[field]) {
       setErrors((prev) => {
@@ -80,49 +72,6 @@ export function useUsuarioForm({
         delete newErrors[field];
         return newErrors;
       });
-    }
-  };
-
-  // Buscar usuario por documento (fetch externo)
-  const buscarPorDocumento = async (documento: string) => {
-    if (!documento || documento.length < 5) {
-      return;
-    }
-
-    setIsSearchingDocument(true);
-    try {
-      const response = await fetch(
-        route("usuarios.buscar-documento", { documento })
-      );
-      const responseData = await response.json();
-
-      if (response.ok && responseData.nombre_completo) {
-        setData((prev) => ({
-          ...prev,
-          nombre_completo: responseData.nombre_completo,
-        }));
-        toast({
-          title: "Usuario encontrado",
-          description: `Nombre: ${responseData.nombre_completo}`,
-          variant: "success",
-        });
-      } else {
-        toast({
-          title: "No encontrado",
-          description: "No se encontró usuario con ese documento en la base de datos externa",
-          variant: "destructive",
-        });
-        setData((prev) => ({ ...prev, nombre_completo: "" }));
-      }
-    } catch (error) {
-      console.error("Error buscando documento:", error);
-      toast({
-        title: "Error",
-        description: "Error al buscar el documento",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSearchingDocument(false);
     }
   };
 
@@ -137,13 +86,13 @@ export function useUsuarioForm({
 
     if (!validation.success) {
       const zodErrors: Record<string, string> = {};
-      validation.error.errors.forEach((err) => {
+      validation.error.issues.forEach((err) => {
         if (err.path[0]) {
           zodErrors[err.path[0].toString()] = err.message;
         }
       });
       setErrors(zodErrors);
-      
+
       toast({
         title: "Errores de validación",
         description: "Por favor corrige los errores en el formulario",
@@ -169,9 +118,8 @@ export function useUsuarioForm({
     errors,
     processing,
     isSearchingDocument,
-    firstInputRef,
     handleChange,
     handleSubmit,
-    buscarPorDocumento,
+    setErrors,
   };
 }

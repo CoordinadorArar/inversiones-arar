@@ -6,6 +6,7 @@ use App\Models\EmpresaWeb;
 use App\Http\Requests\AdministracionWeb\EmpresaWebRequest;
 use App\Models\GestionModulos\Modulo;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 
 /**
@@ -70,6 +71,19 @@ class EmpresaWebController extends Controller
     }
 
     /**
+     * Método auxiliar para obtener empresas cacheadas.
+     * Cachea por 5 minutos para evitar consultas repetidas.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    private function getEmpresasCacheadas()
+    {
+        return Cache::remember('empresas_web_list', 300, function () { // 300 segundos = 5 minutos
+            return EmpresaWeb::orderByDesc('id')->get();
+        });
+    }
+
+    /**
      * Muestra la vista de listado de empresas en React via Inertia.
      * Renderiza el componente 'Listado' con empresas ordenadas, pestañas y nombre del módulo.
      *
@@ -80,7 +94,7 @@ class EmpresaWebController extends Controller
         // Renderiza vista Inertia con datos.
         return Inertia::render('Modulos:AdministracionWeb/Empresas/pages/Listado', [
             'tabs' => $this->tabs,              // Pestañas accesibles.
-            'empresas' => EmpresaWeb::orderByDesc('id')->get(),    // Todas las empresas.
+            'empresas' => $this->getEmpresasCacheadas(), // Empresas cacheadas.
             'moduloNombre' => $this->moduloNombre,  // Nombre del módulo.
         ]);
     }
@@ -97,7 +111,7 @@ class EmpresaWebController extends Controller
         $permisos = $this->rol->getPermisosPestana(2);
 
         // Si puede editar, enviar empresas; si no, array vacío
-        $empresas = in_array('editar', $permisos) ? EmpresaWeb::orderByDesc('id')->get() : [];
+        $empresas = in_array('editar', $permisos) ? $this->getEmpresasCacheadas() : [];
 
         $props = [
             'tabs' => $this->tabs,              // Pestañas accesibles.
@@ -125,7 +139,7 @@ class EmpresaWebController extends Controller
         $permisos = $this->rol->getPermisosPestana(2);
 
         // Si puede editar, enviar empresas; si no, array vacío
-        $empresas = in_array('editar', $permisos) ? EmpresaWeb::orderByDesc('id')->get() : [];
+        $empresas = (in_array('editar', $permisos) && in_array('crear', $permisos)) ? $this->getEmpresasCacheadas() : [];
 
         $props = [
             'tabs' => $this->tabs,
@@ -143,7 +157,6 @@ class EmpresaWebController extends Controller
                 'error' => 'No tienes permiso para crear empresas', // Pasa error
             ]);
         }
-
 
         // Renderiza vista Inertia con datos.
         return Inertia::render('Modulos:AdministracionWeb/Empresas/pages/Gestion', [
@@ -182,10 +195,11 @@ class EmpresaWebController extends Controller
         }
 
         // Obtener todas las empresas para el select
-        $empresas = EmpresaWeb::orderByDesc('id')->get();
+        $empresas = $this->getEmpresasCacheadas(); // Cacheadas
 
         // Verificar que la empresa existe
         $empresa = EmpresaWeb::find($id);
+
         if (!$empresa) {
             return Inertia::render('Modulos:AdministracionWeb/Empresas/pages/Gestion', [
                 ...$props,
@@ -193,7 +207,6 @@ class EmpresaWebController extends Controller
                 'error' => 'La empresa no existe', // Pasa error
             ]);
         }
-
 
         return Inertia::render('Modulos:AdministracionWeb/Empresas/pages/Gestion', [
             ...$props,
@@ -233,6 +246,9 @@ class EmpresaWebController extends Controller
             // Crear empresa
             $empresa = EmpresaWeb::create($validated);
 
+            // Invalidar cache después de crear
+            Cache::forget('empresas_web_list');
+            Cache::forget('dominios_empresas');
             return response()->json([
                 'message' => 'Empresa creada correctamente',
                 'empresa' => $empresa
@@ -275,7 +291,6 @@ class EmpresaWebController extends Controller
                 if ($empresa->logo_url) {
                     \Storage::disk('public')->delete($empresa->logo_url);
                 }
-
                 $file = $request->file('logo');
                 $filename = time() . '_' . $file->getClientOriginalName();
                 $path = $file->storeAs('/logos_empresas', $filename, 'public');
@@ -284,6 +299,10 @@ class EmpresaWebController extends Controller
 
             // Actualizar empresa
             $empresa->update($validated);
+
+            // Invalidar cache después de actualizar
+            Cache::forget('empresas_web_list');
+            Cache::forget('dominios_empresas');
 
             return response()->json([
                 'message' => 'Empresa actualizada correctamente',
@@ -322,6 +341,9 @@ class EmpresaWebController extends Controller
             // Soft delete
             $empresa->delete();
 
+            // Invalidar cache después de eliminar
+            Cache::forget('empresas_web_list');
+            Cache::forget('dominios_empresas');
             return response()->json([
                 'message' => 'Empresa eliminada correctamente'
             ], 200);
@@ -334,5 +356,18 @@ class EmpresaWebController extends Controller
                 'error' => 'Hubo un error al eliminar la empresa. Por favor intenta más tarde.'
             ], 500);
         }
+    }
+
+    /**
+     * Método auxiliar para obtener dominios de empresas cacheados.
+     * Cachea por 1 hora para evitar consultas repetidas.
+     *
+     * @return array
+     */
+    public function getDominiosCacheados()
+    {
+        return Cache::remember('dominios_empresas', 3600, function () { // 3600 segundos = 1 hora
+            return EmpresaWeb::pluck('dominio')->filter()->values()->toArray();
+        });
     }
 }
