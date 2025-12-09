@@ -138,21 +138,13 @@ class ConfiguracionController extends Controller
             $validated = $request->validated();
             $updates = [];
 
-            // Preparar actualizaciones de contacto
-            if (isset($validated['email'])) {
-                $updates['contact.email'] = $validated['email'];
-            }
-            if (isset($validated['telefono'])) {
-                $updates['contact.telefono'] = $validated['telefono'];
-            }
-            if (isset($validated['ubicacion'])) {
-                $updates['contact.ubicacion'] = $validated['ubicacion'];
-            }
-            if (isset($validated['ubicacion_detalles'])) {
-                $updates['contact.ubicacion.detalles'] = $validated['ubicacion_detalles'];
-            }
-            if (isset($validated['ubicacion_url'])) {
-                $updates['contact.ubicacion.url'] = $validated['ubicacion_url'];
+            // Lista de campos de contacto
+            $contactFields = ['email', 'telefono', 'ubicacion', 'ubicacion_detalles', 'ubicacion_url'];
+            foreach ($contactFields as $field) {
+                // Preparar actualizaciones de contacto
+                if ($request->has($field)) {
+                    $updates['contact.' . str_replace('_', '.', $field)] = $validated[$field] ?? '';
+                }
             }
 
             // Manejar logo
@@ -218,18 +210,13 @@ class ConfiguracionController extends Controller
             $validated = $request->validated();
             $updates = [];
 
-            // Preparar actualizaciones de redes sociales
-            if (isset($validated['instagram'])) {
-                $updates['rrss.instagram'] = $validated['instagram'];
-            }
-            if (isset($validated['facebook'])) {
-                $updates['rrss.facebook'] = $validated['facebook'];
-            }
-            if (isset($validated['x'])) {
-                $updates['rrss.x'] = $validated['x'];
-            }
-            if (isset($validated['linkedin'])) {
-                $updates['rrss.linkedin'] = $validated['linkedin'];
+            // Lista de campos de redes
+            $rrssFields = ['instagram', 'facebook', 'x', 'linkedin'];
+            foreach ($rrssFields as $field) {
+                // Preparar actualizaciones de redes sociales
+                if ($request->has($field)) {
+                    $updates['rrss.' . $field] = $validated[$field] ?? '';
+                }
             }
 
             // Actualizar todas las configuraciones

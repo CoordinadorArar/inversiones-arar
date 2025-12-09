@@ -184,13 +184,7 @@ export function useInformacionCorporativa({
         // Aquí se prepara FormData para enviar archivos y datos.
         const formDataToSend = new FormData();
         Object.entries(formData).forEach(([key, value]) => {
-            if (value !== null && value !== "") {
-                if (value instanceof File) {
-                    formDataToSend.append(key, value);
-                } else {
-                    formDataToSend.append(key, value as string);
-                }
-            }
+            formDataToSend.append(key, value || "");
         });
 
         try {
@@ -198,6 +192,7 @@ export function useInformacionCorporativa({
             const response = await fetch(route("update-corporativa"), {
                 method: "POST",
                 headers: {
+                    "Accept": "application/json",
                     "X-CSRF-TOKEN":
                         document.querySelector('meta[name="csrf-token"]')?.getAttribute("content") || "",
                 },

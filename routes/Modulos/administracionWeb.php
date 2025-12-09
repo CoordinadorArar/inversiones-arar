@@ -24,46 +24,65 @@ use Illuminate\Support\Facades\Route;
  * @date 2025-11-27
  */
 
+
 // Grupo de rutas protegidas con middleware 'auth' (requiere login).
 Route::middleware('auth')->group(function () {
+
+    $moduloPadre = 'administracion-web';
 
     // ===================================================================
     // MÓDULO PADRE: Administración Web
     // Ruta base: Redirige dinámicamente al primer módulo hijo accesible para el usuario.
     // Usa ModuloRedirectController para chequear permisos y redirigir.
     // ===================================================================
-    Route::get('/administracion-web', function () {
+    Route::get('/' . $moduloPadre, function () use ($moduloPadre) {
         // Llama al método redirectToFirstAccessible con la ruta base.
         // Ej: Si usuario tiene acceso a 'empresas', redirige a /administracion-web/empresas.
         return app(ModuloRedirectController::class)
-            ->redirectToFirstAccessible('/administracion-web');
+            ->redirectToFirstAccessible('/' . $moduloPadre);
     });
 
     // Prefijo para subrutas del módulo padre.
-    Route::prefix('administracion-web')->group(function () {
+    Route::prefix($moduloPadre)->group(function () {
+
+        $modulosHijos = ['empresas', 'configuracion-general', 'tablas-maestras'];
 
         // ===============================================================
         // MÓDULO HIJO: Empresas
         // Ruta: Redirige a la primera pestaña accesible dentro de Empresas.
         // ===============================================================
-        Route::get('/empresas', function () {
+        Route::get('/' . $modulosHijos[0], function () use ($modulosHijos) {
             // Redirige a primera pestaña accesible (ej. /listado si tiene permiso).
             return app(ModuloRedirectController::class)
-                ->redirectToFirstAccessible('/empresas');
+                ->redirectToFirstAccessible('/' . $modulosHijos[0]);
         });
 
         // Grupo de pestañas para Empresas (prefijo /administracion-web/empresas).
-        Route::prefix('empresas')->group(function () {
+        Route::prefix($modulosHijos[0])->group(function () {
 
             // --- VISTAS ---
 
             // Pestaña: Listado de empresas.
             // Middleware: pestana.access:1 (ID de la pestaña en DB) para validar acceso.
             Route::get('/listado', [EmpresaWebController::class, 'index'])
+                ->name('empresa.listado')
                 ->middleware('pestana.access:1');
 
-            // Pestaña: Gestión de empresas (crear/editar).
-            Route::get('/gestion', [EmpresaWebController::class, 'gestion']);
+            // Pestaña: Gestión de empresas (modo idle - sin crear ni editar).
+            Route::get('/gestion', [EmpresaWebController::class, 'gestion'])
+                ->name('empresa.gestion')
+                ->middleware('pestana.access:2');
+
+            // Pestaña: Gestión - Modo crear (URL amigable).
+            Route::get('/gestion/crear', [EmpresaWebController::class, 'create'])
+                ->name('empresa.create')
+                ->middleware('pestana.access:2');
+
+            // Pestaña: Gestión - Modo editar (URL amigable con ID).
+            Route::get('/gestion/{id}', [EmpresaWebController::class, 'edit'])
+                ->name('empresa.edit')
+                ->middleware('pestana.access:2');
+
 
             // --- CRUD ---
             // Mantienen el prefijo /gestion, pero se separan para mayor claridad.
@@ -81,17 +100,20 @@ Route::middleware('auth')->group(function () {
         // MÓDULO HIJO: Configuración General
         // Ruta: Redirige a la primera pestaña accesible.
         // ===============================================================
-        Route::get('/configuracion-general', function () {
+        Route::get('/' . $modulosHijos[1], function () use ($modulosHijos) {
             // Redirige a primera pestaña accesible (ej. /informacion-corporativa).
             return app(ModuloRedirectController::class)
-                ->redirectToFirstAccessible('/configuracion-general');
+                ->redirectToFirstAccessible('/' . $modulosHijos[1]);
         });
 
-        // Grupo de pestañas para Configuración General (comentadas, por implementar).
-        Route::prefix('configuracion-general')->group(function () {
-            Route::get('/informacion-corporativa', [ConfiguracionController::class, 'informacionCorporativa'])->middleware('pestana.access:3');
+        // Grupo de pestañas para Configuración General.
+        Route::prefix($modulosHijos[1])->group(function () {
 
-            Route::get('/redes-sociales', [ConfiguracionController::class, 'redesSociales'])->middleware('pestana.access:4');
+            Route::get('/informacion-corporativa', [ConfiguracionController::class, 'informacionCorporativa'])
+                ->middleware('pestana.access:3');
+
+            Route::get('/redes-sociales', [ConfiguracionController::class, 'redesSociales'])
+                ->middleware('pestana.access:4');
 
             Route::post('/update-corporativa', [ConfiguracionController::class, 'updateInformacionCorporativa'])
                 ->name('update-corporativa');
@@ -103,16 +125,17 @@ Route::middleware('auth')->group(function () {
         // MÓDULO HIJO: Tablas Maestras
         // Ruta: Redirige a la primera pestaña accesible.
         // ===============================================================
-        Route::get('/tablas-maestras', function () {
+        Route::get('/' . $modulosHijos[2], function () use ($modulosHijos) {
             // Redirige a primera pestaña accesible (ej. /tipos-identificaciones).
             return app(ModuloRedirectController::class)
-                ->redirectToFirstAccessible('/tablas-maestras');
+                ->redirectToFirstAccessible('/' . $modulosHijos[2]);
         });
 
         // Grupo de pestañas para Tablas Maestras (comentadas, por implementar).
-        Route::prefix('tablas-maestras')->group(function () {
+        Route::prefix($modulosHijos[2])->group(function () {
             // Aquí se define la ruta para la pestaña de tipos de identificaciones, con middleware para acceso.
-            Route::get('/tipos-identificaciones', [TipoIdentificacionController::class, 'index'])->middleware('pestana.access:5');
+            Route::get('/tipos-identificaciones', [TipoIdentificacionController::class, 'index'])
+                ->middleware('pestana.access:5');
 
             // --- CRUD ---
             // Mantienen el prefijo /tipos-identificaciones, pero se separan para mayor claridad.
@@ -126,7 +149,8 @@ Route::middleware('auth')->group(function () {
             });
 
             // Aquí se define la ruta para la pestaña de tipos de pqrsd, con middleware para acceso.
-            Route::get('/tipos-pqrsd', [TipoPqrsController::class, 'index'])->middleware('pestana.access:6');
+            Route::get('/tipos-pqrsd', [TipoPqrsController::class, 'index'])
+                ->middleware('pestana.access:6');
 
             // --- CRUD ---
             // Mantienen el prefijo /tipos-pqrsd, pero se separan para mayor claridad.
@@ -140,7 +164,8 @@ Route::middleware('auth')->group(function () {
             });
 
             // Aquí se define la ruta para la pestaña de estados de pqrsd, con middleware para acceso.
-            Route::get('/estados-pqrsd', [EstadoPqrsController::class, 'index'])->middleware('pestana.access:7');
+            Route::get('/estados-pqrsd', [EstadoPqrsController::class, 'index'])
+                ->middleware('pestana.access:7');
 
             // --- CRUD ---
             // Mantienen el prefijo /estados-pqrsd, pero se separan para mayor claridad.

@@ -93,7 +93,7 @@ export default function TiposIdentificaciones({ tipos: tiposIniciales, tabs, mod
         tabs={tabs}
         activeTab={window.location.pathname}
       >
-        <div className={`grid gap-4 ${shouldShowForm ? 'lg:grid-cols-[1fr_320px]' : ''}`}>
+        <div className={`h-full grid gap-4 ${shouldShowForm ? 'lg:grid-cols-[1fr_320px]' : ''}`}>
           {/* Sección de la tabla: Usa Card para contener el listado de tipos. */}
           <Card className="py-6 flex flex-col shadow border-none gap-4 overflow-hidden">
             <CardHeader>

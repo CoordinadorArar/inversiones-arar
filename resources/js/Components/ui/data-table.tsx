@@ -139,7 +139,7 @@ export function DataTable<TData, TValue>({
 
   // Render: Contenedor flex col con toolbar, tabla y paginación.
   return (
-    <div className="flex flex-col gap-3 md:gap-4">
+    <div className="flex flex-col gap-3 md:gap-4 h-full">
       {/* TOOLBAR RESPONSIVO: Input de búsqueda y dropdown de columnas. */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-between gap-3 flex-shrink-0">
         {/* Input de búsqueda global con ícono. */}
@@ -190,97 +190,95 @@ export function DataTable<TData, TValue>({
 
       {/* TABLA CON SCROLL: Contenedor con overflow para scroll horizontal/vertical. */}
       <div className="flex-1 rounded-lg border border-primary/10 overflow-hidden min-h-0 shadow-sm">
-        <div className="overflow-auto h-full">
-          <Table>
-            {/* HEADER STICKY: Fijo en scroll vertical con backdrop. */}
-            <TableHeader className="sticky top-0 z-10 bg-primary/90 backdrop-blur-sm">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id} className="hover:bg-transparent border-none">
-                  {headerGroup.headers.map((header) => (
-                    <TableHead
-                      key={header.id}
-                      className="font-semibold text-primary-foreground whitespace-nowrap"
+        <Table>
+          {/* HEADER STICKY: Fijo en scroll vertical con backdrop. */}
+          <TableHeader className="sticky top-0 z-10 bg-primary/90 backdrop-blur-sm">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id} className="hover:bg-transparent border-none">
+                {headerGroup.headers.map((header) => (
+                  <TableHead
+                    key={header.id}
+                    className="font-semibold text-primary-foreground whitespace-nowrap"
+                  >
+                    {header.isPlaceholder ? null : (
+                      <div className="flex items-center gap-2">
+                        {/* Si columna es sorteable, botón con ícono de flecha. */}
+                        {header.column.getCanSort() ? (
+                          <Button
+                            variant="ghost"
+                            className="h-8 px-2 hover:!bg-primary/90 hover:text-primary-foreground font-semibold"
+                            onClick={() => header.column.toggleSorting()}  // Toggle sorting.
+                          >
+                            {flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                            {/* Ícono según estado de sorting. */}
+                            {header.column.getIsSorted() === "asc" ? (
+                              <ArrowUp className="ml-2 h-3.5 w-3.5" />
+                            ) : header.column.getIsSorted() === "desc" ? (
+                              <ArrowDown className="ml-2 h-3.5 w-3.5" />
+                            ) : (
+                              <ArrowUpDown className="ml-2 h-3.5 w-3.5 opacity-50" />
+                            )}
+                          </Button>
+                        ) : (
+                          // Si no sorteable, solo texto.
+                          <span className="px-2">
+                            {flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+
+          {/* BODY: Filas de datos o estado vacío. */}
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              // Si hay filas, mapea y renderiza.
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                  className="transition-colors border-b border-border/50"
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell
+                      key={cell.id}
+                      className="py-3 font-medium text-foreground/80"
                     >
-                      {header.isPlaceholder ? null : (
-                        <div className="flex items-center gap-2">
-                          {/* Si columna es sorteable, botón con ícono de flecha. */}
-                          {header.column.getCanSort() ? (
-                            <Button
-                              variant="ghost"
-                              className="h-8 px-2 hover:!bg-primary/90 hover:text-primary-foreground font-semibold"
-                              onClick={() => header.column.toggleSorting()}  // Toggle sorting.
-                            >
-                              {flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
-                              {/* Ícono según estado de sorting. */}
-                              {header.column.getIsSorted() === "asc" ? (
-                                <ArrowUp className="ml-2 h-3.5 w-3.5" />
-                              ) : header.column.getIsSorted() === "desc" ? (
-                                <ArrowDown className="ml-2 h-3.5 w-3.5" />
-                              ) : (
-                                <ArrowUpDown className="ml-2 h-3.5 w-3.5 opacity-50" />
-                              )}
-                            </Button>
-                          ) : (
-                            // Si no sorteable, solo texto.
-                            <span className="px-2">
-                              {flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
-                            </span>
-                          )}
-                        </div>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
                       )}
-                    </TableHead>
+                    </TableCell>
                   ))}
                 </TableRow>
-              ))}
-            </TableHeader>
-
-            {/* BODY: Filas de datos o estado vacío. */}
-            <TableBody>
-              {table.getRowModel().rows?.length ? (
-                // Si hay filas, mapea y renderiza.
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                    className="transition-colors border-b border-border/50"
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell
-                        key={cell.id}
-                        className="py-3 font-medium text-foreground/80"
-                      >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                // Estado vacío: Mensaje con ícono.
-                <TableRow className="hover:bg-transparent">
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-32 text-center"
-                  >
-                    <div className="flex flex-col items-center justify-center text-muted-foreground">
-                      <Search className="h-8 w-8 mb-2 opacity-20" />
-                      <p className="text-sm font-medium">No se encontraron resultados</p>
-                      <p className="text-xs mt-1">Intenta con otros términos de búsqueda</p>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
+              ))
+            ) : (
+              // Estado vacío: Mensaje con ícono.
+              <TableRow className="hover:bg-transparent">
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-32 text-center"
+                >
+                  <div className="flex flex-col items-center justify-center text-muted-foreground">
+                    <Search className="h-8 w-8 mb-2 opacity-20" />
+                    <p className="text-sm font-medium">No se encontraron resultados</p>
+                    <p className="text-xs mt-1">Intenta con otros términos de búsqueda</p>
+                  </div>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
       </div>
 
       {/* PAGINACIÓN RESPONSIVA: Info, selector de filas, navegación. */}

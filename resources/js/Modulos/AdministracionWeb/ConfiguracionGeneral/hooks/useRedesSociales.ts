@@ -125,16 +125,21 @@ export function useRedesSociales({
         setIsSubmitting(true);
         setErrors({});
 
+        const formDataToSend = new FormData();
+        Object.entries(formData).forEach(([key, value]) => {
+            formDataToSend.append(key, value || "");
+        });
+
         try {
             // Aquí se envía la petición a la API usando fetch con JSON.
             const response = await fetch(route("update-redes"), {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
+                    "Accept": "application/json",                    
                     "X-CSRF-TOKEN":
                         document.querySelector('meta[name="csrf-token"]')?.getAttribute("content") || "",
                 },
-                body: JSON.stringify(formData),
+                body: formDataToSend,
             });
 
             const data = await response.json();

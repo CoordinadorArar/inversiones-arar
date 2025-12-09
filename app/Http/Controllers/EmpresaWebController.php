@@ -99,12 +99,107 @@ class EmpresaWebController extends Controller
         // Si puede editar, enviar empresas; si no, array vacío
         $empresas = in_array('editar', $permisos) ? EmpresaWeb::orderByDesc('id')->get() : [];
 
-        // Renderiza vista Inertia con datos.
-        return Inertia::render('Modulos:AdministracionWeb/Empresas/pages/Gestion', [
+        $props = [
             'tabs' => $this->tabs,              // Pestañas accesibles.
             'empresas' => $empresas,
             'permisos' => $permisos,            // Permisos de la pestaña.
             'moduloNombre' => $this->moduloNombre,  // Nombre del módulo.
+            'initialMode' => 'idle', // Modo por defecto
+            'initialEmpresaId' => null,
+        ];
+
+        // Renderiza vista Inertia con datos.
+        return Inertia::render('Modulos:AdministracionWeb/Empresas/pages/Gestion', $props);
+    }
+
+    /**
+     * Vista: Gestión - Modo crear
+     * Renderiza la misma vista pero con el formulario en modo crear
+     * URL: /gestion/crear
+     * 
+     * @return \Inertia\Response
+     */
+    public function create()
+    {
+        // Obtiene permisos específicos de la pestaña 2 (Gestión) para el rol.
+        $permisos = $this->rol->getPermisosPestana(2);
+
+        // Si puede editar, enviar empresas; si no, array vacío
+        $empresas = in_array('editar', $permisos) ? EmpresaWeb::orderByDesc('id')->get() : [];
+
+        $props = [
+            'tabs' => $this->tabs,
+            'empresas' => $empresas,
+            'permisos' => $permisos,
+            'moduloNombre' => $this->moduloNombre,
+            'initialMode' => 'idle',
+            'initialEmpresaId' => null,
+        ];
+
+        // Verificar permiso de crear
+        if (!in_array('crear', $permisos)) {
+            return Inertia::render('Modulos:AdministracionWeb/Empresas/pages/Gestion', [
+                ...$props,
+                'error' => 'No tienes permiso para crear empresas', // Pasa error
+            ]);
+        }
+
+
+        // Renderiza vista Inertia con datos.
+        return Inertia::render('Modulos:AdministracionWeb/Empresas/pages/Gestion', [
+            ...$props,
+            'initialMode' => 'create', // Modo crear desde URL
+        ]);
+    }
+
+    /**
+     * Vista: Gestión - Modo editar
+     * Renderiza la misma vista pero con el formulario en modo editar
+     * URL: /gestion/{id}
+     * 
+     * @param int $id ID de la empresa a editar
+     * @return \Inertia\Response
+     */
+    public function edit(int $id)
+    {
+        $permisos = $this->rol->getPermisosPestana(2);
+
+        $props = [
+            'tabs' => $this->tabs,
+            'empresas' => [],
+            'permisos' => $permisos,
+            'moduloNombre' => $this->moduloNombre,
+            'initialMode' => 'idle',
+            'initialEmpresaId' => null,
+        ];
+
+        // Verificar permiso de editar
+        if (!in_array('editar', $permisos)) {
+            return Inertia::render('Modulos:AdministracionWeb/Empresas/pages/Gestion', [
+                ...$props,
+                'error' => 'No tienes permiso para editar empresas', // Pasa error
+            ]);
+        }
+
+        // Obtener todas las empresas para el select
+        $empresas = EmpresaWeb::orderByDesc('id')->get();
+
+        // Verificar que la empresa existe
+        $empresa = EmpresaWeb::find($id);
+        if (!$empresa) {
+            return Inertia::render('Modulos:AdministracionWeb/Empresas/pages/Gestion', [
+                ...$props,
+                'empresas' => $empresas,
+                'error' => 'La empresa no existe', // Pasa error
+            ]);
+        }
+
+
+        return Inertia::render('Modulos:AdministracionWeb/Empresas/pages/Gestion', [
+            ...$props,
+            'empresas' => $empresas,
+            'initialMode' => 'edit', // Modo editar desde URL
+            'initialEmpresaId' => $id, // ID de la empresa a editar
         ]);
     }
 

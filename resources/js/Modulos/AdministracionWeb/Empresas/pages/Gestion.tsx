@@ -15,12 +15,12 @@ import { DashboardLayout } from "@/Layouts/DashboardLayout";
 import { SearchableSelect } from "@/Components/SearchableSelect";
 import { EMPRESA_INITIAL_DATA } from "../types/empresaForm.types";
 import { Button } from "@/Components/ui/button";
-import { FilePlus, Pencil, Plus } from "lucide-react";
+import { AlertCircle, FilePlus, Pencil, Plus } from "lucide-react";
 import { EmpresaForm } from "../partials/EmpresaForm";
 import { Label } from "@/components/ui/label";
 import { EmpresaInterface } from "../types/empresaInterface";
 import { useEmpresaGestion } from "../hooks/useEmpresaGestion";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import HelpManualButton from "@/Components/HelpManualButton";
 import { TabInterface } from "@/Types/tabInterface";
 
@@ -33,12 +33,16 @@ import { TabInterface } from "@/Types/tabInterface";
  * @property {EmpresaInterface[]} empresas - Lista de empresas disponibles.
  * @property {string} moduloNombre - Nombre del módulo para el header.
  * @property {string[]} permisos - Permisos del usuario para la pestaña.
+ * @property {string} [error] - Mensaje de error desde backend.
  */
 interface EmpresaGestionProps {
   tabs: TabInterface[];
   empresas: EmpresaInterface[];
   moduloNombre: string;
   permisos: string[];
+  initialMode?: 'idle' | 'create' | 'edit'; // Modo inicial desde URL
+  initialEmpresaId?: number | null; // ID de empresa si viene desde URL
+  error?: string | null;
 }
 /**
  * Componente principal para la página de Gestión de Empresas.
@@ -52,7 +56,10 @@ export default function EmpresaGestion({
   empresas: empresasBack,
   tabs,
   moduloNombre,
-  permisos
+  permisos,
+  initialMode = 'idle',
+  initialEmpresaId = null,
+  error
 }: EmpresaGestionProps) {
 
   // Aquí se usa el hook useEmpresaGestion para manejar estado, permisos y operaciones CRUD.
@@ -73,7 +80,9 @@ export default function EmpresaGestion({
     handleDelete,
   } = useEmpresaGestion({
     empresasIniciales: empresasBack,
-    permisos
+    permisos,
+    initialMode,
+    initialEmpresaId,
   });
 
   // Aquí se usa useMemo para calcular datos iniciales del formulario basados en modo y empresa seleccionada.
@@ -98,6 +107,27 @@ export default function EmpresaGestion({
 
     return EMPRESA_INITIAL_DATA;
   }, [mode, selectedEmpresa]);
+
+  // Mantiene cualquier error que venga del backend
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // Cuando cambie la prop `error` (del backend), actualiza el mensaje
+  useEffect(() => {
+    setErrorMessage(error ?? null);
+  }, [error]);
+  console.log(error, errorMessage)
+
+  // Si el usuario cambia algo -> limpia error
+  useEffect(() => {
+    const userInteracted =
+      (selectedEmpresaId && selectedEmpresaId !== initialEmpresaId) ||
+      mode === "create";
+
+    if (userInteracted) {
+      setErrorMessage(null);
+    }
+  }, [selectedEmpresaId, mode, initialEmpresaId]);
+
 
   return (
     // Aquí se usa ModuleLayout para envolver la página con navegación de pestañas y header del módulo.
@@ -159,6 +189,16 @@ export default function EmpresaGestion({
                 </Button>
               )}
             </div>
+
+            {/* Muestra error si existe */}
+            {errorMessage && (
+              <div className="p-3 rounded-lg border text-destructive border-destructive/50 bg-destructive/10 w-full mt-4 flex gap-2 items-center">
+                <AlertCircle className="h-4 w-4" />
+                <p className="text-sm">
+                  {errorMessage}
+                </p>
+              </div>
+            )}
 
             {/* Indicador de modo: Muestra si está en crear o editando una empresa específica. */}
             {mode !== "idle" && (

@@ -80,9 +80,10 @@ class ConfiguracionService
         try {
             foreach ($configs as $nombre => $valor) {
                 Configuracion::where('nombre', $nombre)->update([
-                    'valor' => $valor,                    
+                    'valor' => $valor === '' ? null : $valor, // Vacío -> null
                 ]);
             }
+
 
             Cache::forget('config.all');
             return true;
