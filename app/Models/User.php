@@ -51,7 +51,7 @@ class User extends Authenticatable
      */
     protected function casts(): array
     {
-        return [            
+        return [
             'password' => 'hashed',
             'bloqueado_at' => 'datetime',
         ];
@@ -65,11 +65,11 @@ class User extends Authenticatable
     }
 
     protected $appends = [
-        'datos_completos',
+        'info_corta',
     ];
 
 
-    public function getDatosCompletosAttribute()
+    public function datosCompletos()
     {
         $numDoc = $this->numero_documento;
 
@@ -96,6 +96,24 @@ class User extends Authenticatable
         ", [$numDoc]);
 
         return $datosCompletos;
+    }
+
+    public function getInfoCortaAttribute()
+    {
+        $numDoc = $this->numero_documento;
+
+        $infoCorta = DB::connection('sqlsrv_second')->selectOne("
+            select 
+                CONCAT(ter.f200_apellido1,' ',ter.f200_apellido2) as apellidos, 
+                ter.f200_nombres as nombres, 
+                carg.c0763_descripcion as cargo
+            from UNOEEARAR..t200_mm_terceros ter                         
+            inner join UNOEEARAR..w0550_contratos con ON ter.f200_rowid = con.c0550_rowid_tercero
+            inner join UNOEEARAR..w0763_gh01_cargos carg on con.c0550_rowid_cargo = carg.c0763_rowid          
+            where ter.f200_id = ?
+        ", [$numDoc]);
+
+        return $infoCorta;
     }
 
     public function rol()

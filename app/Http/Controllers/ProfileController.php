@@ -19,9 +19,14 @@ class ProfileController extends Controller
      */
     public function index(Request $request): Response
     {
+        $user = Auth::user();
+        
+        $user->datos_completos = $user->datosCompletos();
+
         return Inertia::render('Profile/Profile', [
             'dominios' => EmpresaWeb::pluck('dominio')->filter()->values(),
             'status' => session('status'),
+            'user' => $user,
         ]);
     }
 

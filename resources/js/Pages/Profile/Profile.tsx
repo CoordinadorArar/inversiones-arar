@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { calcularAntiguedadExacta, formatPhoneNumberCO, formatToSpanishDate } from '@/lib/formatUtils';
 
-export default function Profile({ auth: { user: { datos_completos, numero_documento, email } }, dominios, status }) {
+export default function Profile({  user: { datos_completos, numero_documento, email }, dominios, status }) {
     const nombreCorto = (datos_completos.nombres.split(" ")[0] + " " + datos_completos.apellidos.split(" ")[0]).toLowerCase();
     const nombreCompleto = (datos_completos.nombres + " " + datos_completos.apellidos).toLowerCase();
 

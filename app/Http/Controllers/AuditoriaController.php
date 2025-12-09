@@ -49,14 +49,14 @@ class AuditoriaController extends Controller
                 'accion' => $auditoria->accion,
                 'usuario' => $auditoria->usuario ? [
                     'id' => $auditoria->usuario->id,
-                    'name' => $auditoria->usuario->datos_completos->nombres,
-                    'lastname' => $auditoria->usuario->datos_completos->apellidos,
+                    'name' => $auditoria->usuario->info_corta->nombres,
+                    'lastname' => $auditoria->usuario->info_corta->apellidos,
                     'email' => $auditoria->usuario->email,
                     'rol' => $auditoria->usuario->rol->nombre ?? 'Sin rol',
-                    'cargo' => $auditoria->usuario->datos_completos->cargo ?? 'Sin cargo', 
+                    'cargo' => $auditoria->usuario->info_corta->cargo ?? 'Sin cargo', 
                 ] : null,  // Si no hay usuario, null.
                 'usuario_nombre' => $auditoria->usuario
-                    ? $auditoria->usuario->datos_completos->nombres . ' ' . $auditoria->usuario->datos_completos->apellidos
+                    ? $auditoria->usuario->info_corta->nombres . ' ' . $auditoria->usuario->info_corta->apellidos
                     : null,
                 'fecha' => Carbon::parse($auditoria->fecha_creacion)->format('Y-m-d H:i:s'),  // Parsea y formatea.
                 'cambios' => $auditoria->cambios ? json_decode($auditoria->cambios, true) : null,  // Array de cambios.

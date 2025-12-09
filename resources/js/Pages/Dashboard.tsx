@@ -12,11 +12,11 @@ import { Head } from "@inertiajs/react";
 import {  DollarSign, ChevronUp, ChevronDown, FileText, CalendarIcon, Cake } from "lucide-react";
 import { useState } from "react";
 
-export default function Dashboard({auth: { user: { datos_completos }}}) {
+export default function Dashboard({auth: { user: { info_corta }}}) {
 
   const [showAllDocs, setShowAllDocs] = useState(false);
 
-  const nombreCorto = (datos_completos.nombres.split(" ")[0] + " " + datos_completos.apellidos.split(" ")[0]).toLowerCase();
+  const nombreCorto = (info_corta.nombres.split(" ")[0] + " " + info_corta.apellidos.split(" ")[0]).toLowerCase();
 
   const documentos = [
     { nombre: "Reglamento interno", tipo: "PDF", fecha: "reatens" },
@@ -64,7 +64,7 @@ export default function Dashboard({auth: { user: { datos_completos }}}) {
 
                   <div className="flex-1">
                     <h2 className="text-3xl font-bold capitalize">Bienvenid@, {nombreCorto.split(" ")[0]}</h2>
-                    <p className="text-muted-foreground capitalize">{datos_completos.cargo.toLowerCase()}</p>
+                    <p className="text-muted-foreground capitalize">{info_corta.cargo.toLowerCase()}</p>
                     <p className="text-sm mt-2">
                       <span className="text-muted-foreground">Próximo evento:</span>{" "}
                       <span className="font-medium">Reunión de equipo</span> el 15 de abril

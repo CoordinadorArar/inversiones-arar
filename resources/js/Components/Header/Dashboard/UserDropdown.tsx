@@ -37,12 +37,12 @@ import { Link, router } from "@inertiajs/react";  // Link para navegación, rout
  */
 export const UserDropdown = ({ user }: UserDropdownProps) => {
   // Extrae email y datos_completos del user.
-  const { email, datos_completos } = user;
+  const { email, info_corta } = user;
   
   // Formatea nombre: Primer nombre + primer apellido, en minúsculas.
   const nombre = (
-    datos_completos.nombres.split(" ")[0] + " " + 
-    datos_completos.apellidos.split(" ")[0]
+    info_corta.nombres.split(" ")[0] + " " + 
+    info_corta.apellidos.split(" ")[0]
   ).toLowerCase();
 
   // Render: DropdownMenu con trigger y content.

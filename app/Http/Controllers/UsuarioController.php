@@ -76,7 +76,7 @@ class UsuarioController extends Controller
             return [
                 'id' => $usuario->id,
                 'numero_documento' => $usuario->numero_documento,
-                'nombre_completo' => $usuario->datos_completos->nombres . " " . $usuario->datos_completos->apellidos,
+                'nombre_completo' => $usuario->info_corta->nombres . " " . $usuario->info_corta->apellidos,
                 'email' => $usuario->email,
                 'rol' => [
                     'id' => $usuario->rol_id,
@@ -105,7 +105,7 @@ class UsuarioController extends Controller
             return [
                 'id' => $usuario->id,
                 'numero_documento' => $usuario->numero_documento,
-                'nombre_completo' => $usuario->datos_completos->nombres . " " . $usuario->datos_completos->apellidos,
+                'nombre_completo' => $usuario->info_corta->nombres . " " . $usuario->info_corta->apellidos,
                 'email' => $usuario->email,
                 'rol' => [
                     'id' => $usuario->rol_id,

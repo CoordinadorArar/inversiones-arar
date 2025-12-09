@@ -40,7 +40,7 @@ export interface PublicHeaderProps {
 export interface UserDropdownProps {
   user: {
     email: string;
-    datos_completos: {
+    info_corta: {
       nombres: string;
       apellidos: string;
     };
