@@ -37,7 +37,8 @@ export function useUsuarioGestion({
   // Permisos
   const puedeCrear = permisos.includes("crear");
   const puedeEditar = permisos.includes("editar");
-  const puedeEliminar = permisos.includes("eliminar");
+  const puedeBloquear = permisos.includes("bloquear");
+  const puedeRestaurar = permisos.includes("restaurar_password");  
 
   // Estados
   const [usuarios, setUsuarios] = useState(usuariosIniciales);  // Actualizable localmente.
@@ -205,7 +206,7 @@ export function useUsuarioGestion({
         setUsuarios((prev) =>
           prev.map((u) => (u.id === responseData.usuario.id ? responseData.usuario : u))
         );
-        navigateTo(route('usuario.edit', responseData.usuario.id));
+        // navigateTo(route('usuario.edit', responseData.usuario.id));
       }
     } catch (error: any) {
       toast({
@@ -220,13 +221,14 @@ export function useUsuarioGestion({
 
   // Bloquear usuario
   const handleBloquear = async () => {
-    if (!selectedUsuarioId || !puedeEditar) return;
+    if (!selectedUsuarioId || !puedeBloquear) return;
 
     setIsSubmitting(true);
     try {
       const response = await fetch(route("usuario.bloquear", selectedUsuarioId), {
         method: "POST",
         headers: {
+          "Accept":"application/json",
           "X-CSRF-TOKEN":
             document.querySelector('meta[name="csrf-token"]')?.getAttribute("content") || "",
         },
@@ -261,7 +263,7 @@ export function useUsuarioGestion({
 
   // Desbloquear usuario
   const handleDesbloquear = async () => {
-    if (!selectedUsuarioId || !puedeEditar) return;
+    if (!selectedUsuarioId || !puedeBloquear) return;
 
     setIsSubmitting(true);
     try {
@@ -302,7 +304,7 @@ export function useUsuarioGestion({
 
   // Restaurar contraseña
   const handleRestaurarPassword = async () => {
-    if (!selectedUsuarioId || !puedeEditar) return;
+    if (!selectedUsuarioId || !puedeRestaurar) return;
 
     setIsSubmitting(true);
     try {
@@ -357,7 +359,8 @@ export function useUsuarioGestion({
     // Permisos
     puedeCrear,
     puedeEditar,
-    puedeEliminar,
+    puedeBloquear,
+    puedeRestaurar,
 
     // Handlers
     handleSelectUsuario,

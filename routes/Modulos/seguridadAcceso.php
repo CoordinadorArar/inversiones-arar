@@ -87,17 +87,17 @@ Route::middleware('auth')->group(function () {
                 // Acción: Crear usuario (POST).
                 Route::post('/', [UsuarioController::class, 'store'])->name('usuario.store');
                 // Acción: Actualizar usuario (PUT con ID).
-                Route::put('/{id}', [UsuarioController::class, 'update'])->name('usuario.update');
+                Route::post('/{id}', [UsuarioController::class, 'update'])->name('usuario.update');
                 // Acción: Eliminar usuario (DELETE con ID).                
                 Route::delete('/{id}', [UsuarioController::class, 'destroy'])->name('usuario.destroy');
 
                 // Acción: Bloquear usuario
-                Route::put('/bloquear/{id}', [UsuarioController::class, 'bloquear'])->name('usuario.bloquear');
+                Route::post('/bloquear/{id}', [UsuarioController::class, 'bloquear'])->name('usuario.bloquear');
                 // Acción: Desbloquear usuario
-                Route::put('/desbloquear/{id}', [UsuarioController::class, 'desbloquear'])->name('usuario.desbloquear');
+                Route::post('/desbloquear/{id}', [UsuarioController::class, 'desbloquear'])->name('usuario.desbloquear');
 
                 // Acción: Eliminar usuario
-                Route::put('/restaurar-password/{id}', [UsuarioController::class, 'restaurarPassword'])->name('usuario.restaurar-password');
+                Route::post('/restaurar-password/{id}', [UsuarioController::class, 'restaurarPassword'])->name('usuario.restaurar-password');
             });
         });
     });

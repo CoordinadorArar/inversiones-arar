@@ -27,24 +27,15 @@ import { useFormChanges } from "@/hooks/use-form-changes";
 /**
  * Interfaz para las props del componente EmpresaForm.
  * Define los parámetros necesarios para configurar el formulario.
- * 
- * @typedef {Object} EmpresaFormProps
- * @property {"create" | "edit"} mode - Modo del formulario (crear o editar).
- * @property {Partial<EmpresaFormData>} [initialData] - Datos iniciales opcionales para prellenar.
- * @property {boolean} [disabled] - Indica si el formulario está deshabilitado.
- * @property {(data: EmpresaFormData) => Promise<void>} onSubmit - Función a llamar al enviar datos válidos.
- * @property {() => Promise<void>} [onDelete] - Función opcional a llamar para eliminar (solo en modo edit).
- * @property {() => void} onCancel - Función a llamar al cancelar.
- * @property {Record<string, string>} [externalErrors] - Errores externos opcionales.
  */
 interface EmpresaFormProps {
-    mode: "create" | "edit";
-    initialData?: Partial<EmpresaFormData>;
-    disabled?: boolean;
-    onSubmit: (data: EmpresaFormData) => Promise<void>;
-    onDelete?: () => Promise<void>;
-    onCancel: () => void;
-    externalErrors?: Record<string, string>;
+    mode: "create" | "edit"; // Modo del formulario (crear o editar).
+    initialData?: Partial<EmpresaFormData>; // Datos iniciales opcionales para prellenar.
+    disabled?: boolean; // Indica si el formulario está deshabilitado.
+    onSubmit: (data: EmpresaFormData) => Promise<void>; // Función a llamar al enviar datos válidos.
+    onDelete?: () => Promise<void>; // Función opcional a llamar para eliminar (solo en modo edit).
+    onCancel: () => void; // Función a llamar al cancelar.
+    externalErrors?: Record<string, string>; // Errores externos opcionales.
 }
 /**
  * Componente EmpresaForm.

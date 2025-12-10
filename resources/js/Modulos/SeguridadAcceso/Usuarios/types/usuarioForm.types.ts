@@ -38,7 +38,7 @@ export const USUARIO_INITIAL_DATA: UsuarioFormData = {
 /**
  * Schema de validación con Zod
  */
-export const usuarioSchema = z.object({
+export const usuarioSchemaBase = z.object({
   numero_documento: z
     .string()
     .trim()
@@ -64,4 +64,4 @@ export const usuarioSchema = z.object({
     .positive("Debe seleccionar un rol"),
 });
 
-export type UsuarioSchemaType = z.infer<typeof usuarioSchema>;
+export type UsuarioSchemaType = z.infer<typeof usuarioSchemaBase>;

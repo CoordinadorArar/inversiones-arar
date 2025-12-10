@@ -11,13 +11,12 @@
  * @author Yariangel Aray
  * @date 2025-12-05
  */
-
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import {
   UsuarioFormData,
   USUARIO_INITIAL_DATA,
-  usuarioSchema,
+  usuarioSchemaBase,
 } from "../types/usuarioForm.types";
 
 interface UseUsuarioFormProps {
@@ -26,6 +25,7 @@ interface UseUsuarioFormProps {
   disabled?: boolean;
   onSubmit: (data: UsuarioFormData) => Promise<void>;
   externalErrors?: Record<string, string>;
+  dominios: string[];
 }
 
 export function useUsuarioForm({
@@ -34,18 +34,36 @@ export function useUsuarioForm({
   disabled = false,
   onSubmit,
   externalErrors = {},
+  dominios
 }: UseUsuarioFormProps) {
   const { toast } = useToast();
 
   // Estado del formulario
   const [data, setData] = useState<UsuarioFormData>({
     ...USUARIO_INITIAL_DATA,
-    ...initialData,
+    ...initialData,    
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [processing, setProcessing] = useState(false);
-  const [isSearchingDocument, setIsSearchingDocument] = useState(false);
+  const [usuarioYaRegistrado, setUsuarioYaRegistrado] = useState(false);
+
+  // Refinamiento del schema: Valida que el dominio del email esté en la lista de dominios permitidos    
+  const usuarioSchema = usuarioSchemaBase
+    .refine(
+      (data) => {
+        // Extrae dominio: ej. "usuario@empresa.com" -> "empresa.com"
+        const domain = data.email.split('@')[1];
+        
+        // Verifica si el dominio está en la lista autorizada
+        return dominios.includes(domain);
+      },
+      {
+        // Mensaje de error.
+        message: "El correo electrónico debe pertenecer a una empresa autorizada.",
+        path: ["email"],
+      }
+    )
 
   // Sincronizar errores externos
   useEffect(() => {
@@ -54,10 +72,12 @@ export function useUsuarioForm({
     }
   }, [externalErrors]);
 
-  // Sincronizar datos iniciales cuando cambian
+  // Sincronizar datos iniciales
   useEffect(() => {
     if (initialData) {
-      setData({ ...USUARIO_INITIAL_DATA, ...initialData });
+      setData({
+        ...USUARIO_INITIAL_DATA, ...initialData,        
+      });
     }
   }, [initialData]);
 
@@ -75,11 +95,42 @@ export function useUsuarioForm({
     }
   };
 
-  // Validar y enviar formulario
+  // Handler para selección de documento
+  const handleDocumentoSelect = (documento: string, nombre: string, yaExiste: boolean) => {
+    if (yaExiste) {
+      setUsuarioYaRegistrado(true);
+      setErrors((prev) => ({
+        ...prev,
+        numero_documento: "Este usuario ya está registrado en la web",
+      }));
+      handleChange("numero_documento", documento);
+      handleChange("nombre_completo", "");
+    } else {
+      setUsuarioYaRegistrado(false);
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors.numero_documento;
+        return newErrors;
+      });
+      handleChange("numero_documento", documento);
+      handleChange("nombre_completo", nombre);
+    }
+  };
+
+  // Validar y enviar
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (disabled || processing) return;
+
+    // Validar usuario ya registrado
+    if (usuarioYaRegistrado && mode === "create") {
+      setErrors((prev) => ({
+        ...prev,
+        numero_documento: "No puedes crear un usuario que ya está registrado",
+      }));
+      return;
+    }
 
     // Validar con Zod
     const validation = usuarioSchema.safeParse(data);
@@ -117,9 +168,9 @@ export function useUsuarioForm({
     data,
     errors,
     processing,
-    isSearchingDocument,
+    usuarioYaRegistrado,
     handleChange,
+    handleDocumentoSelect,
     handleSubmit,
-    setErrors,
   };
 }

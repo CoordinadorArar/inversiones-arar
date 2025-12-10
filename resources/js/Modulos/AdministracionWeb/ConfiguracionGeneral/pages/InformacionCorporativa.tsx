@@ -26,18 +26,12 @@ import { useInformacionCorporativa } from "../hooks/useInformacionCorporativa";
 /**
  * Interfaz para las props del componente InformacionCorporativa.
  * Define la estructura de datos pasados desde el backend via Inertia.
- * 
- * @typedef {Object} InformacionCorporativaProps
- * @property {TabInterface[]} tabs - Pestañas accesibles del módulo.
- * @property {string} moduloNombre - Nombre del módulo para el header.
- * @property {string[]} permisos - Permisos del usuario para la pestaña.
- * @property {{contact: ConfiguracionContacto, images: ConfiguracionImages}} configuracion - Datos de configuración corporativa.
  */
 interface InformacionCorporativaProps {
-  tabs: TabInterface[];
-  moduloNombre: string;
-  permisos: string[];
-  configuracion: {
+  tabs: TabInterface[]; // Pestañas accesibles del módulo.
+  moduloNombre: string; // Nombre del módulo para el header.
+  permisos: string[]; // Permisos del usuario para la pestaña.
+  configuracion: { // Datos de configuración corporativa.
     contact: ConfiguracionContacto;
     images: ConfiguracionImages;
   };

@@ -113,7 +113,7 @@ class RegisteredUserController extends Controller
             ]);
         }
 
-        // Verifica si ya existe usuario web.
+        // Verifica si ya existe usuario en web.
         $usuario = User::where('numero_documento', $request->numero_documento)->first();
 
         // Si existe, redirige a login con mensaje.

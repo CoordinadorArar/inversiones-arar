@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SeguridadAcceso\UsuarioRequest;
+use App\Mail\PasswordGeneradaMail;
 use App\Models\ContratoPropietario;
 use App\Models\GestionModulos\Modulo;
 use App\Models\Rol;
@@ -10,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 
 /**
@@ -60,7 +63,7 @@ class UsuarioController extends Controller
      * Método auxiliar para obtener usuarios cacheados.
      * Cachea por 5 minutos para evitar consultas repetidas.
      *
-     * @return array
+     * @return array Lista de usuarios formateados con rol incluido.
      */
     private function getUsuariosCacheados()
     {
@@ -80,6 +83,29 @@ class UsuarioController extends Controller
                 ];
             });
         });
+    }
+
+    /**
+     * Genera contraseña inicial basada en documento y nombre.
+     * Formato: {documento}{PrimeraLetraApellido}{PrimeraLetraNombre}.     
+     *
+     * @param string $documento Número de documento del usuario.
+     * @param string $nombreCompleto Nombre completo (apellidos nombres).
+     * @return string Contraseña generada.
+     */
+    private function generarPasswordInicial(string $documento, string $nombreCompleto): string
+    {
+        // Separar nombre completo en partes
+        $partes = explode(' ', trim($nombreCompleto));
+
+        // Tomar primera letra del primer nombre (Apellido)
+        $primeraLetraApellido = isset($partes[0]) ? strtoupper(substr($partes[0], 0, 1)) : '';
+
+        // Tomar primera letra del segundo o último nombre (Nombre)
+        $primeraLetraNombre = null !== end($partes) ? strtolower(substr(end($partes), 0, 1)) : '';
+
+        // Formato: {documento}{LetraApellido}{LetraNombre}.
+        return $documento . $primeraLetraApellido . $primeraLetraNombre . '.';
     }
 
     /**
@@ -153,7 +179,7 @@ class UsuarioController extends Controller
      * Renderiza la misma vista pero con el formulario en modo crear
      * URL: /gestion/crear
      * 
-     * @return \Inertia\Response
+     * @return \Inertia\Response Respuesta de Inertia con vista en modo crear.
      */
     public function create()
     {
@@ -188,12 +214,12 @@ class UsuarioController extends Controller
     }
 
     /**
-     * Vista: Gestión - Modo editar
-     * Renderiza la misma vista pero con el formulario en modo editar
-     * URL: /gestion/{id}
-     * 
-     * @param int $id ID del usuario a editar
-     * @return \Inertia\Response
+     * Vista: Gestión - Modo editar.
+     * Renderiza la misma vista pero con el formulario en modo editar.
+     * URL: /gestion/{id}.
+     *
+     * @param int $id ID del usuario a editar.
+     * @return \Inertia\Response Respuesta de Inertia con vista en modo editar.
      */
     public function edit(int $id)
     {
@@ -239,8 +265,11 @@ class UsuarioController extends Controller
     }
 
     /**
-     * API: Buscar documentos en BD externa con contratos activos
-     * Retorna lista de documentos que coinciden + indica si ya existen en users
+     * API: Buscar documentos en BD externa con contratos activos.
+     * Retorna lista de documentos que coinciden + indica si ya existen en users.
+     *
+     * @param Request $request Solicitud con parámetro 'search'.
+     * @return \Illuminate\Http\JsonResponse Lista de resultados o error.
      */
     public function buscarDocumentos(Request $request)
     {
@@ -287,7 +316,14 @@ class UsuarioController extends Controller
         }
     }
 
-    public function store(Request $request)
+    /**
+     * Crea un nuevo usuario en la base de datos.
+     * Valida permisos, contrato activo, genera contraseña y envía email.
+     *
+     * @param UsuarioRequest $request Solicitud con datos validados.
+     * @return \Illuminate\Http\JsonResponse Usuario creado o error.
+     */
+    public function store(UsuarioRequest $request)
     {
         $permisos = $this->rol->getPermisosPestana(9);
 
@@ -297,12 +333,7 @@ class UsuarioController extends Controller
             ], 403);
         }
 
-        $validated = $request->validate([
-            'numero_documento' => 'required|string|max:20|unique:users,numero_documento',
-            'nombre_completo' => 'required|string',
-            'email' => 'required|email|max:255|unique:users,email',
-            'rol_id' => 'required|exists:roles,id',
-        ]);
+        $validated = $request->validated();
 
         try {
             // Verificar que tiene contrato activo
@@ -316,13 +347,23 @@ class UsuarioController extends Controller
                 ], 422);
             }
 
-            // Generar contraseña inicial = documento
+            // Generar contraseña inicial: {documento}{LetraApellido}{LetraNombre}.
+            $passwordInicial = $this->generarPasswordInicial(
+                $validated['numero_documento'],
+                $validated['nombre_completo']
+            );
+
             $usuario = User::create([
                 'numero_documento' => $validated['numero_documento'],
                 'email' => $validated['email'],
                 'rol_id' => $validated['rol_id'],
-                'password' => Hash::make($validated['numero_documento']),
+                'password' => Hash::make($passwordInicial),
             ]);
+
+            // Enviar email
+            Mail::to($usuario->email)->send(
+                new PasswordGeneradaMail($usuario, $passwordInicial)
+            );
 
             // Limpiar caché
             Cache::forget('usuarios_list');
@@ -351,9 +392,13 @@ class UsuarioController extends Controller
     }
 
     /**
-     * Actualizar usuario (solo email y rol)
+     * Actualizar usuario con validación de dominio.
+     *
+     * @param UsuarioRequest $request Solicitud con datos validados.
+     * @param int $id ID del usuario a actualizar.
+     * @return \Illuminate\Http\JsonResponse Usuario actualizado o error.
      */
-    public function update(Request $request, int $id)
+    public function update(UsuarioRequest $request, int $id)
     {
         $permisos = $this->rol->getPermisosPestana(9);
 
@@ -365,10 +410,7 @@ class UsuarioController extends Controller
 
         $usuario = User::findOrFail($id);
 
-        $validated = $request->validate([
-            'email' => 'required|email|max:255|unique:users,email,' . $id,
-            'rol_id' => 'required|exists:roles,id',
-        ]);
+        $validated = $request->validated();
 
         try {
             $usuario->update([
@@ -402,7 +444,10 @@ class UsuarioController extends Controller
     }
 
     /**
-     * Bloquear usuario
+     * Bloquear usuario.
+     *
+     * @param int $id ID del usuario a bloquear.
+     * @return \Illuminate\Http\JsonResponse Mensaje de éxito o error.
      */
     public function bloquear(int $id)
     {
@@ -462,7 +507,7 @@ class UsuarioController extends Controller
     }
 
     /**
-     * Restaurar contraseña
+     * Restaurar contraseña con formato {documento}{LetraApellido}{LetraNombre}.
      */
     public function restaurarPassword(int $id)
     {
@@ -477,15 +522,18 @@ class UsuarioController extends Controller
         try {
             $usuario = User::findOrFail($id);
 
-            // Generar contraseña aleatoria
-            $nuevaPassword = Str::random(12);
+            // Generar contraseña: {documento}{LetraApellido}{LetraNombre}.
+            $nombreCompleto = $usuario->info_corta->apellidos . ' ' . $usuario->info_corta->nombres;
+            $nuevaPassword = $this->generarPasswordInicial($usuario->numero_documento, $nombreCompleto);
 
             $usuario->update([
                 'password' => Hash::make($nuevaPassword)
             ]);
 
-            // TODO: Enviar email con la nueva contraseña
-            // Mail::to($usuario->email)->send(new PasswordRestaurada($usuario, $nuevaPassword));
+            // Enviar email
+            Mail::to($usuario->email)->send(
+                new PasswordGeneradaMail($usuario, $nuevaPassword)
+            );
 
             return response()->json([
                 'message' => 'Contraseña restaurada. Se ha enviado un correo al usuario con la nueva contraseña.'

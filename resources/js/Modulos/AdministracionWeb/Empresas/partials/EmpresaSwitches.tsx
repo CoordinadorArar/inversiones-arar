@@ -24,16 +24,11 @@ import {
 /**
  * Interfaz para las props del componente EmpresaSwitches.
  * Define los datos y callbacks necesarios para renderizar los switches.
- * 
- * @typedef {Object} EmpresaSwitchesProps
- * @property {EmpresaFormData} data - Datos del formulario para determinar estado de switches.
- * @property {(field: keyof EmpresaFormData, value: boolean) => void} onChange - Callback para actualizar switches.
- * @property {boolean} [disabled] - Indica si los switches están deshabilitados.
  */
 interface EmpresaSwitchesProps {
-  data: EmpresaFormData;
-  onChange: (field: keyof EmpresaFormData, value: boolean) => void;
-  disabled?: boolean;
+  data: EmpresaFormData; // Datos del formulario para determinar estado de switches.
+  onChange: (field: keyof EmpresaFormData, value: boolean) => void; // Callback para actualizar switches.
+  disabled?: boolean; // Indica si los switches están deshabilitados.
 }
 
 /**

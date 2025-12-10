@@ -22,16 +22,11 @@ import { TipoInterface } from "../types/tipoInterface";
 /**
  * Interfaz para el contexto de las columnas de tipos.
  * Define las funciones y permisos necesarios para las acciones en la tabla.
- * 
- * @typedef {Object} TipoColumnsContext
- * @property {(id: number) => void} onEdit - Función a llamar para editar un tipo.
- * @property {(tipo: TipoInterface) => void} onDelete - Función a llamar para eliminar un tipo.
- * @property {{editar: boolean, eliminar: boolean}} permisos - Permisos del usuario para editar/eliminar.
  */
 interface TipoColumnsContext {
-  onEdit: (id: number) => void;
-  onDelete: (tipo: TipoInterface) => void;
-  permisos: { editar: boolean; eliminar: boolean };
+  onEdit: (id: number) => void; // Función a llamar para editar un tipo.
+  onDelete: (tipo: TipoInterface) => void; // Función a llamar para eliminar un tipo.
+  permisos: { editar: boolean; eliminar: boolean }; // Permisos del usuario para editar/eliminar.
 }
 /**
  * Función para crear las columnas de la tabla de tipos.

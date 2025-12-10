@@ -24,18 +24,12 @@ import { useRedesSociales } from "../hooks/useRedesSociales";
 /**
  * Interfaz para las props del componente RedesSociales.
  * Define la estructura de datos pasados desde el backend via Inertia.
- * 
- * @typedef {Object} RedesSocialesProps
- * @property {TabInterface[]} tabs - Pestañas accesibles del módulo.
- * @property {string} moduloNombre - Nombre del módulo para el header.
- * @property {string[]} permisos - Permisos del usuario para la pestaña.
- * @property {{rrss: ConfiguracionRRSS}} configuracion - Datos de configuración de redes sociales.
  */
 export interface RedesSocialesProps {
-    tabs: TabInterface[];
-    moduloNombre: string;
-    permisos: string[];
-    configuracion: {
+    tabs: TabInterface[]; // Pestañas accesibles del módulo.
+    moduloNombre: string; // Nombre del módulo para el header.
+    permisos: string[]; // Permisos del usuario para la pestaña.
+    configuracion: { // Datos de configuración de redes sociales.
         rrss: ConfiguracionRRSS;
     };
 }

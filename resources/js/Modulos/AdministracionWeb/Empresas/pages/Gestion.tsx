@@ -27,22 +27,15 @@ import { TabInterface } from "@/Types/tabInterface";
 /**
  * Interfaz para las props del componente EmpresaGestion.
  * Define la estructura de datos pasados desde el backend via Inertia.
- * 
- * @typedef {Object} EmpresaGestionProps
- * @property {TabInterface[]} tabs - Pestañas accesibles del módulo.
- * @property {EmpresaInterface[]} empresas - Lista de empresas disponibles.
- * @property {string} moduloNombre - Nombre del módulo para el header.
- * @property {string[]} permisos - Permisos del usuario para la pestaña.
- * @property {string} [error] - Mensaje de error desde backend.
  */
 interface EmpresaGestionProps {
-  tabs: TabInterface[];
-  empresas: EmpresaInterface[];
-  moduloNombre: string;
-  permisos: string[];
+  tabs: TabInterface[]; // Pestañas accesibles del módulo.
+  empresas: EmpresaInterface[]; // Lista de empresas disponibles.
+  moduloNombre: string; // Nombre del módulo para el header.
+  permisos: string[]; // Permisos del usuario para la pestaña.
   initialMode?: 'idle' | 'create' | 'edit'; // Modo inicial desde URL
   initialEmpresaId?: number | null; // ID de empresa si viene desde URL
-  error?: string | null;
+  error?: string | null; // Mensaje de error desde backend.
 }
 /**
  * Componente principal para la página de Gestión de Empresas.
