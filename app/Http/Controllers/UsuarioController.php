@@ -133,16 +133,12 @@ class UsuarioController extends Controller
      */
     public function index()
     {
-        $permisos = $this->rol->getPermisosPestana(8);
 
-        $props = [
+        return Inertia::render('Modulos:SeguridadAcceso/Usuarios/pages/Listado', [
             'tabs' => $this->tabs,              // Pestañas accesibles.
             'usuarios' => $this->getUsuariosCacheados(), // Usuarios cacheados.
-            'permisos' => $permisos,            // Permisos de la pestaña.
             'moduloNombre' => $this->moduloNombre,  // Nombre del módulo.            
-        ];
-
-        return Inertia::render('Modulos:SeguridadAcceso/Usuarios/pages/Listado', $props);
+        ]);
     }
 
     /**

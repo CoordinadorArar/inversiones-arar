@@ -57,7 +57,7 @@ Route::middleware('auth')->group(function () {
             // --- VISTAS ---
 
             // Pestaña: Listado de usuarios.
-            // Middleware: pestana.access:1 (ID de la pestaña en DB) para validar acceso.
+            // Middleware: pestana.access:8 (ID de la pestaña en DB) para validar acceso.
             Route::get('/listado', [UsuarioController::class, 'index'])
                 ->name('usuario.listado')
                 ->middleware('pestana.access:8');

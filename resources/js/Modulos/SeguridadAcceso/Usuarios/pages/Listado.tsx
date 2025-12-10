@@ -22,7 +22,6 @@ export interface UsuarioListadoProps {
   usuarios: UsuarioInterface[];
   roles: RolInterface[];
   moduloNombre: string;
-  permisos: string[];
 }
 
 export default function UsuariosListado({
