@@ -16,7 +16,7 @@ export function useFormChanges<T extends Record<string, any>>(
     const changes: Record<keyof T, boolean> = {} as Record<keyof T, boolean>;
     for (const key in initialValues) {
       // Compara valores (para archivos, compara si cambió el File)
-      if (initialValues[key] instanceof File || currentValues[key] instanceof File) {
+      if ((initialValues[key] as any) instanceof File || (currentValues[key] as any) instanceof File) {
         changes[key] = initialValues[key] !== currentValues[key];
       } else {
         changes[key] = initialValues[key] !== currentValues[key];

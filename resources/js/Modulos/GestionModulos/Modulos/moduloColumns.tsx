@@ -3,7 +3,7 @@
  * Incluye personalización de celdas con íconos dinámicos, badges para tipos y padres.
  * 
  * @author Yariangel Aray
- * @date 2025-12-09
+ * @date 2025-12-10
  */
 
 import { ColumnDef } from "@tanstack/react-table";
