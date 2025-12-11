@@ -16,6 +16,7 @@ import { DataTable } from "@/Components/ui/data-table";
 import { UsuarioColumns, UsuarioInactiveColumns } from "../usuarioColumns";
 import { TabInterface } from "@/Types/tabInterface";
 import { RolInterface, UsuarioInterface } from "../types/usuarioInterface";
+import HelpManualButton from "@/Components/HelpManualButton";
 
 export interface UsuarioListadoProps {
   tabs: TabInterface[];
@@ -37,7 +38,14 @@ export default function UsuariosListado({
     >
       <Card className="py-6 h-full flex flex-col shadow border-none gap-4">
         <CardHeader>
-          <CardTitle>Listado de Usuarios</CardTitle>
+          <CardTitle className="flex items-center gap-5">
+            Listado de Usuarios
+            {/* Aquí se incluye HelpManualButton para acceder al manual de gestión de empresas. */}
+            <HelpManualButton
+              url="/docs/Manual-Usuarios-Listado.pdf"
+              variant="muted"
+            />
+          </CardTitle>
         </CardHeader>
 
         <CardContent className="flex-1">

@@ -147,7 +147,6 @@ export default function EmpresaGestion({
               {/* Select de empresas */}
               <div>
                 <Label>Seleccionar empresa para editar</Label>
-
                 {puedeEditar ? (
                   <>
                     {/* Aquí se usa SearchableSelect para buscar y seleccionar empresa a editar. */}

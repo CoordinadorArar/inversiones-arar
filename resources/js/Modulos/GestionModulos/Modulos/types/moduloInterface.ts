@@ -3,12 +3,17 @@ export interface ModuloInterface {
   nombre: string;
   icono: string;
   ruta: string;
+  ruta_completa: string;
   es_padre: boolean;
-  modulo_padre: {
-    id: number;
-    nombre: string;
-  } | null;
-  tiene_hijos: boolean;
-  cantidad_hijos: number;
-  fecha_creacion: string;
+  modulo_padre_id: number | null;
+  modulo_padre_nombre: string | null;
+  modulo_padre_ruta: string | null;
+  permisos_extra: string[];
+  cant_hijos: number;
+}
+
+export interface ModuloPadreInterface {
+  id: number;
+  nombre: string;
+  ruta: string;
 }

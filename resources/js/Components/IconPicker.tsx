@@ -30,11 +30,15 @@ import {
  * @returns Nombre normalizado en kebab-case
  */
 function normalizeIconName(name: string): string {
-  return name
-    .replace(/^Lucide/i, "")        // Quita prefijo "Lucide" (LucideHome → Home)
-    .replace(/Icon$/i, "")           // Quita sufijo "Icon" (HomeIcon → Home)
-    .replace(/([a-z])([A-Z])/g, "$1-$2")  // Convierte camelCase a kebab-case (ArrowUp → Arrow-Up)
-    .toLowerCase();                  // Todo en minúsculas (Arrow-Up → arrow-up)
+  // Quita prefijos/sufijos comunes
+  const cleaned = name.replace(/^Lucide/i, "").replace(/Icon$/i, "");
+
+  // Convierte PascalCase a kebab-case
+  return cleaned
+    .replace(/([a-z])([A-Z])/g, '$1-$2')        // Inserta '-' entre minúscula y mayúscula (ej: ArrowUp → Arrow-Up)
+    .replace(/([A-Z])([A-Z][a-z])/g, '$1-$2')   // Maneja mayúsculas consecutivas (ej: XMLHttpRequest → XML-Http-Request, si aplica)
+    .replace(/([a-zA-Z])(\d)/g, '$1-$2')        // Inserta '-' antes de números (ej: Building2 → Building-2)
+    .toLowerCase();                             // Todo en minúsculas
 }
 
 /**
@@ -48,7 +52,7 @@ function normalizeIconName(name: string): string {
 function toDisplayName(str: string): string {
   return str
     .split("-")                           // Separa por guiones ["arrow", "big", "up"]
-    .map(word => 
+    .map(word =>
       word.charAt(0).toUpperCase() +      // Primera letra mayúscula
       word.slice(1)                        // Resto en minúscula
     )
@@ -58,9 +62,11 @@ function toDisplayName(str: string): string {
 interface IconPickerProps {
   value: string;                    // Valor actual del ícono (ej: "home")
   onChange: (value: string) => void; // Función que se ejecuta al seleccionar
+  disabled?: boolean; // Indica si el combobox está deshabilitado.
+  className?: string; // Mensaje de error opcional.
 }
 
-export default function IconPicker({ value, onChange }: IconPickerProps) {
+export default function IconPicker({ value, onChange, disabled = false, className = "" }: IconPickerProps) {
   const [open, setOpen] = useState(false);   // Controla si el popover está abierto
   const [search, setSearch] = useState("");  // Guarda el texto de búsqueda
 
@@ -78,7 +84,7 @@ export default function IconPicker({ value, onChange }: IconPickerProps) {
       const allIconNames = Object.keys(Icons)           // ["Home", "HomeIcon", "LucideHome", ...]
         .filter(name => typeof name === "string")       // Solo strings válidos
         .map(name => normalizeIconName(name))           // Normaliza: "home", "home", "home"    
-        .filter(name => name.length > 0);               // Elimina strings vacíos
+        .filter(name => name.length > 0);                // Elimina strings vacíos
 
       // Elimina duplicados usando Set (home, home, home → home)
       return Array.from(new Set(allIconNames)).sort();  // Ordena alfabéticamente
@@ -124,18 +130,19 @@ export default function IconPicker({ value, onChange }: IconPickerProps) {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between"
+          className={`w-full !mt-0 justify-between ${className}`}
+          disabled={disabled}
         >
           <div className="flex items-center gap-2">
             {/* Muestra el ícono seleccionado (si existe) */}
             {value && <DynamicIcon name={value} className="h-4 w-4" />}
-            
+
             {/* Nombre del ícono capitalizado o placeholder */}
             <span className={cn("truncate", !value && "text-muted-foreground")}>
               {displayName}
             </span>
           </div>
-          
+
           {/* Icono de chevrones para indicar que es un selector */}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -178,7 +185,7 @@ export default function IconPicker({ value, onChange }: IconPickerProps) {
 
                   {/* 🎨 Ícono + Nombre */}
                   <DynamicIcon name={iconName} className="mr-2 h-4 w-4" />
-                  
+
                   {/* Nombre capitalizado para verse bonito */}
                   <span>{toDisplayName(iconName)}</span>
                 </CommandItem>

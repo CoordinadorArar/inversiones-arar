@@ -230,6 +230,10 @@ class UsuarioController extends Controller
             'initialUsuarioId' => null,
         ];
 
+        // if (!in_array('editar', $permisos)) {
+        //     return $this->gestion()->with('error', 'No tienes permiso para editar usuarios');
+        // }
+
         // Verificar permiso de editar
         if (!in_array('editar', $permisos)) {
             return Inertia::render('Modulos:SeguridadAcceso/Usuarios/pages/Gestion', [

@@ -17,6 +17,7 @@ import { DataTable } from "@/Components/ui/data-table";
 import { ModuloColumns, ModuloInactiveColumns } from "../moduloColumns";
 import { TabInterface } from "@/Types/tabInterface";
 import { ModuloInterface } from "../types/moduloInterface";
+import HelpManualButton from "@/Components/HelpManualButton";
 
 /**
  * Interfaz para las props del componente ModulosListado.
@@ -50,7 +51,14 @@ export default function ModulosListado({
     >
       <Card className="py-6 h-full flex flex-col shadow border-none gap-4">
         <CardHeader>
-          <CardTitle>Listado de Módulos</CardTitle>
+          <CardTitle className="flex items-center gap-5">
+            Listado de Módulos
+            {/* Aquí se incluye HelpManualButton para acceder al manual de gestión de empresas. */}
+            <HelpManualButton
+              url="/docs/Manual-Modulos-Listado.pdf"
+              variant="muted"
+            />
+          </CardTitle>
         </CardHeader>
 
         <CardContent className="flex-1">

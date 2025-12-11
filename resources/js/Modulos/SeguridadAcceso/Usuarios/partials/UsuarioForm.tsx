@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import InputError from "@/Components/InputError";
-import { Save, X, Plus, Lock, Unlock, KeyRound, Loader2, AlertCircle } from "lucide-react";
+import { Save, X, Plus, Lock, Unlock, KeyRound, } from "lucide-react";
 import { UsuarioFormData, USUARIO_LIMITS } from "../types/usuarioForm.types";
 import { useUsuarioForm } from "../hooks/useUsuarioForm";
 import { handleEmailKeyDown } from "@/lib/keydownValidations";
@@ -121,7 +121,7 @@ export function UsuarioForm({
             className={`flex items-center gap-2 after:ml-0.5 after:text-red-500 after:content-['*'] ${changes.email && mode === "edit" ? "text-primary" : ""
               }`}
           >
-            Correo Electrónico
+            Correo Electrónico Empresarial
           </Label>
           {/* Aquí se usa Input para el campo de email con validaciones y contador de caracteres. */}
           <Input

@@ -22,6 +22,7 @@ import InputError from "@/Components/InputError";
 import { useFormChanges } from "@/hooks/use-form-changes";
 import { ConfiguracionContacto, ConfiguracionImages } from "../types/configuracionInterface";
 import { useInformacionCorporativa } from "../hooks/useInformacionCorporativa";
+import HelpManualButton from "@/Components/HelpManualButton";
 
 /**
  * Interfaz para las props del componente InformacionCorporativa.
@@ -99,7 +100,14 @@ export default function InformacionCorporativa({
     >
       <Card className="py-6 h-full flex flex-col shadow border-none">
         <CardHeader>
-          <CardTitle>Información Corporativa</CardTitle>
+          <CardTitle className="flex items-center gap-5">
+            Información Corporativa
+            {/* Aquí se incluye HelpManualButton para acceder al manual de gestión de empresas. */}
+            <HelpManualButton
+              url="/docs/Manual-Informacion-Corporativa.pdf"
+              variant="muted"
+            />
+          </CardTitle>
         </CardHeader>
 
         <CardContent>

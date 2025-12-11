@@ -20,6 +20,7 @@ import InputError from "@/Components/InputError";
 import { Input } from "@/components/ui/input";
 import { ConfiguracionRRSS } from "../types/configuracionInterface";
 import { useRedesSociales } from "../hooks/useRedesSociales";
+import HelpManualButton from "@/Components/HelpManualButton";
 
 /**
  * Interfaz para las props del componente RedesSociales.
@@ -101,7 +102,14 @@ export default function RedesSociales({
         >
             <Card className="py-6 h-full flex flex-col shadow border-none">
                 <CardHeader>
-                    <CardTitle>Enlaces de Redes Sociales</CardTitle>
+                    <CardTitle className="flex items-center gap-5">
+                        Enlaces de Redes Sociales
+                        {/* Aquí se incluye HelpManualButton para acceder al manual de gestión de empresas. */}
+                        <HelpManualButton
+                            url="/docs/Manual-RRSS.pdf"
+                            variant="muted"
+                        />
+                    </CardTitle>
                     <p className="text-xs text-muted-foreground">
                         Configura los enlaces a las redes sociales de la empresa. Deja en blanco las que no se utilicen.
                     </p>

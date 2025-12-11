@@ -23,6 +23,7 @@ import { USUARIO_INITIAL_DATA } from "../types/usuarioForm.types";
 import { UsuarioForm } from "../partials/UsuarioForm";
 import { TabInterface } from "@/Types/tabInterface";
 import { RolInterface, UsuarioInterface } from "../types/usuarioInterface";
+import HelpManualButton from "@/Components/HelpManualButton";
 
 /**
  * Interfaz para las props del componente UsuariosGestion.
@@ -129,7 +130,13 @@ export default function UsuariosGestion({
     >
       <Card className="py-6 h-full flex flex-col shadow border-none gap-4">
         <CardHeader>
-          <CardTitle>Gestión de Usuarios</CardTitle>
+          <CardTitle className="flex items-center gap-5">Gestión de Usuarios
+            {/* Aquí se incluye HelpManualButton para acceder al manual de gestión de empresas. */}
+            <HelpManualButton
+              url="/docs/Manual-Usuarios-Gestion.pdf"
+              variant="muted"
+            />
+          </CardTitle>
         </CardHeader>
 
         <CardContent className="flex-1 flex flex-col space-y-6">
