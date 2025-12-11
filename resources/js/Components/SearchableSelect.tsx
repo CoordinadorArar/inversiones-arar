@@ -75,7 +75,7 @@ export function SearchableSelect({
           aria-expanded={open}
           disabled={disabled}
           className={cn(
-            "w-full justify-between",
+            "w-full justify-between whitespace-normal h-auto",
             !selectedOption && "text-muted-foreground",
             className
           )}

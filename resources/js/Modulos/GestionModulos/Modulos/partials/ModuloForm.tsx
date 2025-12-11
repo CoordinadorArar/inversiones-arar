@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import InputError from "@/Components/InputError";
-import { Save, X, Plus, FolderTree, Trash2 } from "lucide-react";
+import { Save, X, Plus, FolderTree, Trash2, AlertCircle } from "lucide-react";
 import { ModuloFormData, MODULO_LIMITS, moduloSchema } from "../types/moduloForm.types";
 import { ModuloPadreInterface } from "../types/moduloInterface";
 import { handleTextKeyDown } from "@/lib/keydownValidations";
@@ -43,6 +43,7 @@ interface ModuloFormProps {
     onDelete?: () => Promise<void>; // Callback opcional para eliminación.
     onCancel: () => void; // Callback para cancelar.
     externalErrors?: Record<string, string>; // Errores externos opcionales.
+    padreEliminado?: boolean;  // Flag para indicar si el padre fue eliminado
 }
 
 /**
@@ -64,6 +65,7 @@ export function ModuloForm({
     onDelete,
     onCancel,
     externalErrors = {},
+    padreEliminado = false,
 }: ModuloFormProps) {
     // Aquí se usa el hook personalizado para manejar datos, errores y lógica del formulario.
     const {
@@ -118,7 +120,7 @@ export function ModuloForm({
         changes.modulo_padre_id ||
         changes.es_padre
     );
-    
+
     // Handler para submit: Muestra warning si es necesario.
     // Se agregó validación con Zod AL INICIO para evitar mostrar alerta si hay errores.
     // Valida primero, si falla, muestra errores inmediatamente. Si pasa, decide sobre alerta.
@@ -245,7 +247,7 @@ export function ModuloForm({
                             <FolderTree className="h-4 w-4 text-primary" />
                             Módulo padre
                         </Label>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-muted-foreground mt-1">
                             Los módulos padre sirven como contenedores para agrupar otros módulos. No tienen
                             página propia ni permisos extra.
                         </p>
@@ -262,6 +264,7 @@ export function ModuloForm({
                         hasChanges={changes.modulo_padre_id && mode == "edit"}
                         error={errors.modulo_padre_id}
                         className={getInputClass("modulo_padre_id")}
+                        padreEliminado={padreEliminado}
                     />
                 )}
 
@@ -289,7 +292,7 @@ export function ModuloForm({
                                 <InputGroupInput
                                     id="ruta"
                                     value={data.ruta}
-                                    onChange={(e) => handleChange("ruta", e.target.value)}
+                                    onChange={(e) => handleChange("ruta", e.target.value.replace(/ /g, '-'))}
                                     onKeyDown={handleRutaModuloKeyDown}
                                     maxLength={MODULO_LIMITS.ruta}
                                     disabled={disabled}
@@ -302,7 +305,7 @@ export function ModuloForm({
                         <Input
                             id="ruta"
                             value={data.ruta}
-                            onChange={(e) => handleChange("ruta", e.target.value)}
+                            onChange={(e) => handleChange("ruta", e.target.value.replace(/ /g, '-'))}
                             onKeyDown={handleRutaModuloKeyDown}
                             maxLength={MODULO_LIMITS.ruta}
                             disabled={disabled}
@@ -333,7 +336,7 @@ export function ModuloForm({
                         <Input
                             id="permisos_extra"
                             value={data.permisos_extra}
-                            onChange={(e) => handleChange("permisos_extra", e.target.value)}
+                            onChange={(e) => handleChange("permisos_extra", e.target.value.replace(/ /g, '_'))}
                             onKeyDown={handlePermisosExtraKeyDown}
                             disabled={disabled}
                             className={getInputClass("permisos_extra")}
@@ -402,7 +405,7 @@ export function ModuloForm({
                 onOpenChange={handleDeleteCancel}
                 onConfirm={handleDeleteConfirm}
                 processing={processing}
-                itemName={`El módulo «${data.nombre}» será eliminado del sistema.`}
+                itemName={`El módulo «${data.nombre}» será eliminado permanentemente. Asegúrese de inhabilitar todas las rutas relacionadas en el código. Si es un módulo padre, sus submódulos dejarán de ser visibles en el sidebar hasta que se les asigne un nuevo padre.`}
             />
 
             {/* Diálogo de confirmación de warning */}

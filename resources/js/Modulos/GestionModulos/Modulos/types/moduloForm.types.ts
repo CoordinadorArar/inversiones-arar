@@ -58,7 +58,7 @@ export const moduloSchema = z.object({
     .min(1, "El nombre es obligatorio")
     .max(MODULO_LIMITS.nombre, `Máximo ${MODULO_LIMITS.nombre} caracteres`)
     // CAMBIO: Agregado regex para permitir solo letras y espacios.
-    .regex(/^[a-zA-Z\s]+$/, "El nombre solo puede contener letras y espacios"),
+    .regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/, "El nombre solo puede contener letras y espacios"),
   icono: z
     .string()
     .min(1, "El ícono es obligatorio")

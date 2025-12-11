@@ -38,7 +38,7 @@ export function useUsuarioGestion({
   const puedeCrear = permisos.includes("crear");
   const puedeEditar = permisos.includes("editar");
   const puedeBloquear = permisos.includes("bloquear");
-  const puedeRestaurar = permisos.includes("restaurar_password");  
+  const puedeRestaurar = permisos.includes("restaurar_password");
 
   // Estados
   const [usuarios, setUsuarios] = useState(usuariosIniciales);  // Actualizable localmente.
@@ -84,7 +84,7 @@ export function useUsuarioGestion({
         setMode('create');  // Establece modo crear.
         setSelectedUsuarioId(null);  // Limpia selección de usuario.
         setFormErrors({});  // Limpia errores del formulario.
-      } 
+      }
       // Si la URL incluye '/gestion/' seguido de un ID, cambia al modo de edición con ese ID.
       else if (path.includes('/gestion/')) {
         // Usa regex para extraer el ID numérico de la URL (ej. /gestion/123).
@@ -95,7 +95,7 @@ export function useUsuarioGestion({
           setSelectedUsuarioId(id);  // Selecciona el usuario por ID.
           setFormErrors({});  // Limpia errores.
         }
-      } 
+      }
       // Si no coincide con crear o editar, vuelve al modo idle (sin acción).
       else {
         setMode('idle');  // Modo inactivo.
@@ -106,7 +106,7 @@ export function useUsuarioGestion({
 
     // Agrega el listener para el evento 'popstate'.
     window.addEventListener('popstate', handlePopState);
-    
+
     // Cleanup: Remueve el listener cuando el componente se desmonta o el efecto se vuelve a ejecutar.
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);  // Array vacío: el efecto solo se ejecuta una vez al montar el componente.
@@ -139,6 +139,8 @@ export function useUsuarioGestion({
 
   // Submit del formulario
   const handleSubmit = async (data: UsuarioFormData) => {
+
+    // Aquí se valida permisos antes de proceder.
     if (!puedeCrear && mode === "create") {
       toast({
         title: "Sin permisos",
@@ -178,35 +180,55 @@ export function useUsuarioGestion({
 
       const responseData = await response.json();
 
-      if (!response.ok) {
-        if (responseData.errors) {
-          setFormErrors(responseData.errors);
-        }
-        throw new Error(responseData.error || "Error al guardar");
-      }
+      if (response.ok) {
+        // Éxito: Actualiza array local y muestra toast.
+        toast({
+          title: mode === "create" ? "Usuario creado" : "Usuario actualizado",
+          description: responseData.message,
+          variant: "success",
+        });
 
-      toast({
-        title: mode === "create" ? "Usuario creado" : "Usuario actualizado",
-        description: responseData.message,
-        variant: "success",
-      });
+        // Actualiza array local en lugar de recargar página.
+        if (mode === "create") {
+          setUsuarios((prev) => [responseData.usuario, ...prev]);
 
-      // Actualiza array local en lugar de recargar página
-      if (mode === "create") {
-        setUsuarios((prev) => [responseData.usuario, ...prev]);
-        if (puedeEditar) {
-          setSelectedUsuarioId(Number(responseData.usuario.id));
-          setMode("edit");
-          navigateTo(route('usuario.edit', responseData.usuario.id));
+          if (puedeEditar) {
+            setSelectedUsuarioId(Number(responseData.usuario.id));
+            setMode("edit");
+            navigateTo(route('usuario.edit', responseData.usuario.id));
+          } else {
+            setMode("create");
+            navigateTo(route('usuario.create'));
+          }
+
         } else {
-          setMode("create");
-          navigateTo(route('usuario.create'));
+          setUsuarios((prev) =>
+            prev.map((u) => (u.id === responseData.usuario.id ? responseData.usuario : u))
+          );
         }
+      } else if (response.status === 422) {
+        // Errores de validación: setea en estado.
+        setFormErrors(responseData.errors || {});
+
+        toast({
+          title: "Error de validación",
+          description: "Revisa los campos marcados e intenta de nuevo",
+          variant: "destructive",
+        });
+      } else if (response.status === 403) {
+        // Sin permisos.
+        toast({
+          title: "Acceso denegado",
+          description: responseData.error || "No tienes permisos para esta acción",
+          variant: "destructive",
+        });
       } else {
-        setUsuarios((prev) =>
-          prev.map((u) => (u.id === responseData.usuario.id ? responseData.usuario : u))
-        );
-        // navigateTo(route('usuario.edit', responseData.usuario.id));
+        // Otros errores.
+        toast({
+          title: "Error",
+          description: responseData.error || "Intenta de nuevo más tarde",
+          variant: "destructive",
+        });
       }
     } catch (error: any) {
       toast({
@@ -228,7 +250,7 @@ export function useUsuarioGestion({
       const response = await fetch(route("usuario.bloquear", selectedUsuarioId), {
         method: "POST",
         headers: {
-          "Accept":"application/json",
+          "Accept": "application/json",
           "X-CSRF-TOKEN":
             document.querySelector('meta[name="csrf-token"]')?.getAttribute("content") || "",
         },

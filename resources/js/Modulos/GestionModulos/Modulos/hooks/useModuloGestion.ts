@@ -69,7 +69,9 @@ export function useModuloGestion({
     () =>
       modulos.map((modulo) => ({
         value: modulo.id.toString(),
-        label: `${modulo.nombre} (${modulo.ruta_completa})`,
+        label: modulo.padre_eliminado  // <-- CAMBIO: Si padre eliminado, indica en label
+        ? `${modulo.nombre} (${modulo.ruta} - Padre eliminado)`
+        : `${modulo.nombre} (${modulo.ruta_completa})`,
       })),
     [modulos]
   );
@@ -153,6 +155,7 @@ export function useModuloGestion({
    * @param {ModuloFormData} data - Datos del formulario.
    */
   const handleSubmit = async (data: ModuloFormData) => {
+
     // Aquí se valida permisos antes de proceder.
     if (!puedeCrear && mode === "create") {
       toast({
@@ -181,13 +184,18 @@ export function useModuloGestion({
           ? route("modulo.store")
           : route("modulo.update", selectedModuloId);
 
+      // Aquí se prepara el payload, convirtiendo permisos_extra a array o null.
+      const permisosArray = data.permisos_extra
+        ? data.permisos_extra.split(",").map((p) => p.trim()).filter(Boolean)
+        : [];
+
+
       // Aquí se prepara el payload, convirtiendo permisos_extra a array.
       const payload = {
         ...data,
-        permisos_extra: data.permisos_extra
-          ? data.permisos_extra.split(",").map((p) => p.trim()).filter(Boolean)
-          : [],
+        permisos_extra: permisosArray.length > 0 ? permisosArray : null,  // <-- Envía null si el array está vacío
       };
+
 
       // Aquí se hace la llamada a API con fetch.
       const response = await fetch(url, {
@@ -203,41 +211,63 @@ export function useModuloGestion({
 
       const responseData = await response.json();
 
-      if (!response.ok) {
-        if (responseData.errors) {
-          setFormErrors(responseData.errors);
-        }
-        throw new Error(responseData.error || "Error al guardar");
-      }
+      if (response.ok) {
+        // Éxito: Actualiza array local y muestra toast.
+        toast({
+          title: mode === "create" ? "Módulo creado" : "Módulo actualizado",
+          description: responseData.message,
+          variant: "success",
+        });
 
-      // Aquí se muestra toast de éxito.
-      toast({
-        title: mode === "create" ? "Módulo creado" : "Módulo actualizado",
-        description: responseData.message,
-        variant: "success",
-      });
+        // Aquí se actualiza el estado local de módulos y navega según el modo.
+        if (mode === "create") {
+          setModulos((prev) => [responseData.modulo, ...prev]);
 
-      // Aquí se actualiza el estado local de módulos y navega según el modo.
-      if (mode === "create") {
-        setModulos((prev) => [responseData.modulo, ...prev]);
-        if (puedeEditar) {
-          setSelectedModuloId(Number(responseData.modulo.id));
-          setMode("edit");
-          navigateTo(route("modulo.edit", responseData.modulo.id));
+          if (puedeEditar) {
+            setSelectedModuloId(Number(responseData.modulo.id));
+            setMode("edit");
+            navigateTo(route("modulo.edit", responseData.modulo.id));
+          } else {
+            setMode("create");
+            navigateTo(route("modulo.create"));
+          }
+
         } else {
-          setMode("create");
-          navigateTo(route("modulo.create"));
+          setModulos((prev) =>
+            prev.map((m) => (m.id === responseData.modulo.id ? responseData.modulo : m))
+          );
         }
+      } else if (response.status === 422) {
+        // Errores de validación: setea en estado.
+        setFormErrors(responseData.errors || {});
+
+        toast({
+          title: "Error de validación",
+          description: "Revisa los campos marcados e intenta de nuevo",
+          variant: "destructive",
+        });
+      } else if (response.status === 403) {
+        // Sin permisos.
+        toast({
+          title: "Acceso denegado",
+          description: responseData.error || "No tienes permisos para esta acción",
+          variant: "destructive",
+        });
       } else {
-        setModulos((prev) =>
-          prev.map((m) => (m.id === responseData.modulo.id ? responseData.modulo : m))
-        );
+        // Otros errores.
+        toast({
+          title: "Error",
+          description: responseData.error || "Intenta de nuevo más tarde",
+          variant: "destructive",
+        });
       }
+
     } catch (error: any) {
       // Aquí se maneja errores en el submit.
+      console.error("Error:", error);  // Log para debugging (como en empresas).
       toast({
-        title: "Error",
-        description: error.message,
+        title: "Error de conexión",
+        description: "Revisa tu conexión e intenta de nuevo",
         variant: "destructive",
       });
     }

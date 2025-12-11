@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import InputError from "@/Components/InputError";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Check, ChevronsUpDown, Folder } from "lucide-react";
+import { AlertCircle, Check, ChevronsUpDown, Folder, TriangleAlert } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { ModuloPadreInterface } from "../types/moduloInterface";
@@ -33,6 +33,7 @@ interface ModuloComboboxProps {
     hasChanges?: boolean; // Indica si hay cambios para resaltar.
     error?: string; // Mensaje de error opcional.
     className?: string;
+    padreEliminado?: boolean;
 }
 
 /**
@@ -51,7 +52,8 @@ export function ModuloCombobox({
     disabled = false,
     hasChanges = false,
     error,
-    className = ""
+    className = "",
+    padreEliminado = false,
 }: ModuloComboboxProps) {
     // Aquí se usa useState para manejar si el combobox está abierto.
     const [open, setOpen] = useState(false);
@@ -64,6 +66,13 @@ export function ModuloCombobox({
             <Label htmlFor="modulo_padre_id" className={hasChanges ? "text-primary" : ""}>
                 Módulo Padre (opcional)
             </Label>
+            {/* Aviso si es huérfano */}
+            {padreEliminado && (
+                <div className="p-2 flex gap-2 items-center rounded-lg border border-destructive bg-destructive/15 text-red-700 text-sm font-medium">
+                    <TriangleAlert className="h-4 w-4" />                    
+                    El módulo padre original fue eliminado. Selecciona un nuevo padre o conviertalo en un módulo directo.
+                </div>
+            )}
             {/* Aquí se usa Popover para el dropdown del combobox. */}
             <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
@@ -74,7 +83,7 @@ export function ModuloCombobox({
                         aria-expanded={open}
                         className={cn(
                             "w-full justify-between",
-                            !value && "text-muted-foreground", 
+                            !value && "text-muted-foreground",
                             className
                         )}
                         disabled={disabled}

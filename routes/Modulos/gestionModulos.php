@@ -42,8 +42,8 @@ Route::middleware('auth')->group(function () {
         $modulosHijos = ['modulos', 'pestanas'];
 
         // ===============================================================
-        // MÓDULO HIJO: Usuarios
-        // Ruta: Redirige a la primera pestaña accesible dentro de Usuarios.
+        // MÓDULO HIJO: Modulos
+        // Ruta: Redirige a la primera pestaña accesible dentro de Módulos.
         // ===============================================================
         Route::get('/' . $modulosHijos[0], function () use ($modulosHijos) {
             // Redirige a primera pestaña accesible (ej. /listado si tiene permiso).

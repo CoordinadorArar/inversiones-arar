@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\GestionModulos;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\GestionModulos\ModuloRequest;
 use App\Models\GestionModulos\Modulo;
-use App\Http\Requests\GestionModulos\StoreModuloRequest;
-use App\Http\Requests\GestionModulos\UpdateModuloRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 
 class ModuloController extends Controller
@@ -54,8 +54,11 @@ class ModuloController extends Controller
             ->map(function ($modulo) {
                 // Concatenar ruta si tiene padre
                 $rutaCompleta = $modulo->modulo_padre_id
-                    ? ($modulo->moduloPadre->ruta . $modulo->ruta)
+                    ? ($modulo->moduloPadre?->ruta . $modulo->ruta)
                     : $modulo->ruta;
+
+                // Flag para saber si el padre fue eliminado
+                $padreEliminado = $modulo->modulo_padre_id && !$modulo->moduloPadre;
 
                 return [
                     'id' => $modulo->id,
@@ -67,6 +70,7 @@ class ModuloController extends Controller
                     'modulo_padre_id' => $modulo->modulo_padre_id,
                     'modulo_padre_nombre' => $modulo->moduloPadre?->nombre,
                     'modulo_padre_ruta' => $modulo->moduloPadre?->ruta,
+                    'padre_eliminado' => $padreEliminado,
                     'permisos_extra' => $modulo->permisos_extra ?? [],
                     'cant_hijos' => $modulo->modulosHijos->count(),
                 ];
@@ -206,26 +210,163 @@ class ModuloController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Crear nuevo módulo
      */
-    public function store(StoreModuloRequest $request)
+    public function store(ModuloRequest $request)
     {
-        //
+        $permisos = $this->rol->getPermisosPestana(14);
+
+        if (!in_array('crear', $permisos)) {
+            return response()->json([
+                'error' => 'No tienes permiso para crear módulos'
+            ], 403);
+        }
+
+        try {
+            $validated = $request->validated();
+
+            $modulo = Modulo::create([
+                'nombre' => $validated['nombre'],
+                'icono' => $validated['icono'],
+                'ruta' => $validated['ruta'],
+                'es_padre' => $validated['es_padre'],
+                'modulo_padre_id' => $validated['modulo_padre_id'] ?? null,
+                'permisos_extra' => $validated['permisos_extra'] && !empty($validated['permisos_extra']) ? $validated['permisos_extra'] : null,  // Guarda null si es vacío
+            ]);
+
+            Cache::forget('modulos_list');
+
+            // Cargar relaciones para la respuesta
+            $modulo->load(['moduloPadre', 'modulosHijos']);
+
+            $rutaCompleta = $modulo->modulo_padre_id
+                ? ($modulo->moduloPadre->ruta . $modulo->ruta)
+                : $modulo->ruta;
+
+            return response()->json([
+                'message' => 'Módulo creado correctamente',
+                'modulo' => [
+                    'id' => $modulo->id,
+                    'nombre' => $modulo->nombre,
+                    'icono' => $modulo->icono,
+                    'ruta' => $modulo->ruta,
+                    'ruta_completa' => $rutaCompleta,
+                    'es_padre' => $modulo->es_padre,
+                    'modulo_padre_id' => $modulo->modulo_padre_id,
+                    'modulo_padre_nombre' => $modulo->moduloPadre?->nombre,
+                    'modulo_padre_ruta' => $modulo->moduloPadre?->ruta,
+                    'permisos_extra' => $modulo->permisos_extra ?? [],
+                    'cant_hijos' => 0,
+                ]
+            ], 201);
+        } catch (\Exception $e) {
+            \Log::error('Error creando módulo: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Error al crear el módulo'
+            ], 500);
+        }
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualizar módulo existente
      */
-    public function update(UpdateModuloRequest $request, Modulo $modulo)
+    public function update(ModuloRequest $request, int $id)
     {
-        //
+        $permisos = $this->rol->getPermisosPestana(14);
+
+        if (!in_array('editar', $permisos)) {
+            return response()->json([
+                'error' => 'No tienes permiso para editar módulos'
+            ], 403);
+        }
+
+        try {
+            $modulo = Modulo::findOrFail($id);
+            $validated = $request->validated();
+
+            $modulo->update([
+                'nombre' => $validated['nombre'],
+                'icono' => $validated['icono'],
+                'ruta' => $validated['ruta'],
+                'es_padre' => $validated['es_padre'],
+                'modulo_padre_id' => $validated['modulo_padre_id'] ?? null,
+                'permisos_extra' => $validated['permisos_extra'] && !empty($validated['permisos_extra']) ? $validated['permisos_extra'] : null,  // Guarda null si es vacío
+            ]);
+
+
+            Cache::forget('modulos_list');
+
+            $modulo->load(['moduloPadre', 'modulosHijos']);
+
+            $rutaCompleta = $modulo->modulo_padre_id
+                ? ($modulo->moduloPadre->ruta . $modulo->ruta)
+                : $modulo->ruta;
+
+            return response()->json([
+                'message' => 'Módulo actualizado correctamente',
+                'modulo' => [
+                    'id' => $modulo->id,
+                    'nombre' => $modulo->nombre,
+                    'icono' => $modulo->icono,
+                    'ruta' => $modulo->ruta,
+                    'ruta_completa' => $rutaCompleta,
+                    'es_padre' => $modulo->es_padre,
+                    'modulo_padre_id' => $modulo->modulo_padre_id,
+                    'modulo_padre_nombre' => $modulo->moduloPadre?->nombre,
+                    'modulo_padre_ruta' => $modulo->moduloPadre?->ruta,
+                    'permisos_extra' => $modulo->permisos_extra ?? [],
+                    'cant_hijos' => $modulo->modulosHijos->count(),
+                ]
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error actualizando módulo: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Error al actualizar el módulo'
+            ], 500);
+        }
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Eliminar módulo
      */
-    public function destroy(Modulo $modulo)
+    public function destroy(int $id)
     {
-        //
+        $permisos = $this->rol->getPermisosPestana(14);
+
+        if (!in_array('eliminar', $permisos)) {
+            return response()->json([
+                'error' => 'No tienes permiso para eliminar módulos'
+            ], 403);
+        }
+
+        try {
+            $modulo = Modulo::findOrFail($id);
+
+            // // Verificar que no tenga módulos hijos
+            // if ($modulo->modulosHijos()->count() > 0) {
+            //     return response()->json([
+            //         'error' => 'No se puede eliminar un módulo que tiene módulos hijos'
+            //     ], 422);
+            // }
+
+            // // Verificar que no tenga pestañas
+            // if ($modulo->pestanas()->count() > 0) {
+            //     return response()->json([
+            //         'error' => 'No se puede eliminar un módulo que tiene pestañas asociadas'
+            //     ], 422);
+            // }
+
+            $modulo->delete();
+            Cache::forget('modulos_list');
+
+            return response()->json([
+                'message' => 'Módulo eliminado correctamente'
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error eliminando módulo: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Error al eliminar el módulo'
+            ], 500);
+        }
     }
 }

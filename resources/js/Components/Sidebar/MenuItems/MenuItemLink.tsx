@@ -57,7 +57,7 @@ export const MenuItemLink = ({
     <Link
       href={url}  // URL para navegación.
       className={cn(
-        "flex items-center gap-2 w-full p-[8px] transition-all duration-300 rounded-md whitespace-nowrap",
+        "flex items-start gap-2 w-full p-[8px] transition-all duration-300 rounded-md ",
         // Estilos específicos para subitems (padding y tamaño de texto reducido).
         isSubItem ? "px-3 py-1.5 text-sm" : "",
         // Estilos cuando está activo: bg primary, texto primary, hover, border derecho.
@@ -75,7 +75,7 @@ export const MenuItemLink = ({
       }}
     >
       {/* Ícono dinámico siempre visible. */}
-      <DynamicIcon name={icon} className="h-4 w-4" />
+      <DynamicIcon name={icon} className="h-4 w-4 min-w-4 mt-0.5" />
       
       {/* Texto: Para subitems siempre, para principales solo si no colapsado. */}
       {(isSubItem || !collapsed) && (

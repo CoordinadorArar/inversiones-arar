@@ -67,21 +67,6 @@ export const ModuloColumns: ColumnDef<ModuloInterface>[] = [
             // return <span className="text-xs font-mono text-muted-foreground">{ruta}</span>;
         },
     },
-    // {
-    //     accessorKey: "modulo_padre",
-    //     header: "Padre",
-    //     cell: ({ row }) => {
-    //         const padre = row.original.modulo_padre;
-    //         // Aquí se muestra el padre como badge si existe, o EmptyBadge si no.
-    //         return padre ? (
-    //             <Badge className="bg-primary/15 text-primary border-primary/30">
-    //                 {padre.nombre}
-    //             </Badge>
-    //         ) : (
-    //             <EmptyBadge />
-    //         );
-    //     },
-    // },
     {
         accessorKey: "tiene_hijos",
         header: "Tipo",
@@ -89,6 +74,7 @@ export const ModuloColumns: ColumnDef<ModuloInterface>[] = [
             const esPadre = row.original.es_padre;
             const cantidadHijos = row.original.cant_hijos;
             const moduloPadre = row.original.modulo_padre_nombre;
+            const padreEliminado = row.original.padre_eliminado;
 
             // Aquí se determina el tipo: Padre con cantidad de hijos, Hijo o Independiente, y se renderiza como badge.
             if (esPadre) {
@@ -101,6 +87,12 @@ export const ModuloColumns: ColumnDef<ModuloInterface>[] = [
                 return (
                     <Badge className="bg-green-500/10 text-green-700 border-green-500/20">
                         Módulo Hijo de {moduloPadre}
+                    </Badge>
+                );
+            } else if (padreEliminado) {  // Si padre eliminado, muestra badge especial
+                return (
+                    <Badge className="bg-red-500/10 text-red-700 border-red-500/20">
+                        Módulo Hijo (Padre eliminado)
                     </Badge>
                 );
             } else {

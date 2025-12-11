@@ -8,6 +8,7 @@ export interface ModuloInterface {
   modulo_padre_id: number | null;
   modulo_padre_nombre: string | null;
   modulo_padre_ruta: string | null;
+  padre_eliminado: boolean
   permisos_extra: string[];
   cant_hijos: number;
 }

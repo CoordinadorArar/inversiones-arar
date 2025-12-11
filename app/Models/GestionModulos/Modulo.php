@@ -45,7 +45,10 @@ class Modulo extends Model
     ];
 
     // Deshabilitar timestamps automáticos (usa fecha_creacion/modificacion manuales).
-    public $timestamps = false;
+    public $timestamps = true;
+    
+    const CREATED_AT = 'fecha_creacion';
+    const UPDATED_AT = 'fecha_modificacion';
 
     // Campos tratados como fechas (para Carbon).
     protected $dates = [

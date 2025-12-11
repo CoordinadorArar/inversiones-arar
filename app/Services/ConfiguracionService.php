@@ -79,9 +79,12 @@ class ConfiguracionService
     {
         try {
             foreach ($configs as $nombre => $valor) {
-                Configuracion::where('nombre', $nombre)->update([
-                    'valor' => $valor === '' ? null : $valor, // Vacío -> null
-                ]);
+                $config = Configuracion::where('nombre', $nombre)->first();
+
+                if ($config) {
+                    $config->valor = $valor === '' ? null : $valor;
+                    $config->save(); // dispara eventos → auditoría
+                }
             }
 
 

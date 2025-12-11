@@ -90,8 +90,9 @@ export default function ModulosGestion({
                 icono: selectedModulo.icono,
                 ruta: selectedModulo.ruta,
                 es_padre: selectedModulo.es_padre,
-                modulo_padre_id: Number(selectedModulo.modulo_padre_id),
+                modulo_padre_id: Number(selectedModulo.modulo_padre_id) || null,  // Maneja null si padre eliminado
                 permisos_extra: selectedModulo.permisos_extra.join(","),
+                // padre_eliminado: selectedModulo.padre_eliminado,
             };
         }
         return MODULO_INITIAL_DATA;
@@ -217,6 +218,7 @@ export default function ModulosGestion({
                                     onDelete={mode === "edit" && puedeEliminar ? handleDelete : undefined}
                                     onCancel={handleCancel}
                                     externalErrors={formErrors}
+                                    padreEliminado={selectedModulo?.padre_eliminado}
                                 />
                             )}
                         </div>

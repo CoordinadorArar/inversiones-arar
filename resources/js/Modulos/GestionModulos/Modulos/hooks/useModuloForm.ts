@@ -207,10 +207,10 @@ export function useModuloForm({
      * @param {React.KeyboardEvent<HTMLInputElement>} e - Evento de teclado.
      */
     const handlePermisosExtraKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        const allowed = /^[a-z_,]$/;
+        const allowed = /^[a-zA-Z_, ]$/;
         if (!allowed.test(e.key) && !allowedKeys.includes(e.key) && !e.ctrlKey && !e.metaKey) {
             e.preventDefault();
-        }
+        }        
     };
 
     /**
@@ -220,7 +220,7 @@ export function useModuloForm({
      * @param {React.KeyboardEvent<HTMLInputElement>} e - Evento de teclado.
      */
     const handleRutaModuloKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        const allowed = /^[a-z0-9\-/]$/;
+        const allowed = /^[a-z0-9\-/ ]$/;
         if (!allowed.test(e.key) && !allowedKeys.includes(e.key) && !e.ctrlKey && !e.metaKey) {
             e.preventDefault();
         }

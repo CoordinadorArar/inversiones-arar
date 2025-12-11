@@ -54,12 +54,17 @@ export function ConfirmDialogModulo({
                         <AlertTriangle className="h-5 w-5 text-amber-500" />
                         {mode === "create" ? "Confirmar creación de módulo" : "Advertencia: Datos sensibles"}
                     </AlertDialogTitle>
-                    <AlertDialogDescription className="space-y-3 text-left">
+                    {/* CAMBIO: Agrega AlertDialogDescription con resumen breve para accesibilidad */}
+                    <AlertDialogDescription className="font-medium text-foreground">
+                        {mode === "create"
+                            ? "Después de crear el módulo, deberás realizar acciones adicionales:"
+                            : "Los datos del módulo son sensibles y pueden afectar el funcionamiento del sistema."
+                        }
+                    </AlertDialogDescription>
+                    {/* CAMBIO: Mantén el div para contenido detallado, sin nesting inválido */}
+                    <div className="text-sm text-muted-foreground space-y-3 text-left mt-4">
                         {mode === "create" ? (
                             <>
-                                <p className="font-medium text-foreground">
-                                    Después de crear el módulo, deberás realizar las siguientes acciones:
-                                </p>
                                 <ul className="list-disc list-inside space-y-1 text-sm">
                                     <li>Crear las rutas correspondientes en el archivo de rutas de Laravel</li>
                                     <li>Crear el controlador y las vistas necesarias</li>
@@ -72,9 +77,6 @@ export function ConfirmDialogModulo({
                             </>
                         ) : (
                             <>
-                                <p className="font-medium text-foreground">
-                                    Los datos del módulo son sensibles y pueden afectar el funcionamiento del sistema.
-                                </p>
                                 {hasCriticalChanges && (
                                     <>
                                         <p className="font-medium text-amber-600">
@@ -85,7 +87,7 @@ export function ConfirmDialogModulo({
                                             {changes.es_padre && <li>Confirmación para Modulo Padre</li>}
                                             {changes.modulo_padre_id && <li>Módulo padre</li>}
                                         </ul>
-                                        <p className="text-sm">
+                                        <p className="text-sm text-foreground">
                                             Si cambias la ruta o el módulo padre y su confirmación, deberás actualizar:
                                         </p>
                                         <ul className="list-disc list-inside space-y-1 text-sm">
@@ -100,7 +102,7 @@ export function ConfirmDialogModulo({
                                 </p>
                             </>
                         )}
-                    </AlertDialogDescription>
+                    </div>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel onClick={onCancel}>
