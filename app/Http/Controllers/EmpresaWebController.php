@@ -13,8 +13,7 @@ use Inertia\Inertia;
  * Controlador para gestionar empresas en el módulo de Administración Web.
  * Maneja vistas de listado y gestión, operaciones CRUD (crear, leer, actualizar, eliminar),
  * integrándose con React via Inertia y verificando permisos por rol y pestaña.
- * 
- * Maneja dos pestañas: Listado y Gestión
+ * Maneja dos pestañas: Listado y Gestión.
  *
  * @author Yariangel Aray
  * @date 2025-11-27
@@ -22,32 +21,30 @@ use Inertia\Inertia;
 class EmpresaWebController extends Controller
 {
     /**
-     * ID fijo del módulo Empresas (no cambia).
-     * Usado para acceder a datos relacionados con el módulo.
+     * ID fijo del módulo "Empresas".
+     * Se usa para obtener pestañas y nombre del módulo.
      *
      * @var int
      */
     protected int $moduloId = 6;
 
     /**
-     * Rol del usuario autenticado (cargado en constructor).
-     * Contiene el objeto rol para acceder a permisos y pestañas.
+     * Rol del usuario autenticado.
+     * Contiene la lógica de permisos por pestaña.
      *
      * @var mixed
      */
     protected $rol;
 
     /**
-     * Pestañas accesibles del módulo para el rol (array de pestañas).
-     * Lista de pestañas que el usuario puede ver según su rol.
+     * Pestañas accesibles del módulo según el rol.
      *
      * @var mixed
      */
     protected $tabs;
 
     /**
-     * Nombre del módulo (para pasar a vistas).
-     * Nombre del módulo obtenido de la base de datos, usado en las vistas de Inertia.
+     * Nombre del módulo cargado desde base de datos.
      *
      * @var mixed
      */
@@ -71,19 +68,6 @@ class EmpresaWebController extends Controller
     }
 
     /**
-     * Método auxiliar para obtener empresas cacheadas.
-     * Cachea por 5 minutos para evitar consultas repetidas.
-     *
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
-    private function getEmpresasCacheadas()
-    {
-        return Cache::remember('empresas_web_list', 300, function () { // 300 segundos = 5 minutos
-            return EmpresaWeb::orderByDesc('id')->get();
-        });
-    }
-
-    /**
      * Muestra la vista de listado de empresas en React via Inertia.
      * Renderiza el componente 'Listado' con empresas ordenadas, pestañas y nombre del módulo.
      *
@@ -93,9 +77,9 @@ class EmpresaWebController extends Controller
     {
         // Renderiza vista Inertia con datos.
         return Inertia::render('Modulos:AdministracionWeb/Empresas/pages/Listado', [
-            'tabs' => $this->tabs,              // Pestañas accesibles.
-            'empresas' => $this->getEmpresasCacheadas(), // Empresas cacheadas.
-            'moduloNombre' => $this->moduloNombre,  // Nombre del módulo.
+            'tabs' => $this->tabs,
+            'empresas' => $this->getEmpresasCacheadas(),
+            'moduloNombre' => $this->moduloNombre,
         ]);
     }
 
@@ -110,27 +94,27 @@ class EmpresaWebController extends Controller
         // Obtiene permisos específicos de la pestaña 2 (Gestión) para el rol.
         $permisos = $this->rol->getPermisosPestana(2);
 
-        // Si puede editar, enviar empresas; si no, array vacío
-        $empresas = in_array('editar', $permisos) ? $this->getEmpresasCacheadas() : [];
-
-        $props = [
-            'tabs' => $this->tabs,              // Pestañas accesibles.
-            'empresas' => $empresas,
-            'permisos' => $permisos,            // Permisos de la pestaña.
-            'moduloNombre' => $this->moduloNombre,  // Nombre del módulo.
-            'initialMode' => 'idle', // Modo por defecto
-            'initialEmpresaId' => null,
-        ];
+        // Si puede editar, enviar empresas; si no, array vacío.
+        $empresas = in_array('editar', $permisos)
+            ? $this->getEmpresasCacheadas()
+            : [];
 
         // Renderiza vista Inertia con datos.
-        return Inertia::render('Modulos:AdministracionWeb/Empresas/pages/Gestion', $props);
+        return Inertia::render('Modulos:AdministracionWeb/Empresas/pages/Gestion', [
+            'tabs' => $this->tabs,
+            'empresas' => $empresas,
+            'permisos' => $permisos,
+            'moduloNombre' => $this->moduloNombre,
+            'initialMode' => 'idle',
+            'initialEmpresaId' => null,
+        ]);
     }
 
     /**
-     * Vista: Gestión - Modo crear
-     * Renderiza la misma vista pero con el formulario en modo crear
-     * URL: /gestion/crear
-     * 
+     * Vista: Gestión - Modo crear.
+     * Renderiza la misma vista pero con el formulario en modo crear.
+     * URL: /gestion/crear.
+     *
      * @return \Inertia\Response
      */
     public function create()
@@ -138,81 +122,62 @@ class EmpresaWebController extends Controller
         // Obtiene permisos específicos de la pestaña 2 (Gestión) para el rol.
         $permisos = $this->rol->getPermisosPestana(2);
 
-        // Si puede editar, enviar empresas; si no, array vacío
-        $empresas = (in_array('editar', $permisos) && in_array('crear', $permisos)) ? $this->getEmpresasCacheadas() : [];
+        if (!in_array('crear', $permisos)) {
+            // Retorna la vista de gestión con un error adicional (sin re-renderizar, solo agrega prop 'error').
+            return $this->gestion()->with('error', 'No tienes permiso para crear empresas');
+        }
 
-        $props = [
+        // Si puede editar, enviar empresas; si no, array vacío.
+        $empresas = in_array('editar', $permisos)
+            ? $this->getEmpresasCacheadas()
+            : [];
+
+        // Renderiza vista Inertia con datos.
+        return Inertia::render('Modulos:AdministracionWeb/Empresas/pages/Gestion', [
             'tabs' => $this->tabs,
             'empresas' => $empresas,
             'permisos' => $permisos,
             'moduloNombre' => $this->moduloNombre,
-            'initialMode' => 'idle',
+            'initialMode' => 'create',
             'initialEmpresaId' => null,
-        ];
-
-        // Verificar permiso de crear
-        if (!in_array('crear', $permisos)) {
-            return Inertia::render('Modulos:AdministracionWeb/Empresas/pages/Gestion', [
-                ...$props,
-                'error' => 'No tienes permiso para crear empresas', // Pasa error
-            ]);
-        }
-
-        // Renderiza vista Inertia con datos.
-        return Inertia::render('Modulos:AdministracionWeb/Empresas/pages/Gestion', [
-            ...$props,
-            'initialMode' => 'create', // Modo crear desde URL
         ]);
     }
 
     /**
-     * Vista: Gestión - Modo editar
-     * Renderiza la misma vista pero con el formulario en modo editar
-     * URL: /gestion/{id}
-     * 
-     * @param int $id ID de la empresa a editar
+     * Vista: Gestión - Modo editar.
+     * Renderiza la misma vista pero con el formulario en modo editar.
+     * URL: /gestion/{id}.
+     *
+     * @param int $id ID de la empresa a editar.
      * @return \Inertia\Response
      */
     public function edit(int $id)
     {
         $permisos = $this->rol->getPermisosPestana(2);
 
-        $props = [
-            'tabs' => $this->tabs,
-            'empresas' => [],
-            'permisos' => $permisos,
-            'moduloNombre' => $this->moduloNombre,
-            'initialMode' => 'idle',
-            'initialEmpresaId' => null,
-        ];
-
-        // Verificar permiso de editar
         if (!in_array('editar', $permisos)) {
-            return Inertia::render('Modulos:AdministracionWeb/Empresas/pages/Gestion', [
-                ...$props,
-                'error' => 'No tienes permiso para editar empresas', // Pasa error
-            ]);
+            // Retorna la vista de gestión con un error adicional.
+            return $this->gestion()->with('error', 'No tienes permiso para editar empresas');
         }
 
-        // Obtener todas las empresas para el select
-        $empresas = $this->getEmpresasCacheadas(); // Cacheadas
-
-        // Verificar que la empresa existe
+        // Verificar que la empresa existe.
         $empresa = EmpresaWeb::find($id);
 
         if (!$empresa) {
-            return Inertia::render('Modulos:AdministracionWeb/Empresas/pages/Gestion', [
-                ...$props,
-                'empresas' => $empresas,
-                'error' => 'La empresa no existe', // Pasa error
-            ]);
+            // Retorna la vista de gestión con un error adicional.
+            return $this->gestion()->with('error', 'La empresa no existe');
         }
 
+        // Obtener todas las empresas para el select.
+        $empresas = $this->getEmpresasCacheadas();
+
         return Inertia::render('Modulos:AdministracionWeb/Empresas/pages/Gestion', [
-            ...$props,
+            'tabs' => $this->tabs,
             'empresas' => $empresas,
-            'initialMode' => 'edit', // Modo editar desde URL
-            'initialEmpresaId' => $id, // ID de la empresa a editar
+            'permisos' => $permisos,
+            'moduloNombre' => $this->moduloNombre,
+            'initialMode' => 'edit',
+            'initialEmpresaId' => $id,
         ]);
     }
 
@@ -226,7 +191,7 @@ class EmpresaWebController extends Controller
     public function store(EmpresaWebRequest $request)
     {
         try {
-            // Validar permiso
+            // Validar permiso.
             if (!$this->rol->tienePermisoPestana(2, 'crear')) {
                 return response()->json([
                     'error' => 'No tienes permiso para crear empresas'
@@ -235,7 +200,7 @@ class EmpresaWebController extends Controller
 
             $validated = $request->validated();
 
-            // Manejar logo si existe
+            // Manejar logo si existe: Subir archivo y guardar path.
             if ($request->hasFile('logo')) {
                 $file = $request->file('logo');
                 $filename = time() . '_' . $file->getClientOriginalName();
@@ -243,10 +208,10 @@ class EmpresaWebController extends Controller
                 $validated['logo_url'] = $path;
             }
 
-            // Crear empresa
+            // Crear empresa.
             $empresa = EmpresaWeb::create($validated);
 
-            // Invalidar cache después de crear
+            // Invalidar cache después de crear.
             Cache::forget('empresas_web_list');
             Cache::forget('dominios_empresas');
             return response()->json([
@@ -275,7 +240,7 @@ class EmpresaWebController extends Controller
     public function update(EmpresaWebRequest $request, int $id)
     {
         try {
-            // Validar permiso
+            // Validar permiso.
             if (!$this->rol->tienePermisoPestana(2, 'editar')) {
                 return response()->json([
                     'error' => 'No tienes permiso para editar empresas'
@@ -285,9 +250,9 @@ class EmpresaWebController extends Controller
             $empresa = EmpresaWeb::findOrFail($id);
             $validated = $request->validated();
 
-            // Manejar logo si existe
+            // Manejar logo si existe: Eliminar anterior y subir nuevo.
             if ($request->hasFile('logo')) {
-                // Eliminar logo anterior si existe
+                // Eliminar logo anterior si existe.
                 if ($empresa->logo_url) {
                     \Storage::disk('public')->delete($empresa->logo_url);
                 }
@@ -297,10 +262,10 @@ class EmpresaWebController extends Controller
                 $validated['logo_url'] = $path;
             }
 
-            // Actualizar empresa
+            // Actualizar empresa.
             $empresa->update($validated);
 
-            // Invalidar cache después de actualizar
+            // Invalidar cache después de actualizar.
             Cache::forget('empresas_web_list');
             Cache::forget('dominios_empresas');
 
@@ -329,7 +294,7 @@ class EmpresaWebController extends Controller
     public function destroy(int $id)
     {
         try {
-            // Validar permiso
+            // Validar permiso.
             if (!$this->rol->tienePermisoPestana(2, 'eliminar')) {
                 return response()->json([
                     'error' => 'No tienes permiso para eliminar empresas'
@@ -338,10 +303,10 @@ class EmpresaWebController extends Controller
 
             $empresa = EmpresaWeb::findOrFail($id);
 
-            // Soft delete
+            // Soft delete.
             $empresa->delete();
 
-            // Invalidar cache después de eliminar
+            // Invalidar cache después de eliminar.
             Cache::forget('empresas_web_list');
             Cache::forget('dominios_empresas');
             return response()->json([
@@ -356,5 +321,18 @@ class EmpresaWebController extends Controller
                 'error' => 'Hubo un error al eliminar la empresa. Por favor intenta más tarde.'
             ], 500);
         }
+    }
+
+    /**
+     * Método auxiliar para obtener empresas cacheadas.
+     * Cachea por 5 minutos para evitar consultas repetidas.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    private function getEmpresasCacheadas()
+    {
+        return Cache::remember('empresas_web_list', 300, function () { // 300 segundos = 5 minutos
+            return EmpresaWeb::orderByDesc('id')->get();
+        });
     }
 }

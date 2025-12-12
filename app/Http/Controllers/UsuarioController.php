@@ -20,8 +20,7 @@ use Inertia\Inertia;
  * Controlador para gestionar usuarios en el módulo de Seguridad y Acceso.
  * Maneja vistas de listado y gestión, operaciones CRUD (crear, leer, actualizar, eliminar),
  * integrándose con React via Inertia y verificando permisos por rol y pestaña.
- * 
- * Maneja dos pestañas: Listado y Gestión
+ * Maneja dos pestañas: Listado y Gestión.
  *
  * @author Yariangel Aray
  * @date 2025-12-09
@@ -29,86 +28,34 @@ use Inertia\Inertia;
 class UsuarioController extends Controller
 {
     /**
-     * ID fijo del módulo Usuarios (no cambia).
-     * Usado para acceder a datos relacionados con el módulo.
+     * ID fijo del módulo "Usuarios".
+     * Se usa para obtener pestañas y nombre del módulo.
      *
      * @var int
      */
     protected int $moduloId = 9;
 
     /**
-     * Rol del usuario autenticado (cargado en constructor).
-     * Contiene el objeto rol para acceder a permisos y pestañas.
+     * Rol del usuario autenticado.
+     * Contiene la lógica de permisos por pestaña.
      *
      * @var mixed
      */
     protected $rol;
 
     /**
-     * Pestañas accesibles del módulo para el rol (array de pestañas).
-     * Lista de pestañas que el usuario puede ver según su rol.
+     * Pestañas accesibles del módulo según el rol.
      *
      * @var mixed
      */
     protected $tabs;
 
     /**
-     * Nombre del módulo (para pasar a vistas).
-     * Nombre del módulo obtenido de la base de datos, usado en las vistas de Inertia.
+     * Nombre del módulo cargado desde base de datos.
      *
      * @var mixed
      */
     protected $moduloNombre;
-
-    /**
-     * Método auxiliar para obtener usuarios cacheados.
-     * Cachea por 5 minutos para evitar consultas repetidas.
-     *
-     * @return array Lista de usuarios formateados con rol incluido.
-     */
-    private function getUsuariosCacheados()
-    {
-        return Cache::remember('usuarios_list', 300, function () { // 300 segundos = 5 minutos
-            return User::with('rol')->orderByDesc('id')->get()->map(function ($usuario) {
-                return [
-                    'id' => $usuario->id,
-                    'numero_documento' => $usuario->numero_documento,
-                    'nombres' => $usuario->info_corta->nombres,
-                    'apellidos' => $usuario->info_corta->apellidos,
-                    'email' => $usuario->email,
-                    'rol' => [
-                        'id' => $usuario->rol_id,
-                        'nombre' => $usuario->rol->nombre,
-                    ],
-                    'rol_id' => $usuario->rol_id,
-                    'bloqueado_at' => $usuario->bloqueado_at
-                ];
-            });
-        });
-    }
-
-    /**
-     * Genera contraseña inicial basada en documento y nombre.
-     * Formato: {documento}{PrimeraLetraApellido}{PrimeraLetraNombre}.     
-     *
-     * @param string $documento Número de documento del usuario.
-     * @param string $nombreCompleto Nombre completo (apellidos nombres).
-     * @return string Contraseña generada.
-     */
-    private function generarPasswordInicial(string $documento, string $nombres, string $apellidos): string
-    {
-        $nombre = explode(' ', trim($nombres))[0];
-        $apellido = explode(' ', trim($apellidos))[0];
-
-        // Tomar primera letra del primer apellido (Apellido)
-        $primeraLetraApellido = isset($apellido) ? strtoupper(substr($apellido, 0, 1)) : '';
-
-        // Tomar primera letra del primer nombre (Nombre)
-        $primeraLetraNombre = isset($nombre) ? strtolower(substr($nombre, 0, 1)) : '';
-
-        // Formato: {documento}{LetraApellido}{LetraNombre}.
-        return $documento . $primeraLetraApellido . $primeraLetraNombre . '.';
-    }
 
     /**
      * Constructor: Inicializa propiedades con datos del usuario autenticado.
@@ -135,11 +82,10 @@ class UsuarioController extends Controller
      */
     public function index()
     {
-
         return Inertia::render('Modulos:SeguridadAcceso/Usuarios/pages/Listado', [
-            'tabs' => $this->tabs,              // Pestañas accesibles.
-            'usuarios' => $this->getUsuariosCacheados(), // Usuarios cacheados.
-            'moduloNombre' => $this->moduloNombre,  // Nombre del módulo.            
+            'tabs' => $this->tabs,
+            'usuarios' => $this->getUsuariosCacheados(),
+            'moduloNombre' => $this->moduloNombre,
         ]);
     }
 
@@ -154,60 +100,52 @@ class UsuarioController extends Controller
         // Obtiene permisos específicos de la pestaña 9 (Gestión) para el rol.
         $permisos = $this->rol->getPermisosPestana(9);
 
-        // Si puede editar, enviar usuarios; si no, array vacío
+        // Si puede editar, enviar usuarios; si no, array vacío.
         $usuarios = in_array('editar', $permisos) ? $this->getUsuariosCacheados() : [];
 
-        $props = [
-            'tabs' => $this->tabs,              // Pestañas accesibles.
-            'usuarios' => $usuarios,
-            'permisos' => $permisos,            // Permisos de la pestaña.
-            'moduloNombre' => $this->moduloNombre,  // Nombre del módulo.
-            'roles' => Rol::all(),
-            'dominios' => (new EmpresaWeb())->getDominiosCacheados(), // Dominios cacheados.
-            'initialMode' => 'idle', // Modo por defecto
-            'initialUsuarioId' => null,
-        ];
-
         // Renderiza vista Inertia con datos.
-        return Inertia::render('Modulos:SeguridadAcceso/Usuarios/pages/Gestion', $props);
+        return Inertia::render('Modulos:SeguridadAcceso/Usuarios/pages/Gestion', [
+            'tabs' => $this->tabs,
+            'usuarios' => $usuarios,
+            'permisos' => $permisos,
+            'moduloNombre' => $this->moduloNombre,
+            'roles' => Rol::all(),
+            'dominios' => (new EmpresaWeb())->getDominiosCacheados(),
+            'initialMode' => 'idle',
+            'initialUsuarioId' => null,
+        ]);
     }
 
     /**
-     * Vista: Gestión - Modo crear
-     * Renderiza la misma vista pero con el formulario en modo crear
-     * URL: /gestion/crear
-     * 
+     * Vista: Gestión - Modo crear.
+     * Renderiza la misma vista pero con el formulario en modo crear.
+     * URL: /gestion/crear.
+     *
      * @return \Inertia\Response Respuesta de Inertia con vista en modo crear.
      */
     public function create()
     {
         $permisos = $this->rol->getPermisosPestana(9);
 
-        $usuarios = (in_array('editar', $permisos) && in_array('crear', $permisos)) ? $this->getUsuariosCacheados() : [];
+        if (!in_array('crear', $permisos)) {
+            // Retorna la vista de gestión con un error adicional.
+            return $this->gestion()->with('error', 'No tienes permiso para crear usuarios');
+        }
 
-        $props = [
+        $usuarios = in_array('editar', $permisos)
+            ? $this->getUsuariosCacheados()
+            : [];
+
+        // Renderiza vista Inertia con datos.
+        return Inertia::render('Modulos:SeguridadAcceso/Usuarios/pages/Gestion', [
             'tabs' => $this->tabs,
             'usuarios' => $usuarios,
             'permisos' => $permisos,
             'moduloNombre' => $this->moduloNombre,
-            'initialMode' => 'idle',
-            'initialUsuarioId' => null,
-        ];
-
-        // Verificar permiso de crear
-        if (!in_array('crear', $permisos)) {
-            return Inertia::render('Modulos:SeguridadAcceso/Usuarios/pages/Gestion', [
-                ...$props,
-                'error' => 'No tienes permiso para crear usuarios', // Pasa error
-            ]);
-        }
-
-        // Renderiza vista Inertia con datos.
-        return Inertia::render('Modulos:SeguridadAcceso/Usuarios/pages/Gestion', [
-            ...$props,
             'roles' => Rol::all(),
-            'dominios' => (new EmpresaWeb())->getDominiosCacheados(), // Dominios cacheados.
-            'initialMode' => 'create', // Modo crear desde URL
+            'dominios' => (new EmpresaWeb())->getDominiosCacheados(),
+            'initialMode' => 'create',
+            'initialUsuarioId' => null,
         ]);
     }
 
@@ -223,46 +161,30 @@ class UsuarioController extends Controller
     {
         $permisos = $this->rol->getPermisosPestana(9);
 
-        $props = [
-            'tabs' => $this->tabs,
-            'usuarios' => [],
-            'permisos' => $permisos,
-            'moduloNombre' => $this->moduloNombre,
-            'initialMode' => 'idle',
-            'initialUsuarioId' => null,
-        ];
-
-        // if (!in_array('editar', $permisos)) {
-        //     return $this->gestion()->with('error', 'No tienes permiso para editar usuarios');
-        // }
-
-        // Verificar permiso de editar
         if (!in_array('editar', $permisos)) {
-            return Inertia::render('Modulos:SeguridadAcceso/Usuarios/pages/Gestion', [
-                ...$props,
-                'error' => 'No tienes permiso para editar usuarios', // Pasa error
-            ]);
+            // Retorna la vista de gestión con un error adicional.
+            return $this->gestion()->with('error', 'No tienes permiso para editar usuarios');
         }
 
-        $usuarios = in_array('editar', $permisos) ? $this->getUsuariosCacheados() : [];
-
-        // Verificar que el usuario existe
+        // Verificar que el usuario existe.
         $usuario = User::find($id);
+
         if (!$usuario) {
-            return Inertia::render('Modulos:SeguridadAcceso/Usuarios/pages/Gestion', [
-                ...$props,
-                'usuarios' => $usuarios,
-                'error' => 'El usuario no existe', // Pasa error
-            ]);
+            // Retorna la vista de gestión con un error adicional.
+            return $this->gestion()->with('error', 'El usuario no existe');
         }
+
+        $usuarios = $this->getUsuariosCacheados();
 
         return Inertia::render('Modulos:SeguridadAcceso/Usuarios/pages/Gestion', [
-            ...$props,
+            'tabs' => $this->tabs,
             'usuarios' => $usuarios,
+            'permisos' => $permisos,
+            'moduloNombre' => $this->moduloNombre,
             'roles' => Rol::all(),
-            'dominios' => (new EmpresaWeb())->getDominiosCacheados(), // Dominios cacheados.
-            'initialMode' => 'edit', // Modo editar desde URL
-            'initialUsuarioId' => $id, // ID del usuario a editar
+            'dominios' => (new EmpresaWeb())->getDominiosCacheados(),
+            'initialMode' => 'edit',
+            'initialUsuarioId' => $id,
         ]);
     }
 
@@ -284,20 +206,19 @@ class UsuarioController extends Controller
         }
 
         try {
-            // Buscar en tabla de terceros (BD externa) donde el documento coincida
+            // Buscar en tabla de terceros (BD externa) donde el documento coincida.
             $terceros = ContratoPropietario::where('f200_id', 'LIKE', '%' . $search . '%')
-                // ->limit(10)
                 ->get();
 
             $resultados = [];
 
             foreach ($terceros as $tercero) {
-                // Verificar si tiene contrato activo
+                // Verificar si tiene contrato activo.
                 if (!$tercero->hasContratoActivo()) {
                     continue;
                 }
 
-                // Verificar si ya existe en tabla usuarios
+                // Verificar si ya existe en tabla usuarios.
                 $yaExiste = User::where('numero_documento', $tercero->f200_id)->exists();
 
                 $resultados[] = [
@@ -338,7 +259,7 @@ class UsuarioController extends Controller
         $validated = $request->validated();
 
         try {
-            // Verificar que tiene contrato activo
+            // Verificar que tiene contrato activo.
             $tercero = ContratoPropietario::where('f200_id', $validated['numero_documento'])->first();
 
             if (!$tercero || !$tercero->hasContratoActivo()) {
@@ -348,7 +269,6 @@ class UsuarioController extends Controller
                     ]
                 ], 422);
             }
-
 
             $usuario = User::create([
                 'numero_documento' => $validated['numero_documento'],
@@ -367,12 +287,12 @@ class UsuarioController extends Controller
                 'password' => Hash::make($passwordInicial),
             ]);
 
-            // Enviar email
+            // Enviar email.
             Mail::to($usuario->email)->send(
                 new PasswordGeneradaMail($usuario, $passwordInicial)
             );
 
-            // Limpiar caché
+            // Limpiar caché.
             Cache::forget('usuarios_list');
 
             return response()->json([
@@ -400,7 +320,7 @@ class UsuarioController extends Controller
     }
 
     /**
-     * Actualizar usuarios
+     * Actualizar usuario.
      *
      * @param UsuarioRequest $request Solicitud con datos validados.
      * @param int $id ID del usuario a actualizar.
@@ -486,7 +406,10 @@ class UsuarioController extends Controller
     }
 
     /**
-     * Desbloquear usuario
+     * Desbloquear usuario.
+     *
+     * @param int $id ID del usuario a desbloquear.
+     * @return \Illuminate\Http\JsonResponse Mensaje de éxito o error.
      */
     public function desbloquear(int $id)
     {
@@ -517,6 +440,9 @@ class UsuarioController extends Controller
 
     /**
      * Restaurar contraseña con formato {documento}{LetraApellido}{LetraNombre}.
+     *
+     * @param int $id ID del usuario.
+     * @return \Illuminate\Http\JsonResponse Mensaje de éxito o error.
      */
     public function restaurarPassword(int $id)
     {
@@ -531,14 +457,14 @@ class UsuarioController extends Controller
         try {
             $usuario = User::findOrFail($id);
 
-            // Generar contraseña: {documento}{LetraApellido}{LetraNombre}.            
+            // Generar contraseña: {documento}{LetraApellido}{LetraNombre}.
             $nuevaPassword = $this->generarPasswordInicial($usuario->numero_documento, $usuario->info_corta->nombres, $usuario->info_corta->apellidos);
 
             $usuario->update([
                 'password' => Hash::make($nuevaPassword)
             ]);
 
-            // Enviar email
+            // Enviar email.
             Mail::to($usuario->email)
                 ->cc(['desarrollo01@inversionesarar.com'])
                 ->send(
@@ -554,5 +480,55 @@ class UsuarioController extends Controller
                 'error' => 'Error al restaurar la contraseña'
             ], 500);
         }
+    }
+
+    /**
+     * Método auxiliar para obtener usuarios cacheados.
+     * Cachea por 5 minutos para evitar consultas repetidas.
+     *
+     * @return array Lista de usuarios formateados con rol incluido.
+     */
+    private function getUsuariosCacheados()
+    {
+        return Cache::remember('usuarios_list', 300, function () { // 300 segundos = 5 minutos
+            return User::with('rol')->orderByDesc('id')->get()->map(function ($usuario) {
+                return [
+                    'id' => $usuario->id,
+                    'numero_documento' => $usuario->numero_documento,
+                    'nombres' => $usuario->info_corta->nombres,
+                    'apellidos' => $usuario->info_corta->apellidos,
+                    'email' => $usuario->email,
+                    'rol' => [
+                        'id' => $usuario->rol_id,
+                        'nombre' => $usuario->rol->nombre,
+                    ],
+                    'rol_id' => $usuario->rol_id,
+                    'bloqueado_at' => $usuario->bloqueado_at
+                ];
+            });
+        });
+    }
+
+    /**
+     * Genera contraseña inicial basada en documento y nombre.
+     * Formato: {documento}{PrimeraLetraApellido}{PrimeraLetraNombre}.     
+     *
+     * @param string $documento Número de documento del usuario.
+     * @param string $nombreCompleto Nombre completo (apellidos nombres).
+     * @return string Contraseña generada.
+     */
+    private function generarPasswordInicial(string $documento, string $nombres, string $apellidos): string
+    {
+        $nombre = explode(' ', trim($nombres))[0];
+        $apellido = explode(' ', trim($apellidos))[0];
+
+        // Tomar primera letra del primer apellido (Apellido)
+        $primeraLetraApellido = isset($apellido) ? strtoupper(substr($apellido, 0, 1)) : '';
+
+        // Tomar primera letra del primer nombre (Nombre)
+        $primeraLetraNombre = isset($nombre) ? strtolower(substr($nombre, 0, 1)) : '';
+
+        // Formato: {documento}{LetraApellido}{LetraNombre}.
+        return $documento . $primeraLetraApellido . $primeraLetraNombre . '.';
     }
 }

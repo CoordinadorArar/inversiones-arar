@@ -11,8 +11,10 @@ use Inertia\Inertia;
 
 /**
  * Controlador para gestionar configuraciones generales del sistema.
- * Maneja dos pestañas: Información Corporativa (contacto e imágenes) y Redes Sociales.
- * Usa ConfiguracionService para obtener y actualizar configuraciones, integrándose con React via Inertia.
+ * Maneja vistas de información corporativa y redes sociales, operaciones de actualización,
+ * integrándose con React via Inertia y verificando permisos por rol y pestaña.
+ * Usa ConfiguracionService para obtener y actualizar configuraciones.
+ * Maneja dos pestañas: Información Corporativa y Redes Sociales.
  *
  * @author Yariangel Aray
  * @date 2025-12-04
@@ -20,32 +22,30 @@ use Inertia\Inertia;
 class ConfiguracionController extends Controller
 {
     /**
-     * ID fijo del módulo Configuración General (no cambia).
-     * Usado para acceder a datos relacionados con el módulo.
+     * ID fijo del módulo "Configuración General".
+     * Se usa para obtener pestañas y nombre del módulo.
      *
      * @var int
      */
     protected int $moduloId = 7;
 
     /**
-     * Rol del usuario autenticado (cargado en constructor).
-     * Contiene el objeto rol para acceder a permisos y pestañas.
+     * Rol del usuario autenticado.
+     * Contiene la lógica de permisos por pestaña.
      *
      * @var mixed
      */
     protected $rol;
 
     /**
-     * Pestañas accesibles del módulo para el rol (array de pestañas).
-     * Lista de pestañas que el usuario puede ver según su rol.
+     * Pestañas accesibles del módulo según el rol.
      *
      * @var mixed
      */
     protected $tabs;
 
     /**
-     * Nombre del módulo (para pasar a vistas).
-     * Nombre del módulo obtenido de la base de datos, usado en las vistas de Inertia.
+     * Nombre del módulo cargado desde base de datos.
      *
      * @var mixed
      */
@@ -70,19 +70,20 @@ class ConfiguracionController extends Controller
 
     /**
      * Muestra la vista de Información Corporativa en React via Inertia.
-     * Recupera configuraciones de contacto e imágenes, junto con pestañas, permisos y nombre del módulo.
+     * Renderiza el componente 'InformacionCorporativa' con configuraciones de contacto e imágenes, pestañas, permisos y nombre del módulo.
      *
      * @return \Inertia\Response Respuesta de Inertia con la vista y datos necesarios.
      */
     public function informacionCorporativa()
     {
-        // Obtener permisos de la pestaña
+        // Obtiene permisos específicos de la pestaña 3 (Información Corporativa) para el rol.
         $permisos = $this->rol->getPermisosPestana(3);
 
-        // Obtener configuraciones de contacto e imágenes        
+        // Obtener configuraciones de contacto e imágenes usando ConfiguracionService.
         $contact = ConfiguracionService::getGroup('contact');
         $images = ConfiguracionService::getGroup('image');
 
+        // Renderiza vista Inertia con datos.
         return Inertia::render('Modulos:AdministracionWeb/ConfiguracionGeneral/pages/InformacionCorporativa', [
             'tabs' => $this->tabs,
             'moduloNombre' => $this->moduloNombre,
@@ -96,18 +97,19 @@ class ConfiguracionController extends Controller
 
     /**
      * Muestra la vista de Redes Sociales en React via Inertia.
-     * Recupera configuraciones de redes sociales, junto con pestañas, permisos y nombre del módulo.
+     * Renderiza el componente 'RedesSociales' con configuraciones de redes sociales, pestañas, permisos y nombre del módulo.
      *
      * @return \Inertia\Response Respuesta de Inertia con la vista y datos necesarios.
      */
     public function redesSociales()
     {
-        // Obtener permisos de la pestaña
+        // Obtiene permisos específicos de la pestaña 4 (Redes Sociales) para el rol.
         $permisos = $this->rol->getPermisosPestana(4);
 
-        // Obtener configuraciones de redes sociales
+        // Obtener configuraciones de redes sociales usando ConfiguracionService.
         $rrss = ConfiguracionService::getGroup('rrss');
 
+        // Renderiza vista Inertia con datos.
         return Inertia::render('Modulos:AdministracionWeb/ConfiguracionGeneral/pages/RedesSociales', [
             'tabs' => $this->tabs,
             'moduloNombre' => $this->moduloNombre,
@@ -120,7 +122,7 @@ class ConfiguracionController extends Controller
 
     /**
      * Actualiza la información corporativa (contacto e imágenes).
-     * Valida permisos, maneja subida de archivos (logo e icono) y actualiza configuraciones via ConfiguracionService.
+     * Valida permisos, maneja subida de archivos (logo e icono eliminando anteriores si existen) y retorna respuesta JSON.
      *
      * @param ConfiguracionRequest $request Solicitud con datos validados para actualizar.
      * @return \Illuminate\Http\JsonResponse Respuesta JSON con mensaje de éxito o error.
@@ -128,7 +130,7 @@ class ConfiguracionController extends Controller
     public function updateInformacionCorporativa(ConfiguracionRequest $request)
     {
         try {
-            // Validar permiso
+            // Validar permiso.
             if (!$this->rol->tienePermisoPestana(3, 'editar')) {
                 return response()->json([
                     'error' => 'No tienes permiso para editar la configuración'
@@ -138,17 +140,17 @@ class ConfiguracionController extends Controller
             $validated = $request->validated();
             $updates = [];
 
-            // Lista de campos de contacto
+            // Preparar actualizaciones de campos de contacto.
             $contactFields = ['email', 'telefono', 'ubicacion', 'ubicacion_detalles', 'ubicacion_url'];
             foreach ($contactFields as $field) {
-                // Preparar actualizaciones de contacto
                 if ($request->has($field)) {
                     $updates['contact.' . str_replace('_', '.', $field)] = $validated[$field] ?? '';
                 }
             }
 
-            // Manejar logo
+            // Manejar logo si existe: Eliminar anterior y subir nuevo.
             if ($request->hasFile('logo')) {
+                // Eliminar logo anterior si existe.
                 $currentLogo = ConfiguracionService::get('image.logo');
                 if ($currentLogo && Storage::disk('public')->exists($currentLogo)) {
                     Storage::disk('public')->delete($currentLogo);
@@ -160,8 +162,9 @@ class ConfiguracionController extends Controller
                 $updates['image.logo'] = $path;
             }
 
-            // Manejar icono
+            // Manejar icono si existe: Eliminar anterior y subir nuevo.
             if ($request->hasFile('icono')) {
+                // Eliminar icono anterior si existe.
                 $currentIcono = ConfiguracionService::get('image.icono');
                 if ($currentIcono && Storage::disk('public')->exists($currentIcono)) {
                     Storage::disk('public')->delete($currentIcono);
@@ -173,7 +176,7 @@ class ConfiguracionController extends Controller
                 $updates['image.icono'] = $path;
             }
 
-            // Actualizar todas las configuraciones
+            // Actualizar todas las configuraciones usando ConfiguracionService.
             ConfiguracionService::updateMultiple($updates);
 
             return response()->json([
@@ -192,7 +195,7 @@ class ConfiguracionController extends Controller
 
     /**
      * Actualiza las redes sociales.
-     * Valida permisos y actualiza configuraciones de redes sociales via ConfiguracionService.
+     * Valida permisos y retorna respuesta JSON.
      *
      * @param ConfiguracionRequest $request Solicitud con datos validados para actualizar.
      * @return \Illuminate\Http\JsonResponse Respuesta JSON con mensaje de éxito o error.
@@ -200,7 +203,7 @@ class ConfiguracionController extends Controller
     public function updateRedesSociales(ConfiguracionRequest $request)
     {
         try {
-            // Validar permiso
+            // Validar permiso.
             if (!$this->rol->tienePermisoPestana(4, 'editar')) {
                 return response()->json([
                     'error' => 'No tienes permiso para editar las redes sociales'
@@ -210,16 +213,15 @@ class ConfiguracionController extends Controller
             $validated = $request->validated();
             $updates = [];
 
-            // Lista de campos de redes
+            // Preparar actualizaciones de campos de redes sociales.
             $rrssFields = ['instagram', 'facebook', 'x', 'linkedin'];
             foreach ($rrssFields as $field) {
-                // Preparar actualizaciones de redes sociales
                 if ($request->has($field)) {
                     $updates['rrss.' . $field] = $validated[$field] ?? '';
                 }
             }
 
-            // Actualizar todas las configuraciones
+            // Actualizar todas las configuraciones usando ConfiguracionService.
             ConfiguracionService::updateMultiple($updates);
 
             return response()->json([

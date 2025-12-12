@@ -10,7 +10,6 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * 
  * Esta clase se utiliza para enviar emails cuando un administrador
  * restaura la contraseña de un usuario o crea un nuevo usuario.
  * 

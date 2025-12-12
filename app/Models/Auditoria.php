@@ -7,25 +7,31 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
 /**
- * Modelo Auditoria.
- * 
- * Propósito: Registrar cambios en otras tablas para auditoría (logs de inserts/updates/deletes).
- * Usado para compliance, tracking de modificaciones y quién las hizo.
- * 
- * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- 
+ * Modelo Auditoria para registrar cambios en otras tablas.
+ * Almacena logs de INSERT, UPDATE y DELETE con información del usuario que realizó la acción.
+ * Usado para compliance, tracking de modificaciones y auditoría del sistema.
+ *
+ * @author Yariangel Aray
  * @date 2025-11-18
  */
-
 class Auditoria extends Model
 {
     /** @use HasFactory<\Database\Factories\AuditoriaFactory> */
     use HasFactory;
 
-    // Deshabilitar timestamps automáticos (usa fecha_creacion manual).
+    /**
+     * Deshabilitar timestamps automáticos.
+     * Este modelo usa fecha_creacion manual en lugar de created_at/updated_at.
+     *
+     * @var bool
+     */
     public $timestamps = false;
 
-    // Campos fillable para mass assignment.
+    /**
+     * Campos asignables en masa.
+     *
+     * @var array<string>
+     */
     protected $fillable = [
         'tabla_afectada',
         'id_registro_afectado',
@@ -35,36 +41,32 @@ class Auditoria extends Model
         'fecha_creacion'
     ];
 
-    // Campos tratados como fechas.
+    /**
+     * Campos que deben ser tratados como fechas.
+     *
+     * @var array<string>
+     */
     protected $dates = [
         'fecha_creacion',
     ];
 
-
     /**
-     * BLOQUE: Método registrar - Crear entrada de auditoría.
-     * 
-     * Parámetros:
-     * - $model: Instancia del modelo afectado (ej. User).
-     * - $accion: Tipo de cambio ('INSERT', 'UPDATE', 'DELETE').
-     * 
-     * Lógica:
-     * - Obtiene usuario actual (o null si no autenticado).
-     * - Para UPDATE, calcula cambios comparando dirty vs original.
-     * - Crea registro con tabla, ID, acción, usuario y cambios en JSON.
-     * 
-     * Propósito: Método estático para logging automático desde otros modelos.
-     * 
-     * @param Model $model
-     * @param string $accion
+     * Registra una acción de auditoría en la base de datos.
+     * Método estático para logging automático desde trait HasAuditoria.
+     * Captura usuario actual, calcula cambios (para UPDATE) y crea registro de auditoría.
+     *
+     * @param Model $model Instancia del modelo afectado (ej. User, Configuracion).
+     * @param string $accion Tipo de cambio: 'INSERT', 'UPDATE' o 'DELETE'.
      * @return void
      */
     public static function registrar($model, $accion)
     {
+        // Obtener ID del usuario autenticado o null si no hay usuario logueado.
         $usuario = Auth::check() ? Auth::user()->id : null;
 
-
         $cambios = null;
+
+        // Para UPDATE, calcular cambios comparando valores dirty vs original.
         if ($accion === 'UPDATE') {
             $cambios = [];
             foreach ($model->getDirty() as $campo => $nuevoValor) {
@@ -76,6 +78,7 @@ class Auditoria extends Model
             }
         }
 
+        // Crear registro de auditoría con información del cambio.
         self::create([
             'tabla_afectada'        => $model->getTable(),
             'id_registro_afectado'  => $model->id,
@@ -86,8 +89,9 @@ class Auditoria extends Model
     }
 
     /**
-     * Relación: Usuario que realizó la acción.
-     * 
+     * Relación: Usuario que realizó la acción auditada.
+     * Retorna el usuario que ejecutó el INSERT, UPDATE o DELETE.
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function usuario()

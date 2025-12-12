@@ -9,73 +9,46 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 
+/**
+ * Controlador para gestionar módulos del sistema.
+ * Maneja vistas de listado y gestión, operaciones CRUD (crear, leer, actualizar, eliminar),
+ * integrándose con React via Inertia y verificando permisos por rol y pestaña.
+ * Maneja dos pestañas: Listado y Gestión.
+ *
+ * @author Yariangel Aray
+ * @date 2025-12-09
+ */
 class ModuloController extends Controller
 {
     /**
-     * ID fijo del módulo "Modulos" (no cambia).
-     * Usado para acceder a datos relacionados con el módulo.
+     * ID fijo del módulo "Modulos".
+     * Se usa para obtener pestañas y nombre del módulo.
      *
      * @var int
      */
     protected int $moduloId = 11;
 
     /**
-     * Rol del usuario autenticado (cargado en constructor).
-     * Contiene el objeto rol para acceder a permisos y pestañas.
+     * Rol del usuario autenticado.
+     * Contiene la lógica de permisos por pestaña.
      *
      * @var mixed
      */
     protected $rol;
 
     /**
-     * Pestañas accesibles del módulo para el rol (array de pestañas).
-     * Lista de pestañas que el usuario puede ver según su rol.
+     * Pestañas accesibles del módulo según el rol.
      *
      * @var mixed
      */
     protected $tabs;
 
     /**
-     * Nombre del módulo (para pasar a vistas).
-     * Nombre del módulo obtenido de la base de datos, usado en las vistas de Inertia.
+     * Nombre del módulo cargado desde base de datos.
      *
      * @var mixed
      */
     protected $moduloNombre;
-
-    /**
-     * Obtener módulos cacheados con rutas concatenadas
-     */
-    private function getModulosCacheados()
-    {
-        return Modulo::with(['moduloPadre', 'modulosHijos'])
-            ->orderByDesc('id')
-            ->get()
-            ->map(function ($modulo) {
-                // Concatenar ruta si tiene padre
-                $rutaCompleta = $modulo->modulo_padre_id
-                    ? ($modulo->moduloPadre?->ruta . $modulo->ruta)
-                    : $modulo->ruta;
-
-                // Flag para saber si el padre fue eliminado
-                $padreEliminado = $modulo->modulo_padre_id && !$modulo->moduloPadre;
-
-                return [
-                    'id' => $modulo->id,
-                    'nombre' => $modulo->nombre,
-                    'icono' => $modulo->icono,
-                    'ruta' => $modulo->ruta,
-                    'ruta_completa' => $rutaCompleta,
-                    'es_padre' => $modulo->es_padre,
-                    'modulo_padre_id' => $modulo->modulo_padre_id,
-                    'modulo_padre_nombre' => $modulo->moduloPadre?->nombre,
-                    'modulo_padre_ruta' => $modulo->moduloPadre?->ruta,
-                    'padre_eliminado' => $padreEliminado,
-                    'permisos_extra' => $modulo->permisos_extra ?? [],
-                    'cant_hijos' => $modulo->modulosHijos->count(),
-                ];
-            });
-    }
 
     /**
      * Constructor: Inicializa propiedades con datos del usuario autenticado.
@@ -95,10 +68,14 @@ class ModuloController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
+     * Muestra la vista de listado de módulos en React via Inertia.
+     * Renderiza el componente 'Listado' con módulos ordenados, pestañas y nombre del módulo.
+     *
+     * @return \Inertia\Response Respuesta de Inertia con la vista y datos necesarios.
      */
     public function index()
     {
+        // Renderiza vista Inertia con datos.
         return Inertia::render('Modulos:GestionModulos/Modulos/pages/Listado', [
             'tabs' => $this->tabs,
             'modulos' => $this->getModulosCacheados(),
@@ -107,14 +84,22 @@ class ModuloController extends Controller
     }
 
     /**
-     * Vista: Gestión de módulos
+     * Muestra la vista de gestión de módulos en React via Inertia.
+     * Renderiza el componente 'Gestion' con módulos (si tiene permiso de editar), módulos padre para selector, permisos de la pestaña 14 y datos del módulo.
+     *
+     * @return \Inertia\Response Respuesta de Inertia con la vista y datos necesarios.
      */
     public function gestion()
     {
+        // Obtiene permisos específicos de la pestaña 14 (Gestión) para el rol.
         $permisos = $this->rol->getPermisosPestana(14);
-        $modulos = in_array('editar', $permisos) ? $this->getModulosCacheados() : [];
 
-        // Obtener solo módulos padre para el combo
+        // Si puede editar, enviar módulos; si no, array vacío.
+        $modulos = in_array('editar', $permisos)
+            ? $this->getModulosCacheados()
+            : [];
+
+        // Obtener solo módulos padre para el combo de selección.
         $modulosPadre = Modulo::where('es_padre', true)
             ->orderBy('nombre')
             ->get()
@@ -124,6 +109,7 @@ class ModuloController extends Controller
                 'ruta' => $m->ruta,
             ]);
 
+        // Renderiza vista Inertia con datos.
         return Inertia::render('Modulos:GestionModulos/Modulos/pages/Gestion', [
             'tabs' => $this->tabs,
             'modulos' => $modulos,
@@ -136,20 +122,28 @@ class ModuloController extends Controller
     }
 
     /**
-     * Vista: Gestión - Modo crear
+     * Vista: Gestión - Modo crear.
+     * Renderiza la misma vista pero con el formulario en modo crear.
+     * URL: /gestion/crear.
+     *
+     * @return \Inertia\Response
      */
     public function create()
     {
+        // Obtiene permisos específicos de la pestaña 14 (Gestión) para el rol.
         $permisos = $this->rol->getPermisosPestana(14);
 
         if (!in_array('crear', $permisos)) {
+            // Retorna la vista de gestión con un error adicional (sin re-renderizar, solo agrega prop 'error').
             return $this->gestion()->with('error', 'No tienes permiso para crear módulos');
         }
 
-        $modulos = (in_array('editar', $permisos) && in_array('crear', $permisos))
+        // Si puede editar, enviar módulos; si no, array vacío.
+        $modulos = in_array('editar', $permisos)
             ? $this->getModulosCacheados()
             : [];
 
+        // Obtener solo módulos padre para el combo de selección.
         $modulosPadre = Modulo::where('es_padre', true)
             ->orderBy('nombre')
             ->get()
@@ -159,6 +153,7 @@ class ModuloController extends Controller
                 'ruta' => $m->ruta,
             ]);
 
+        // Renderiza vista Inertia con datos.
         return Inertia::render('Modulos:GestionModulos/Modulos/pages/Gestion', [
             'tabs' => $this->tabs,
             'modulos' => $modulos,
@@ -171,23 +166,35 @@ class ModuloController extends Controller
     }
 
     /**
-     * Vista: Gestión - Modo editar
+     * Vista: Gestión - Modo editar.
+     * Renderiza la misma vista pero con el formulario en modo editar.
+     * URL: /gestion/{id}.
+     *
+     * @param int $id ID del módulo a editar.
+     * @return \Inertia\Response
      */
     public function edit(int $id)
     {
+        // Obtiene permisos específicos de la pestaña 14 (Gestión) para el rol.
         $permisos = $this->rol->getPermisosPestana(14);
 
         if (!in_array('editar', $permisos)) {
+            // Retorna la vista de gestión con un error adicional (sin re-renderizar, solo agrega prop 'error').
             return $this->gestion()->with('error', 'No tienes permiso para editar módulos');
         }
 
+        // Verificar que el módulo existe.
         $modulo = Modulo::find($id);
+
         if (!$modulo) {
+            // Retorna la vista de gestión con un error adicional (sin re-renderizar, solo agrega prop 'error').
             return $this->gestion()->with('error', 'El módulo no existe');
         }
 
-        $modulos = in_array('editar', $permisos) ? $this->getModulosCacheados() : [];
+        // Obtener todos los módulos para el select.
+        $modulos = $this->getModulosCacheados();
 
+        // Obtener módulos padre excluyendo el módulo actual (para evitar asignarse a sí mismo como padre).
         $modulosPadre = Modulo::where('es_padre', true)
             ->where('id', '!=', $id)
             ->orderBy('nombre')
@@ -210,12 +217,18 @@ class ModuloController extends Controller
     }
 
     /**
-     * Crear nuevo módulo
+     * Crea un nuevo módulo en la base de datos.
+     * Valida permisos, procesa permisos extra y retorna respuesta JSON con ruta completa calculada.
+     *
+     * @param ModuloRequest $request Solicitud con datos validados para crear el módulo.
+     * @return \Illuminate\Http\JsonResponse Respuesta JSON con mensaje de éxito o error.
      */
     public function store(ModuloRequest $request)
     {
+        // Obtiene permisos específicos de la pestaña 14 (Gestión) para el rol.
         $permisos = $this->rol->getPermisosPestana(14);
 
+        // Validar permiso.
         if (!in_array('crear', $permisos)) {
             return response()->json([
                 'error' => 'No tienes permiso para crear módulos'
@@ -225,20 +238,23 @@ class ModuloController extends Controller
         try {
             $validated = $request->validated();
 
+            // Crear módulo. Guarda null en permisos_extra si está vacío.
             $modulo = Modulo::create([
                 'nombre' => $validated['nombre'],
                 'icono' => $validated['icono'],
                 'ruta' => $validated['ruta'],
                 'es_padre' => $validated['es_padre'],
                 'modulo_padre_id' => $validated['modulo_padre_id'] ?? null,
-                'permisos_extra' => $validated['permisos_extra'] && !empty($validated['permisos_extra']) ? $validated['permisos_extra'] : null,  // Guarda null si es vacío
+                'permisos_extra' => $validated['permisos_extra'] && !empty($validated['permisos_extra']) ? $validated['permisos_extra'] : null,
             ]);
 
+            // Invalidar cache después de crear.
             Cache::forget('modulos_list');
 
-            // Cargar relaciones para la respuesta
+            // Cargar relaciones para calcular ruta completa.
             $modulo->load(['moduloPadre', 'modulosHijos']);
 
+            // Concatenar ruta completa si tiene módulo padre.
             $rutaCompleta = $modulo->modulo_padre_id
                 ? ($modulo->moduloPadre->ruta . $modulo->ruta)
                 : $modulo->ruta;
@@ -260,20 +276,30 @@ class ModuloController extends Controller
                 ]
             ], 201);
         } catch (\Exception $e) {
-            \Log::error('Error creando módulo: ' . $e->getMessage());
+            \Log::error('Error al crear módulo: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+
             return response()->json([
-                'error' => 'Error al crear el módulo'
+                'error' => 'Hubo un error al crear el módulo. Por favor intenta más tarde.'
             ], 500);
         }
     }
 
     /**
-     * Actualizar módulo existente
+     * Actualiza un módulo existente en la base de datos.
+     * Valida permisos, procesa permisos extra y retorna respuesta JSON con ruta completa calculada.
+     *
+     * @param ModuloRequest $request Solicitud con datos validados para actualizar.
+     * @param int $id ID del módulo a actualizar.
+     * @return \Illuminate\Http\JsonResponse Respuesta JSON con mensaje de éxito o error.
      */
     public function update(ModuloRequest $request, int $id)
     {
+        // Obtiene permisos específicos de la pestaña 14 (Gestión) para el rol.
         $permisos = $this->rol->getPermisosPestana(14);
 
+        // Validar permiso.
         if (!in_array('editar', $permisos)) {
             return response()->json([
                 'error' => 'No tienes permiso para editar módulos'
@@ -284,21 +310,24 @@ class ModuloController extends Controller
             $modulo = Modulo::findOrFail($id);
             $validated = $request->validated();
 
+            // Actualizar módulo. Guarda null en permisos_extra si está vacío.
             $modulo->update([
                 'nombre' => $validated['nombre'],
                 'icono' => $validated['icono'],
                 'ruta' => $validated['ruta'],
                 'es_padre' => $validated['es_padre'],
                 'modulo_padre_id' => $validated['modulo_padre_id'] ?? null,
-                'permisos_extra' => $validated['permisos_extra'] && !empty($validated['permisos_extra']) ? $validated['permisos_extra'] : null,  // Guarda null si es vacío
+                'permisos_extra' => $validated['permisos_extra'] && !empty($validated['permisos_extra']) ? $validated['permisos_extra'] : null,
             ]);
 
-
+            // Invalidar cache después de actualizar.
             Cache::forget('modulos_list');
             Cache::forget('pestanas_list');
 
+            // Cargar relaciones para calcular ruta completa.
             $modulo->load(['moduloPadre', 'modulosHijos']);
 
+            // Concatenar ruta completa si tiene módulo padre.
             $rutaCompleta = $modulo->modulo_padre_id
                 ? ($modulo->moduloPadre->ruta . $modulo->ruta)
                 : $modulo->ruta;
@@ -318,22 +347,31 @@ class ModuloController extends Controller
                     'permisos_extra' => $modulo->permisos_extra ?? [],
                     'cant_hijos' => $modulo->modulosHijos->count(),
                 ]
-            ]);
+            ], 200);
         } catch (\Exception $e) {
-            \Log::error('Error actualizando módulo: ' . $e->getMessage());
+            \Log::error('Error al actualizar módulo: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+
             return response()->json([
-                'error' => 'Error al actualizar el módulo'
+                'error' => 'Hubo un error al actualizar el módulo. Por favor intenta más tarde.'
             ], 500);
         }
     }
 
     /**
-     * Eliminar módulo
+     * Elimina un módulo de la base de datos (soft delete).
+     * Valida permisos y retorna respuesta JSON.
+     *
+     * @param int $id ID del módulo a eliminar.
+     * @return \Illuminate\Http\JsonResponse Respuesta JSON con mensaje de éxito o error.
      */
     public function destroy(int $id)
     {
+        // Obtiene permisos específicos de la pestaña 14 (Gestión) para el rol.
         $permisos = $this->rol->getPermisosPestana(14);
 
+        // Validar permiso.
         if (!in_array('eliminar', $permisos)) {
             return response()->json([
                 'error' => 'No tienes permiso para eliminar módulos'
@@ -343,32 +381,61 @@ class ModuloController extends Controller
         try {
             $modulo = Modulo::findOrFail($id);
 
-            // // Verificar que no tenga módulos hijos
-            // if ($modulo->modulosHijos()->count() > 0) {
-            //     return response()->json([
-            //         'error' => 'No se puede eliminar un módulo que tiene módulos hijos'
-            //     ], 422);
-            // }
-
-            // // Verificar que no tenga pestañas
-            // if ($modulo->pestanas()->count() > 0) {
-            //     return response()->json([
-            //         'error' => 'No se puede eliminar un módulo que tiene pestañas asociadas'
-            //     ], 422);
-            // }
-
+            // Soft delete.
             $modulo->delete();
+
+            // Invalidar cache después de eliminar.
             Cache::forget('modulos_list');
             Cache::forget('pestanas_list');
 
             return response()->json([
                 'message' => 'Módulo eliminado correctamente'
-            ]);
+            ], 200);
         } catch (\Exception $e) {
-            \Log::error('Error eliminando módulo: ' . $e->getMessage());
+            \Log::error('Error al eliminar módulo: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+
             return response()->json([
-                'error' => 'Error al eliminar el módulo'
+                'error' => 'Hubo un error al eliminar el módulo. Por favor intenta más tarde.'
             ], 500);
         }
+    }
+
+    /**
+     * Método auxiliar para obtener módulos con rutas concatenadas y conteo de hijos.
+     * Calcula ruta completa concatenando con módulo padre si existe, y detecta si el padre fue eliminado.
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    private function getModulosCacheados()
+    {
+        return Modulo::with(['moduloPadre', 'modulosHijos'])
+            ->orderByDesc('id')
+            ->get()
+            ->map(function ($modulo) {
+                // Concatenar ruta completa si tiene módulo padre.
+                $rutaCompleta = $modulo->modulo_padre_id
+                    ? ($modulo->moduloPadre?->ruta . $modulo->ruta)
+                    : $modulo->ruta;
+
+                // Flag para detectar si el padre fue eliminado (modulo_padre_id existe pero moduloPadre es null).
+                $padreEliminado = $modulo->modulo_padre_id && !$modulo->moduloPadre;
+
+                return [
+                    'id' => $modulo->id,
+                    'nombre' => $modulo->nombre,
+                    'icono' => $modulo->icono,
+                    'ruta' => $modulo->ruta,
+                    'ruta_completa' => $rutaCompleta,
+                    'es_padre' => $modulo->es_padre,
+                    'modulo_padre_id' => $modulo->modulo_padre_id,
+                    'modulo_padre_nombre' => $modulo->moduloPadre?->nombre,
+                    'modulo_padre_ruta' => $modulo->moduloPadre?->ruta,
+                    'padre_eliminado' => $padreEliminado,
+                    'permisos_extra' => $modulo->permisos_extra ?? [],
+                    'cant_hijos' => $modulo->modulosHijos->count(),
+                ];
+            });
     }
 }

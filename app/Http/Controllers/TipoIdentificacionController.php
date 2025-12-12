@@ -10,8 +10,9 @@ use Inertia\Inertia;
 
 /**
  * Controlador para gestionar tipos de identificación en el módulo de Administración Web.
- * Maneja operaciones CRUD (crear, leer, actualizar, eliminar) para tipos de identificación,
+ * Maneja vista única con listado y formulario, operaciones CRUD (crear, leer, actualizar, eliminar),
  * integrándose con React via Inertia y verificando permisos por rol y pestaña.
+ * Maneja una pestaña: Tipos de Identificaciones.
  *
  * @author Yariangel Aray
  * @date 2025-12-03
@@ -19,30 +20,40 @@ use Inertia\Inertia;
 class TipoIdentificacionController extends Controller
 {
     /**
-     * ID fijo del módulo Tablas Maestras (no cambia).
+     * ID fijo del módulo "Tablas Maestras".
+     * Se usa para obtener pestañas y nombre del módulo.
+     *
+     * @var int
      */
     protected int $moduloId = 8;
 
     /**
-     * ID fijo de la pestaña Tipos de Identificaciones (no cambia).
+     * ID fijo de la pestaña "Tipos de Identificaciones".
+     * Se usa para obtener permisos específicos de esta pestaña.
+     *
+     * @var int
      */
     protected int $pestanaId = 5;
 
     /**
-     * Rol del usuario autenticado (cargado en constructor).
-     * Contiene el objeto rol para acceder a permisos y pestañas.
+     * Rol del usuario autenticado.
+     * Contiene la lógica de permisos por pestaña.
+     *
+     * @var mixed
      */
     protected $rol;
 
     /**
-     * Pestañas accesibles del módulo para el rol (array de pestañas).
-     * Lista de pestañas que el usuario puede ver según su rol.
+     * Pestañas accesibles del módulo según el rol.
+     *
+     * @var mixed
      */
     protected $tabs;
 
     /**
-     * Nombre del módulo (para pasar a vistas).
-     * Nombre del módulo obtenido de la base de datos, usado en las vistas de Inertia.
+     * Nombre del módulo cargado desde base de datos.
+     *
+     * @var mixed
      */
     protected $moduloNombre;
 
@@ -64,15 +75,17 @@ class TipoIdentificacionController extends Controller
     }
 
     /**
-     * Muestra la lista de tipos de identificación en la vista de React via Inertia.
-     * Recupera todos los tipos ordenados por ID descendente, junto con pestañas, permisos y nombre del módulo.
+     * Muestra la vista de tipos de identificación en React via Inertia.
+     * Renderiza el componente 'TiposIdentificaciones' con tipos ordenados, pestañas, permisos y nombre del módulo.
      *
      * @return \Inertia\Response Respuesta de Inertia con la vista y datos necesarios.
      */
     public function index()
     {
+        // Obtiene permisos específicos de la pestaña 5 (Tipos de Identificaciones) para el rol.
         $permisos = $this->rol->getPermisosPestana($this->pestanaId);
 
+        // Renderiza vista Inertia con datos.
         return Inertia::render('Modulos:AdministracionWeb/TablasMaestras/pages/TiposIdentificaciones', [
             'tabs' => $this->tabs,
             'tipos' => TipoIdentificacion::orderByDesc('id')->get(),
@@ -83,7 +96,7 @@ class TipoIdentificacionController extends Controller
 
     /**
      * Crea un nuevo tipo de identificación en la base de datos.
-     * Valida los datos con TipoIdentificacionRequest, verifica permisos y maneja errores.
+     * Valida permisos y retorna respuesta JSON.
      *
      * @param TipoIdentificacionRequest $request Solicitud con datos validados para crear el tipo.
      * @return \Illuminate\Http\JsonResponse Respuesta JSON con mensaje de éxito o error.
@@ -91,16 +104,16 @@ class TipoIdentificacionController extends Controller
     public function store(TipoIdentificacionRequest $request)
     {
         try {
-            // Verificar permiso
+            // Validar permiso.
             if (!$this->rol->tienePermisoPestana($this->pestanaId, 'crear')) {
                 return response()->json([
                     'error' => 'No tienes permiso para crear tipos de identificación'
                 ], 403);
             }
 
-            // Obtener solo datos validados
             $validated = $request->validated();
-            // Crear el tipo
+
+            // Crear tipo de identificación.
             $tipo = TipoIdentificacion::create($validated);
 
             return response()->json([
@@ -108,16 +121,19 @@ class TipoIdentificacionController extends Controller
                 'tipo' => $tipo,
             ], 201);
         } catch (\Exception $e) {
+            \Log::error('Error al crear tipo de identificación: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+
             return response()->json([
-                'error' => 'Error al crear el tipo de identificación',
-                'message' => $e->getMessage(),
+                'error' => 'Hubo un error al crear el tipo de identificación. Por favor intenta más tarde.'
             ], 500);
         }
     }
 
     /**
      * Actualiza un tipo de identificación existente en la base de datos.
-     * Valida los datos con TipoIdentificacionRequest, verifica permisos y maneja errores.
+     * Valida permisos y retorna respuesta JSON.
      *
      * @param TipoIdentificacionRequest $request Solicitud con datos validados para actualizar.
      * @param int $id ID del tipo de identificación a actualizar.
@@ -126,35 +142,37 @@ class TipoIdentificacionController extends Controller
     public function update(TipoIdentificacionRequest $request, int $id)
     {
         try {
-            // Verificar permiso
-            if (!$this->rol->tienePermisoPestana($this->pestanaId, 'crear')) {
+            // Validar permiso.
+            if (!$this->rol->tienePermisoPestana($this->pestanaId, 'editar')) {
                 return response()->json([
                     'error' => 'No tienes permiso para editar tipos de identificación'
                 ], 403);
             }
 
             $tipoIdentificacion = TipoIdentificacion::findOrFail($id);
-            // Obtener solo datos validados
             $validated = $request->validated();
 
-            // Actualizar el tipo
+            // Actualizar tipo de identificación.
             $tipoIdentificacion->update($validated);
 
             return response()->json([
                 'message' => 'Tipo de identificación actualizado correctamente',
                 'tipo' => $tipoIdentificacion->fresh(),
-            ]);
+            ], 200);
         } catch (\Exception $e) {
+            \Log::error('Error al actualizar tipo de identificación: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+
             return response()->json([
-                'error' => 'Error al actualizar el tipo de identificación',
-                'message' => $e->getMessage(),
+                'error' => 'Hubo un error al actualizar el tipo de identificación. Por favor intenta más tarde.'
             ], 500);
         }
     }
 
     /**
      * Elimina un tipo de identificación de la base de datos (soft delete).
-     * Verifica permisos y maneja errores.
+     * Valida permisos y retorna respuesta JSON.
      *
      * @param int $id ID del tipo de identificación a eliminar.
      * @return \Illuminate\Http\JsonResponse Respuesta JSON con mensaje de éxito o error.
@@ -162,7 +180,7 @@ class TipoIdentificacionController extends Controller
     public function destroy(int $id)
     {
         try {
-            // Verificar permiso
+            // Validar permiso.
             if (!$this->rol->tienePermisoPestana($this->pestanaId, 'eliminar')) {
                 return response()->json([
                     'error' => 'No tienes permiso para eliminar tipos de identificación'
@@ -170,17 +188,20 @@ class TipoIdentificacionController extends Controller
             }
 
             $tipoIdentificacion = TipoIdentificacion::findOrFail($id);
-            // Soft delete
+
+            // Soft delete.
             $tipoIdentificacion->delete();
 
             return response()->json([
                 'message' => 'Tipo de identificación eliminado correctamente',
+            ], 200);
+        } catch (\Exception $e) {
+            \Log::error('Error al eliminar tipo de identificación: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
             ]);
 
-        } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Error al eliminar el tipo de identificación',
-                'message' => $e->getMessage(),
+                'error' => 'Hubo un error al eliminar el tipo de identificación. Por favor intenta más tarde.'
             ], 500);
         }
     }
