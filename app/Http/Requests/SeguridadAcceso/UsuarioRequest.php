@@ -48,7 +48,6 @@ class UsuarioRequest extends FormRequest
                 'max:20',
                 'regex:/^[0-9]+$/',
             ],
-            'nombre_completo' => 'required|string',
             'email' => [
                 'required',
                 'string',
@@ -84,8 +83,6 @@ class UsuarioRequest extends FormRequest
             'numero_documento.regex' => 'El número de documento solo debe contener números',
             'numero_documento.unique' => 'Este número de documento ya está registrado',
             'numero_documento.max' => 'El número de documento no debe superar 20 caracteres',
-
-            'nombre_completo.required' => 'El nombre completo es obligatorio',
 
             'email.required' => 'El correo electrónico es obligatorio',
             'email.email' => 'Debe ingresar un correo electrónico válido',

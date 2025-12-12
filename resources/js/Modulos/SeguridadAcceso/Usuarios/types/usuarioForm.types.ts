@@ -46,11 +46,6 @@ export const usuarioSchemaBase = z.object({
     .max(USUARIO_LIMITS.numero_documento, `Máximo ${USUARIO_LIMITS.numero_documento} caracteres`)
     .regex(/^[0-9]+$/, "Solo números"),
 
-  nombre_completo: z
-    .string()
-    .trim()
-    .min(1, "El nombre es obligatorio"),
-
   email: z
     .string()
     .trim()

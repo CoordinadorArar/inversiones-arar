@@ -35,12 +35,12 @@ class PestanaSeeder extends Seeder
             // Administración Web → Empresas: Pestañas para gestión de empresas.
             [
                 'modulo' => 'Empresas',  // Nombre del módulo padre.
-                'nombre' => 'Listado',   // Nombre de la pestaña.
+                'nombre' => 'Listado Empresas',   // Nombre de la pestaña.
                 'ruta'   => '/listado'   // Ruta relativa.
             ],
             [
                 'modulo' => 'Empresas',
-                'nombre' => 'Gestión',
+                'nombre' => 'Gestión Empresas',
                 'ruta'   => '/gestion'
             ],
 
@@ -76,24 +76,28 @@ class PestanaSeeder extends Seeder
             // Seguridad y Acceso → Usuarios: Pestañas para gestión de usuarios.
             [
                 'modulo' => 'Usuarios',
-                'nombre' => 'Listado',
+                'nombre' => 'Listado Usuarios',
                 'ruta'   => '/listado'
             ],
             [
                 'modulo' => 'Usuarios',
-                'nombre' => 'Gestión',
-                'ruta'   => '/gestion'
+                'nombre' => 'Gestión Usuarios',
+                'ruta'   => '/gestion',
+                'permisos_extra' => [
+                    "bloquear",
+                    "restaurar_password"
+                ]
             ],
 
             // Seguridad y Acceso → Roles: Pestañas para roles y permisos.
             [
                 'modulo' => 'Roles',
-                'nombre' => 'Listado',
+                'nombre' => 'Listado Roles',
                 'ruta'   => '/listado'
             ],
             [
                 'modulo' => 'Roles',
-                'nombre' => 'Gestión',
+                'nombre' => 'Gestión Roles',
                 'ruta'   => '/gestion'
             ],
             [
@@ -105,36 +109,36 @@ class PestanaSeeder extends Seeder
             // Gestión de Módulos → Módulos: Pestañas para módulos.
             [
                 'modulo' => 'Módulos',
-                'nombre' => 'Listado',
+                'nombre' => 'Listado Módulos',
                 'ruta'   => '/listado'
             ],
             [
                 'modulo' => 'Módulos',
-                'nombre' => 'Gestión',
+                'nombre' => 'Gestión Módulos',
                 'ruta'   => '/crear'
             ],
 
             // Gestión de Módulos → Pestañas: Pestañas para pestañas.
             [
                 'modulo' => 'Pestañas',
-                'nombre' => 'Listado',
+                'nombre' => 'Listado Pestañas',
                 'ruta'   => '/listado'
             ],
             [
                 'modulo' => 'Pestañas',
-                'nombre' => 'Gestión',
+                'nombre' => 'Gestión Pestañas',
                 'ruta'   => '/crear'
             ],
 
             // Recursos Humanos → Documentos: Pestañas para documentos.
             [
                 'modulo' => 'Documentos Corporativos',
-                'nombre' => 'Listado',
+                'nombre' => 'Listado Documentos',
                 'ruta'   => '/listado'
             ],
             [
                 'modulo' => 'Documentos Corporativos',
-                'nombre' => 'Gestión',
+                'nombre' => 'Gestión Documentos',
                 'ruta'   => '/gestion'
             ],
 
@@ -158,15 +162,22 @@ class PestanaSeeder extends Seeder
 
             if (!$modulo) continue;  // Saltar si módulo no existe.
 
+            // Preparar atributos para crear/actualizar: incluir ruta y permisos_extra si existe.
+            $attributes = [
+                'ruta' => $item['ruta'],  // Ruta siempre presente.
+            ];
+
+            if (isset($item['permisos_extra'])) {
+                $attributes['permisos_extra'] = json_encode($item['permisos_extra']);  // Serializar como JSON.
+            }
+
             // Insertar o actualizar pestaña (clave: modulo_id + nombre).
             Pestana::firstOrCreate(
                 [
                     'modulo_id' => $modulo->id,  // FK al módulo.
                     'nombre'    => $item['nombre'],  // Nombre único por módulo.
                 ],
-                [
-                    'ruta'      => $item['ruta'],  // Ruta.
-                ]
+                $attributes  // Atributos para crear si no existe.
             );
         }
     }

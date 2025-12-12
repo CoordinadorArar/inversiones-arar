@@ -93,7 +93,7 @@ export default function UsuariosGestion({
     if (mode === "edit" && selectedUsuario) {
       return {
         numero_documento: selectedUsuario.numero_documento,
-        nombre_completo: selectedUsuario.nombre_completo,
+        nombre_completo: selectedUsuario.apellidos + " " + selectedUsuario.nombres,
         email: selectedUsuario.email,
         rol_id: Number(selectedUsuario.rol_id),
       };
@@ -205,7 +205,7 @@ export default function UsuariosGestion({
                     ) : (
                       <span className="flex gap-2 items-center">
                         <Pencil className="h-4 w-4" />
-                        Modo: Editando {selectedUsuario?.nombre_completo}
+                        Modo: Editando {formInitialData?.nombre_completo}
                       </span>
                     )}
                   </p>

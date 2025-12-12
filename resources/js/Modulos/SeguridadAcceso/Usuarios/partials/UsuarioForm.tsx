@@ -208,16 +208,16 @@ export function UsuarioForm({
 
                 {/* Restaurar contraseña: Solo si tiene permiso. */}
                 {permisos.puedeRestaurar && (
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      onClick={onRestaurarPassword}
-                      disabled={processing || isSubmitting}
-                    >
-                      <KeyRound className="h-4 w-4" />
-                      Restaurar Contraseña
-                    </Button>
-                  )}
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={onRestaurarPassword}
+                    disabled={processing || isSubmitting}
+                  >
+                    <KeyRound className="h-4 w-4" />
+                    Restaurar Contraseña
+                  </Button>
+                )}
               </div>
             )}
 

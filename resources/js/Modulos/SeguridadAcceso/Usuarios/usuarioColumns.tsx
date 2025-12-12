@@ -32,8 +32,9 @@ export const UsuarioColumns: ColumnDef<UsuarioInterface>[] = [
     },
   },
   {
-    accessorKey: "nombre_completo",
+    accessorKey: "apellidos",
     header: "Nombre Completo",
+    cell: ({row}) => `${row.original.apellidos} ${row.original.nombres}`
   },
   {
     accessorKey: "email",

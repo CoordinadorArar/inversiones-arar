@@ -7,7 +7,8 @@
 
 export interface UsuarioInterface {
   id: number;
-  nombre_completo: string;
+  nombres: string;
+  apellidos: string;
   numero_documento: string;
   email: string;
   rol_id: number;

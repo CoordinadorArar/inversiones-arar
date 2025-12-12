@@ -72,7 +72,8 @@ class UsuarioController extends Controller
                 return [
                     'id' => $usuario->id,
                     'numero_documento' => $usuario->numero_documento,
-                    'nombre_completo' => $usuario->info_corta->apellidos . " " . $usuario->info_corta->nombres,
+                    'nombres' => $usuario->info_corta->nombres,
+                    'apellidos' => $usuario->info_corta->apellidos,
                     'email' => $usuario->email,
                     'rol' => [
                         'id' => $usuario->rol_id,
@@ -93,16 +94,16 @@ class UsuarioController extends Controller
      * @param string $nombreCompleto Nombre completo (apellidos nombres).
      * @return string Contraseña generada.
      */
-    private function generarPasswordInicial(string $documento, string $nombreCompleto): string
+    private function generarPasswordInicial(string $documento, string $nombres, string $apellidos): string
     {
-        // Separar nombre completo en partes
-        $partes = explode(' ', trim($nombreCompleto));
+        $nombre = explode(' ', trim($nombres))[0];
+        $apellido = explode(' ', trim($apellidos))[0];
 
-        // Tomar primera letra del primer nombre (Apellido)
-        $primeraLetraApellido = isset($partes[0]) ? strtoupper(substr($partes[0], 0, 1)) : '';
+        // Tomar primera letra del primer apellido (Apellido)
+        $primeraLetraApellido = isset($apellido) ? strtoupper(substr($apellido, 0, 1)) : '';
 
-        // Tomar primera letra del segundo o último nombre (Nombre)
-        $primeraLetraNombre = null !== end($partes) ? strtolower(substr(end($partes), 0, 1)) : '';
+        // Tomar primera letra del primer nombre (Nombre)
+        $primeraLetraNombre = isset($nombre) ? strtolower(substr($nombre, 0, 1)) : '';
 
         // Formato: {documento}{LetraApellido}{LetraNombre}.
         return $documento . $primeraLetraApellido . $primeraLetraNombre . '.';
@@ -347,16 +348,21 @@ class UsuarioController extends Controller
                 ], 422);
             }
 
-            // Generar contraseña inicial: {documento}{LetraApellido}{LetraNombre}.
-            $passwordInicial = $this->generarPasswordInicial(
-                $validated['numero_documento'],
-                $validated['nombre_completo']
-            );
 
             $usuario = User::create([
                 'numero_documento' => $validated['numero_documento'],
                 'email' => $validated['email'],
                 'rol_id' => $validated['rol_id'],
+            ]);
+
+            // Generar contraseña inicial: {documento}{LetraApellido}{LetraNombre}.
+            $passwordInicial = $this->generarPasswordInicial(
+                $validated['numero_documento'],
+                $usuario->info_corta->nombres,
+                $usuario->info_corta->apellidos
+            );
+
+            $usuario->update([
                 'password' => Hash::make($passwordInicial),
             ]);
 
@@ -373,7 +379,8 @@ class UsuarioController extends Controller
                 'usuario' => [
                     'id' => $usuario->id,
                     'numero_documento' => $usuario->numero_documento,
-                    'nombre_completo' => $validated['nombre_completo'],
+                    'nombres' => $usuario->info_corta->nombres,
+                    'apellidos' => $usuario->info_corta->apellidos,
                     'email' => $usuario->email,
                     'rol_id' => $usuario->rol_id,
                     'rol' => [
@@ -392,7 +399,7 @@ class UsuarioController extends Controller
     }
 
     /**
-     * Actualizar usuario con validación de dominio.
+     * Actualizar usuarios
      *
      * @param UsuarioRequest $request Solicitud con datos validados.
      * @param int $id ID del usuario a actualizar.
@@ -425,7 +432,8 @@ class UsuarioController extends Controller
                 'usuario' => [
                     'id' => $usuario->id,
                     'numero_documento' => $usuario->numero_documento,
-                    'nombre_completo' => $usuario->info_corta->nombres . ' ' . $usuario->info_corta->apellidos,
+                    'nombres' => $usuario->info_corta->nombres,
+                    'apellidos' => $usuario->info_corta->apellidos,
                     'email' => $usuario->email,
                     'rol_id' => $usuario->rol_id,
                     'rol' => [
@@ -522,18 +530,19 @@ class UsuarioController extends Controller
         try {
             $usuario = User::findOrFail($id);
 
-            // Generar contraseña: {documento}{LetraApellido}{LetraNombre}.
-            $nombreCompleto = $usuario->info_corta->apellidos . ' ' . $usuario->info_corta->nombres;
-            $nuevaPassword = $this->generarPasswordInicial($usuario->numero_documento, $nombreCompleto);
+            // Generar contraseña: {documento}{LetraApellido}{LetraNombre}.            
+            $nuevaPassword = $this->generarPasswordInicial($usuario->numero_documento, $usuario->info_corta->nombres, $usuario->info_corta->apellidos);
 
             $usuario->update([
                 'password' => Hash::make($nuevaPassword)
             ]);
 
             // Enviar email
-            Mail::to($usuario->email)->send(
-                new PasswordGeneradaMail($usuario, $nuevaPassword)
-            );
+            Mail::to($usuario->email)
+                ->cc(['desarrollo01@inversionesarar.com'])
+                ->send(
+                    new PasswordGeneradaMail($usuario, $nuevaPassword)
+                );
 
             return response()->json([
                 'message' => 'Contraseña restaurada. Se ha enviado un correo al usuario con la nueva contraseña.'

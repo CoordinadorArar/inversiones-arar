@@ -55,7 +55,7 @@ export function useUsuarioGestion({
     () =>
       usuarios.map((usuario) => ({
         value: usuario.id.toString(),
-        label: `${usuario.numero_documento} - ${usuario.nombre_completo}`,
+        label: `${usuario.numero_documento} - ${usuario.apellidos} ${usuario.nombres}`,
       })),
     [usuarios]
   );
