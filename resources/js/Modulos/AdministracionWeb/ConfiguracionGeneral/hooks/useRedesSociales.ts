@@ -15,7 +15,7 @@ import {
     RedesSocialesFormData,
     redesSocialesSchema,
 } from "../types/configuracionForm.types";
-import { ConfiguracionRRSS } from "../types/configuracionInterface";
+import { ConfiguracionRRSS } from "../../../../Types/configuracionInterface";
 
 /**
  * Interfaz para las props del hook useRedesSociales.

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
+use App\Services\ConfiguracionService;
 
 /**
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
@@ -19,7 +20,9 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return inertia('Public/Home');
+        $images = ConfiguracionService::getGroup('image');
+
+        return inertia('Public/Home', ['images' => $images]);
     }
 
 }

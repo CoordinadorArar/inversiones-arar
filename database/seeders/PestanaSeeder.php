@@ -114,7 +114,7 @@ class PestanaSeeder extends Seeder
             [
                 'modulo' => 'Módulos',
                 'nombre' => 'Gestión Módulos',
-                'ruta'   => '/crear'
+                'ruta'   => '/gestion'
             ],
 
             // Gestión de Módulos → Pestañas: Pestañas para pestañas.
@@ -126,7 +126,7 @@ class PestanaSeeder extends Seeder
             [
                 'modulo' => 'Pestañas',
                 'nombre' => 'Gestión Pestañas',
-                'ruta'   => '/crear'
+                'ruta'   => '/gestion'
             ],
 
             // Recursos Humanos → Documentos: Pestañas para documentos.

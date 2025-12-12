@@ -12,7 +12,7 @@
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
         <!-- Favicon -->
-        <link rel="icon" href="/images/icono-arar.png" type="image/png">
+        <link rel="icon" href="{{ $images['icono'] ? '/storage'.$images['icono'] : '/images/icono-arar.png' }}" type="image/png">
 
         <!-- Scripts -->
         @routes

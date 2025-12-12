@@ -18,7 +18,7 @@ import { handleUrlKeyDown } from "@/lib/keydownValidations";
 import { TabInterface } from "@/Types/tabInterface";
 import InputError from "@/Components/InputError";
 import { Input } from "@/components/ui/input";
-import { ConfiguracionRRSS } from "../types/configuracionInterface";
+import { ConfiguracionRRSS } from "../../../../Types/configuracionInterface";
 import { useRedesSociales } from "../hooks/useRedesSociales";
 import HelpManualButton from "@/Components/HelpManualButton";
 

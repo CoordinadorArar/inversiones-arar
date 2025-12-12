@@ -23,6 +23,7 @@ namespace App\Http\Middleware;
  * @date 2025-11-25
  */
 use App\Models\EmpresaWeb;
+use App\Services\ConfiguracionService;
 use Closure;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -51,11 +52,20 @@ class SharePublicData
          * - Se filtran las empresas por 'mostrar_en_header' true, ordenadas alfabéticamente.
          * - Propósito: Alimentar dropdown/header en componentes públicos sin queries repetidas.
          */
+        $contact = ConfiguracionService::getGroup('contact');
+        $images = ConfiguracionService::getGroup('image');
+        $rrss = ConfiguracionService::getGroup('rrss');
+
         Inertia::share([
             'empresasHeader' => EmpresaWeb::select('id_siesa as id', 'razon_social as name')
                 ->where('mostrar_en_header', true)   // Solo las que deben mostrarse en header.
                 ->orderBy('razon_social')            // Orden alfabético.
                 ->get(),
+            'configuracion' => [
+                'contact' => $contact,
+                'images' => $images,
+                'rrss' => $rrss,
+            ]
         ]);
         
         // Continuar con el request.

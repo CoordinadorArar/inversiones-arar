@@ -15,7 +15,7 @@ import {
     InformacionCorporativaFormData,
     informacionCorporativaSchema,
 } from "../types/configuracionForm.types";
-import { ConfiguracionContacto, ConfiguracionImages } from "../types/configuracionInterface";
+import { ConfiguracionContacto, ConfiguracionImages } from "../../../../Types/configuracionInterface";
 
 /**
  * Interfaz para las props del hook useInformacionCorporativa.

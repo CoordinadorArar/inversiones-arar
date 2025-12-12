@@ -22,6 +22,7 @@ import { DashboardSidebar } from "@/Components/Sidebar/DashboardSidebar";
 import { MenuParent } from "@/Components/Sidebar/menu.types";
 import { DashboardHeader } from "@/Components/Header/Dashboard/DashboardHeader";
 import { Toaster } from "@/Components/ui/toaster";
+import { ConfiguracionImages } from "@/Types/configuracionInterface";
 
 // Interface para props del componente.
 interface DashboardLayoutProps {
@@ -32,14 +33,17 @@ interface DashboardLayoutProps {
 // Extiende PageProps.
 interface PagePropsDashboard extends PageProps {
   menu: MenuParent[];  // Menu dinámico desde HandleInertiaRequests.
+  images: ConfiguracionImages;
 }
 
 // Componente funcional DashboardLayout.
 export function DashboardLayout({ children, header }: DashboardLayoutProps) {
   // Extraer menu de props compartidas via Inertia (ej. desde middleware).
   const menu: MenuParent[] = usePage<PagePropsDashboard>().props.menu;
+  const images: ConfiguracionImages = usePage<PagePropsDashboard>().props.images;
 
   const user = usePage().props.auth.user;
+  
 
   // Estado inicial: Solo el primer grupo con items abierto (o ninguno)
   const [openGroups, setOpenGroups] = useState<string[]>(() => {
@@ -70,6 +74,7 @@ export function DashboardLayout({ children, header }: DashboardLayoutProps) {
           menu={menu}
           openGroups={openGroups}
           setOpenGroups={setOpenGroups}
+          images={images} 
         />
 
         {/* Contenedor principal: flex col. */}

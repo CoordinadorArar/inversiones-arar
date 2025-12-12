@@ -18,14 +18,12 @@
 import PublicLayout from '@/Layouts/PublicLayout';
 import { Head, Link } from '@inertiajs/react';
 import { Card, CardContent } from "@/components/ui/card";
-import { Target, Users, Building2, ArrowRight, Lightbulb, TrendingUp, Eye, Sparkles, BadgeAlert } from "lucide-react";
+import { Target, Users, Building2, ArrowRight, Lightbulb, TrendingUp, Eye } from "lucide-react";
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { it } from 'node:test';
 import BadgeCustom from '@/Components/BadgeCustom';
+import { ConfiguracionImages } from '@/Types/configuracionInterface';
 
-export default function Home() {
-
+export default function Home({images}:{images:ConfiguracionImages}) {    
     const caracteristicas = [
         {
             title: "Portafolio Diversificado",
@@ -128,7 +126,7 @@ export default function Home() {
                             <div className="flex items-center justify-center order-first md:order-last">
                                 <div className="relative w-full max-w-xs sm:max-w-sm md:max-w-md">
                                     <img
-                                        src="/images/logo-arar.png"
+                                        src={images.logo ? "/storage" + images.logo : "/images/logo-arar.png"}
                                         alt="Inversiones Arar"
                                         className="relative w-full h-auto"
                                     />

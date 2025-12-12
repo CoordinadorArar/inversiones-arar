@@ -20,7 +20,7 @@ import { ImageUpload } from "@/Components/ImageUpload";
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@/Components/ui/input-group";
 import InputError from "@/Components/InputError";
 import { useFormChanges } from "@/hooks/use-form-changes";
-import { ConfiguracionContacto, ConfiguracionImages } from "../types/configuracionInterface";
+import { ConfiguracionContacto, ConfiguracionImages } from "../../../../Types/configuracionInterface";
 import { useInformacionCorporativa } from "../hooks/useInformacionCorporativa";
 import HelpManualButton from "@/Components/HelpManualButton";
 

@@ -11,7 +11,7 @@
 import PublicLayout from '@/Layouts/PublicLayout';
 import { Head } from '@inertiajs/react';
 import { Card, CardContent } from "@/components/ui/card";
-import { Mail, MapPin, Phone, Send, LoaderCircle, MessageSquare, User, Building2 } from 'lucide-react';
+import { Mail, MapPin, Phone, Send, LoaderCircle, MessageSquare, User, Building2, MoveRight, ArrowRight } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -28,6 +28,8 @@ import { useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import InputError from '@/Components/InputError';
 import { z } from "zod";
+import { ConfiguracionContacto } from '@/Types/configuracionInterface';
+import { formatLandlinePhoneNumberCO } from '@/lib/formatUtils';
 
 /**
  * Interface FormData: Define la estructura de los datos del formulario de contacto.
@@ -116,7 +118,7 @@ const contactSchema = z.object({
         .refine(val => val === true, "Debes aceptar la política de privacidad"),  // Refine para mensaje custom.
 });
 
-export default function Contact() {
+export default function Contact({ contact }: { contact: ConfiguracionContacto }) {
     // Estado para datos del formulario: inicializado con valores vacíos/default.
     // Se actualiza con setData en onChange de inputs.
     const [data, setData] = useState<FormData>({
@@ -263,60 +265,60 @@ export default function Contact() {
 
                 {/* Sección Principal - RESPONSIVE */}
                 <section className="relative py-8 md:py-10 bg-secondary/30 border-t">
-                    <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">                                            
+                    <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
                         <div className="grid lg:grid-cols-3 gap-6 md:gap-8">
                             {/* Info de contacto - Columna izquierda */}
                             <div className="lg:col-span-1 space-y-6">
-                                {/* Tarjetas de contacto mejoradas */}
-                                <Card className="group hover:shadow-lg transition-all duration-300 border-primary/20 hover:border-primary/40 overflow-hidden">
-                                    <CardContent className="relative p-4">
-                                        <div className="flex items-start gap-4">
-                                            <div className="relative">
-                                                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center flex-shrink-0  transition-transform shadow-lg">
-                                                    <Mail className="h-6 w-6 text-white" />
+                                {/* Tarjetas de contacto */}
+                                {contact.email && (
+                                    <Card className="group hover:shadow-lg transition-all duration-300 border-primary/20 hover:border-primary/40 overflow-hidden">
+                                        <CardContent className="relative p-4">
+                                            <div className="flex items-start gap-4">
+                                                <div className="relative">
+                                                    <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center flex-shrink-0  transition-transform shadow-lg">
+                                                        <Mail className="h-6 w-6 text-white" />
+                                                    </div>
+                                                    <div className="absolute -bottom-1 -right-1 h-4 w-4 bg-green-500 rounded-full border-2 border-white"></div>
                                                 </div>
-                                                <div className="absolute -bottom-1 -right-1 h-4 w-4 bg-green-500 rounded-full border-2 border-white"></div>
+                                                <div className="flex-1">
+                                                    <h3 className="font-semibold text-lg text-foreground">Correo Electrónico</h3>
+                                                    <a
+                                                        href={"mailto:" + contact.email}
+                                                        className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 group/link"
+                                                    >
+                                                        {contact.email}
+                                                        <ArrowRight className="w-4 h-4 mt-0.5 opacity-0 -translate-x-2 group-hover/link:opacity-100 group-hover/link:translate-x-0 transition-all" />
+                                                    </a>
+                                                </div>
                                             </div>
-                                            <div className="flex-1">
-                                                <h3 className="font-semibold text-lg text-foreground">Correo Electrónico</h3>
-                                                <a
-                                                    href="mailto:asistente@inversionesarar.com"
-                                                    className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 group/link"
-                                                >
-                                                    asistente@inversionesarar.com
-                                                    <svg className="w-4 h-4 opacity-0 -translate-x-2 group-hover/link:opacity-100 group-hover/link:translate-x-0 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                                                    </svg>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </CardContent>
-                                </Card>
+                                        </CardContent>
+                                    </Card>
+                                )}
 
-                                <Card className="group hover:shadow-lg transition-all duration-300 border-primary/20 hover:border-primary/40 overflow-hidden">
-                                    <CardContent className="relative p-4">
-                                        <div className="flex items-start gap-4">
-                                            <div className="relative">
-                                                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center flex-shrink-0 transition-transform shadow-lg">
-                                                    <Phone className="h-6 w-6 text-white" />
+                                {contact.telefono && (
+                                    <Card className="group hover:shadow-lg transition-all duration-300 border-primary/20 hover:border-primary/40 overflow-hidden">
+                                        <CardContent className="relative p-4">
+                                            <div className="flex items-start gap-4">
+                                                <div className="relative">
+                                                    <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center flex-shrink-0 transition-transform shadow-lg">
+                                                        <Phone className="h-6 w-6 text-white" />
+                                                    </div>
+                                                    <div className="absolute -bottom-1 -right-1 h-4 w-4 bg-green-500 rounded-full border-2 border-white"></div>
                                                 </div>
-                                                <div className="absolute -bottom-1 -right-1 h-4 w-4 bg-green-500 rounded-full border-2 border-white"></div>
+                                                <div className="flex-1">
+                                                    <h3 className="font-semibold text-lg text-foreground">Teléfono</h3>
+                                                    <a
+                                                        href={"tel:" + contact.telefono}
+                                                        className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 group/link"
+                                                    >
+                                                        {formatLandlinePhoneNumberCO(contact.telefono)}
+                                                        <ArrowRight className="w-4 h-4 mt-0.5 opacity-0 -translate-x-2 group-hover/link:opacity-100 group-hover/link:translate-x-0 transition-all" />
+                                                    </a>
+                                                </div>
                                             </div>
-                                            <div className="flex-1">
-                                                <h3 className="font-semibold text-lg text-foreground">Teléfono</h3>
-                                                <a
-                                                    href="tel:6076985203"
-                                                    className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 group/link"
-                                                >
-                                                    607 698 5203
-                                                    <svg className="w-4 h-4 opacity-0 -translate-x-2 group-hover/link:opacity-100 group-hover/link:translate-x-0 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                                                    </svg>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </CardContent>
-                                </Card>
+                                        </CardContent>
+                                    </Card>
+                                )}
 
                                 <Card className="group hover:shadow-lg transition-all duration-300 border-primary/20 hover:border-primary/40 overflow-hidden">
                                     <CardContent className="relative p-4">
@@ -327,16 +329,13 @@ export default function Contact() {
                                             <div className="flex-1">
                                                 <h3 className="font-semibold text-lg text-foreground mb-1">Ubicación</h3>
                                                 <a
-                                                    href="https://maps.app.goo.gl/mm8MPxAzZs99BV1D8"
+                                                    href={contact['ubicacion.url']}
                                                     target='_blank'
                                                     rel="noopener noreferrer"
                                                     className="text-sm text-muted-foreground transition-colors hover:text-primary"
                                                 >
-                                                    <span className="block">Km 2 • Torre Uno • Oficina 206</span>
-                                                    <span className="block">Ecoparque Empresarial Natura</span>
-                                                    <span className="block font-medium">
-                                                        Floridablanca, Santander - Colombia
-                                                    </span>
+                                                    <span className="block">{contact.ubicacion}</span>
+                                                    <span className="block font-medium">{contact['ubicacion.detalles']}</span>            
                                                 </a>
                                             </div>
                                         </div>
@@ -597,5 +596,5 @@ export default function Contact() {
 }
 
 Contact.layout = (page) => (
-    <PublicLayout children={page}/>
+    <PublicLayout children={page} />
 )

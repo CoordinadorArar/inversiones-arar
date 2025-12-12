@@ -24,8 +24,20 @@ class PestanaRolSeeder extends Seeder
                     "eliminar",
                 ]),
             ],
-            ['pestana_id' => 3, 'rol_id' => 1],
-            ['pestana_id' => 4, 'rol_id' => 1],
+            [
+                'pestana_id' => 3,
+                'rol_id' => 1,
+                'permisos' => json_encode([
+                    "editar",
+                ]),
+            ],
+            [
+                'pestana_id' => 4,
+                'rol_id' => 1,
+                'permisos' => json_encode([
+                    "editar",
+                ]),
+            ],
             [
                 'pestana_id' => 5,
                 'rol_id' => 1,

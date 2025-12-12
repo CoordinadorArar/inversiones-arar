@@ -2,6 +2,8 @@
 // TIPOS E INTERFACES
 // ============================================================================
 
+import { ConfiguracionImages } from "@/Types/configuracionInterface";
+
 // Interface para items del menu (subitems).
 export interface MenuItem {
   title: string;  // Título del item.
@@ -51,4 +53,5 @@ export interface DashboardSidebarProps {
   menu: MenuParent[];
   openGroups: string[];
   setOpenGroups: (groups: string[] | ((prev: string[]) => string[])) => void;
+  images: ConfiguracionImages;
 }

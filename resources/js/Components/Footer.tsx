@@ -6,37 +6,68 @@
  * @date 2025-11-11
  */
 
-import { Mail, Phone, FileText, Shield, Linkedin, ArrowUpRight, MapPin } from 'lucide-react';
+import { Mail, Phone, FileText, Shield, Linkedin, ArrowUpRight, MapPin, Instagram, Facebook } from 'lucide-react';
 import Copyright from './Copyright';
+import { ConfiguracionContacto, ConfiguracionImages, ConfiguracionRRSS } from '@/Types/configuracionInterface';
+import { formatLandlinePhoneNumberCO } from '@/lib/formatUtils';
 
-export default function Footer() {
+interface FooterProps {
+    configuracion: {
+        contact: ConfiguracionContacto;
+        images: ConfiguracionImages;
+        rrss: ConfiguracionRRSS;
+    }
+}
 
+export default function Footer({ configuracion }: FooterProps) {
+
+    // Configuración de redes sociales con metadata: define íconos, placeholders y nombres.
     const rrss = [
         {
-            name: 'LinkedIn de Inversiones Arar',
-            href: 'https://co.linkedin.com/company/inversiones-arar',
-            icon: Linkedin,
+            id: "instagram" as const,
+            name: "Instagram",
+            icon: Instagram,
         },
-    ]
+        {
+            id: "facebook" as const,
+            name: "Facebook",
+            icon: Facebook,
+        },
+        {
+            id: "x" as const,
+            name: "X (Twitter)",
+            icon: (props: any) => (
+                <svg {...props} viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                </svg>
+            ),
+        },
+        {
+            id: "linkedin" as const,
+            name: "LinkedIn",
+            icon: Linkedin,
+
+        },
+    ];
 
     const contacto = [
         {
             name: 'Email',
-            href: 'mailto:asistente@inversionesarar.com',
+            href: `mailto:${configuracion.contact.email}`,
             icon: Mail,
-            value: 'asistente@inversionesarar.com'
+            value: configuracion.contact.email
         },
         {
             name: 'Teléfono',
-            href: 'tel:6076985203',
+            href: `tel:${configuracion.contact.telefono}`,
             icon: Phone,
-            value: '607 698 5203'
+            value: formatLandlinePhoneNumberCO(configuracion.contact.telefono)
         },
         {
             name: 'Ubicación',
-            href: 'https://maps.app.goo.gl/mm8MPxAzZs99BV1D8',
+            href: configuracion.contact['ubicacion.url'],
             icon: MapPin,
-            value: 'Ecoparque Natura · Floridablanca, Colombia'
+            value: configuracion.contact.ubicacion
         },
     ]
 
@@ -50,7 +81,7 @@ export default function Footer() {
                     <div className="space-y-6 lg:col-span-4">
                         <div className="flex items-center gap-3">
                             <img
-                                src="/images/logo-arar.png"
+                                src={configuracion.images.logo ? "/storage" + configuracion.images.logo : "/images/logo-arar.png"}
                                 alt="Logo Inversiones Arar"
                                 className="h-20 hover:scale-105 transition-transform duration-300"
                             />
@@ -65,17 +96,20 @@ export default function Footer() {
 
                             {
                                 rrss.map((item, index) => (
+                                    configuracion.rrss[item.id] &&
+                                    (
+                                        <a
+                                            key={index}
+                                            href={configuracion.rrss[item.id]}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center justify-center h-10 w-10 rounded-lg bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300 hover:scale-105 hover:shadow-lg group"
+                                            aria-label={item.name}
+                                        >
+                                            <item.icon className="h-5 w-5" />
+                                        </a>
+                                    )
 
-                                    <a
-                                        key={index}
-                                        href={item.href}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="inline-flex items-center justify-center h-10 w-10 rounded-lg bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300 hover:scale-105 hover:shadow-lg group"
-                                        aria-label={item.name}
-                                    >
-                                        <item.icon className="h-5 w-5" />
-                                    </a>
                                 ))
                             }
                         </div>
@@ -92,21 +126,24 @@ export default function Footer() {
                             {
                                 contacto.map((item, index) => (
                                     <li key={index}>
-                                        <a
-                                            href={item.href}
-                                            className="group flex items-start gap-3 text-sm text-muted-foreground hover:text-primary transition-colors"
-                                        >
-                                            <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300 mt-0.5">
-                                                <item.icon className="h-4 w-4" />
-                                            </div>
-                                            <div className="flex-1">
-                                                <div className="font-medium text-foreground mb-0.5">{item.name}</div>
-                                                <div className="break-all">{item.value}</div>
-                                            </div>
-                                        </a>
+                                        {item.value && (
+                                            <a
+                                                href={item.href}
+                                                className="group flex items-start gap-3 text-sm text-muted-foreground hover:text-primary transition-colors"
+                                                target='_blank'
+                                            >
+                                                <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300 mt-0.5">
+                                                    <item.icon className="h-4 w-4" />
+                                                </div>
+                                                <div className="flex-1">
+                                                    <div className="font-medium text-foreground mb-0.5">{item.name}</div>
+                                                    <div className="break-all">{item.value}</div>
+                                                </div>
+                                            </a>
+                                        )}
                                     </li>
                                 ))
-                            }                            
+                            }
                         </ul>
                     </div>
 

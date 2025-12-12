@@ -16,6 +16,7 @@ import { DashboardSidebarProps } from "./menu.types";
 import { useActiveRoute } from "./hooks";
 import { DynamicMenuItem } from "./MenuItems/DynamicMenuItem";
 import { Home } from "lucide-react";
+import { ConfiguracionImages } from "@/Types/configuracionInterface";
 
 /**
  * Componente Principal: DashboardSidebar
@@ -30,7 +31,8 @@ import { Home } from "lucide-react";
 export function DashboardSidebar({
   menu,
   openGroups,
-  setOpenGroups
+  setOpenGroups,
+  images
 }: DashboardSidebarProps) {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
@@ -49,7 +51,7 @@ export function DashboardSidebar({
 
   return (
     <Sidebar collapsible="icon" className="z-50">
-      <SidebarLogo collapsed={collapsed} />
+      <SidebarLogo collapsed={collapsed} images={images}/>
 
       <SidebarContent className="mt-2 overflow-y-auto sidebar-scroll">
         <SidebarGroup>
@@ -84,18 +86,18 @@ export function DashboardSidebar({
  * Componente: SidebarLogo
  * Renderiza el logo que cambia según el estado del sidebar (colapsado/expandido)
  */
-const SidebarLogo = ({ collapsed }: { collapsed: boolean }) => {
+const SidebarLogo = ({ collapsed, images }: { collapsed: boolean, images:ConfiguracionImages }) => {
   return (
     <div className="h-16 flex flex-col items-center justify-center">
       {collapsed ? (
         <img
-          src="/images/icono-arar.png"
+          src={images.icono ? "/storage" + images.icono : "/images/icono-arar.png"}
           alt="Logo"
           className="transition-all duration-300 w-9"
         />
       ) : (
         <img
-          src="/images/logo-arar.png"
+          src={images.logo ? "/storage" + images.logo : "/images/logo-arar.png"}
           alt="Logo"
           className="transition-all duration-300 w-36 mt-5"
         />

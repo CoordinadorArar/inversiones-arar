@@ -57,6 +57,9 @@ export function formatPhoneNumberCO(phoneNumberString) {
 }
 
 export function formatLandlinePhoneNumberCO(phoneNumberString) {
+
+  if (!phoneNumberString) return null;
+  
   // Asegúrate de que la entrada sea tratada como string y elimina caracteres no numéricos
   const cleaned = ('' + phoneNumberString).replace(/\D/g, '');
 

@@ -1,10 +1,16 @@
 import { Briefcase, Building2, CircleAlert, Home, Mail } from "lucide-react";
 import { useRef, useState } from "react";
-import { Empresa, PageItem, PublicHeaderProps } from "../header.types";
+import { Empresa, PageItem } from "../header.types";
 import { VideoModal } from "./VideoModal";
 import { MobileMenu } from "./MobileMenu";
 import { ExternalLinks, GestionHumanaDropdown, Navigation } from "./DesktopMenu";
 import { Link } from "@inertiajs/react";
+import { ConfiguracionImages } from "@/Types/configuracionInterface";
+
+interface PublicHeaderProps {
+  empresas: Empresa[];
+  images: ConfiguracionImages;
+}
 
 /**
  * Componente: PublicHeader
@@ -14,8 +20,7 @@ import { Link } from "@inertiajs/react";
  
  * @date 2025-11-28
  */
-
-export function PublicHeader({ empresas }: PublicHeaderProps) {
+export function PublicHeader({ empresas, images }: PublicHeaderProps) {
     const [showVideoModal, setShowVideoModal] = useState(false);
     const [selectedEmpresa, setSelectedEmpresa] = useState<Empresa | null>(null);
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -68,7 +73,7 @@ export function PublicHeader({ empresas }: PublicHeaderProps) {
                             className='h-full hover:opacity-80 transition-opacity flex-shrink-0'
                         >
                             <img
-                                src="/images/icono-arar.png"
+                                src={images.icono ? "/storage" + images.icono : "/images/icono-arar.png"}
                                 alt="Inversiones Arar"
                                 className='h-8 w-auto'
                             />

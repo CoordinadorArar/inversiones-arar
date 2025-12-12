@@ -1,6 +1,7 @@
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { Building2, CalendarDays, FileText, Users } from 'lucide-react';
 import Copyright from '@/Components/Copyright';
+import { ConfiguracionImages } from '@/Types/configuracionInterface';
 
 interface GuestLayoutProps {
     children: React.ReactNode;
@@ -24,6 +25,7 @@ export default function GuestLayout({
         '4xl': 'max-w-4xl',
         '5xl': 'max-w-5xl',
     };
+    const { images } = usePage().props as unknown as { images: ConfiguracionImages };
 
     return (
         <div className="relative flex min-h-screen items-center justify-center bg-gradient-to-br from-primary/30 via-background to-primary/30 p-3 sm:p-4 md:p-6">
@@ -37,7 +39,7 @@ export default function GuestLayout({
                         {/* Logo */}
                         <Link href={route('home')} className="">
                             <img
-                                src="/images/logo-arar.png"
+                                src={images.logo ? "/storage" + images.logo : "/images/logo-arar.png"}
                                 alt="Arar Logo"
                                 className='w-44 md:w-52 transition-all'
                             />

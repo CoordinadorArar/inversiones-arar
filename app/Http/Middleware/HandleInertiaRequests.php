@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\GestionModulos\Modulo;
+use App\Services\ConfiguracionService;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -75,6 +76,7 @@ class HandleInertiaRequests extends Middleware
             ],
             'status' => fn() => session('status'),
             'menu' => $menu ?? [],
+            'images' => ConfiguracionService::getGroup('image')
         ];
     }
 }

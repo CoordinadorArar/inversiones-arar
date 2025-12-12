@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreContactRequest;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ContactFormMail;
+use App\Services\ConfiguracionService;
 
 class ContactController extends Controller
 {
@@ -22,7 +23,8 @@ class ContactController extends Controller
      */
     public function index()
     {
-        return inertia('Public/Contact');
+        $contact = ConfiguracionService::getGroup('contact');
+        return inertia('Public/Contact', ['contact' => $contact]);
     }
 
     /**

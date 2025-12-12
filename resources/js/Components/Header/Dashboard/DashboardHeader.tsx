@@ -1,14 +1,25 @@
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { DashboardHeaderProps } from "../header.types";
 import { UserDropdown } from "./UserDropdown";
 import { NotificationsButton } from "./NotificationsButton";
 import { SearchButton } from "./SearchButton";
+import { ConfiguracionImages } from "@/Types/configuracionInterface";
+
+interface DashboardHeaderProps {
+  title?: string;
+  user: {
+    email: string;
+    info_corta: {
+      nombres: string;
+      apellidos: string;
+    };
+  };
+}
+
 /**
  * Componente: DashboardHeader
  * Header del dashboard con sidebar trigger, título y controles de usuario
  * 
- * @author Yariangel Aray - Refactorizado en componentes modulares
- 
+ * @author Yariangel Aray
  * @date 2025-11-28
  */
 export function DashboardHeader({ title, user }: DashboardHeaderProps) {

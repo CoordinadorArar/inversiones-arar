@@ -12,12 +12,18 @@ import { Empresa } from "@/Components/Header/header.types";
 import { PublicHeader } from "@/Components/Header/Public/PublicHeader";
 import ScrollToTop from "@/Components/ScrollToTop";
 import { Toaster } from "@/components/ui/toaster"
+import { ConfiguracionContacto, ConfiguracionImages, ConfiguracionRRSS } from "@/Types/configuracionInterface";
 import { PageProps } from '@inertiajs/core';
 import { usePage } from "@inertiajs/react";
 
 // Definir interfaz para las props que vienen de la página (de Inertia.js)
 interface PagePropsHeader extends PageProps {
     empresasHeader: Empresa[];
+    configuracion: { // Datos de configuración corporativa.
+        contact: ConfiguracionContacto;
+        images: ConfiguracionImages;
+        rrss: ConfiguracionRRSS;
+    };
     [key: string]: any;
 }
 
@@ -28,17 +34,19 @@ export default function PublicLayout({ children }) {
     // - Array de empresas visibles en header, usado para dropdown/select.
     const empresas: Empresa[] = usePage<PagePropsHeader>().props.empresasHeader;
 
+    const configuracion = usePage<PagePropsHeader>().props.configuracion
+
     return (
         <div className="min-h-screen bg-background">
             {/* Header: Navegación superior común a todas las páginas públicas. */}
-            <PublicHeader empresas= {empresas} />
+            <PublicHeader empresas={empresas} images={configuracion.images} />
             {/* children: Contenido dinámico de la página (ej. secciones de Home). */}
             {children}
             <ScrollToTop />
             {/* Toaster: Componente para mostrar notificaciones/toasts (ej. éxito/error)*/}
             <Toaster />
             {/* Footer: Pie de página común con info/contacto. */}
-            <Footer />
+            <Footer configuracion={configuracion} />
         </div>
     );
 }

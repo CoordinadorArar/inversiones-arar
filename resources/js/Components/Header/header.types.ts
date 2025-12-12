@@ -33,24 +33,10 @@ export interface VideoModalProps {
   videoRef: React.RefObject<HTMLVideoElement | null>;
 }
 
-export interface PublicHeaderProps {
-  empresas: Empresa[];
-}
-
 export interface UserDropdownProps {
   user: {
     email: string;
     info_corta: {
-      nombres: string;
-      apellidos: string;
-    };
-  };
-}
-export interface DashboardHeaderProps {
-  title?: string;
-  user: {
-    email: string;
-    datos_completos: {
       nombres: string;
       apellidos: string;
     };
