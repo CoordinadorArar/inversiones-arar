@@ -10,7 +10,7 @@
  * @date 2025-12-03
  */
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
-import { ModuleLayout } from "@/Layouts/ModuleLayout";
+import { TabsLayout } from "@/Layouts/TabsLayout";
 import { DashboardLayout } from "@/Layouts/DashboardLayout";
 import { DataTable } from "@/Components/ui/data-table";
 import { DeleteDialog } from "@/Components/DeleteDialog";
@@ -88,8 +88,8 @@ export default function TiposPQRS({ tipos: tiposIniciales, tabs, moduloNombre, p
 
   return (
     <>
-      {/* Aquí se usa ModuleLayout para envolver la página con navegación de pestañas y header del módulo. */}
-      <ModuleLayout
+      {/* Aquí se usa TabsLayout para envolver la página con navegación de pestañas y header del módulo. */}
+      <TabsLayout
         moduloNombre={moduloNombre}
         tabs={tabs}
         activeTab={window.location.pathname}
@@ -149,7 +149,7 @@ export default function TiposPQRS({ tipos: tiposIniciales, tabs, moduloNombre, p
             </div>
           )}
         </div>
-      </ModuleLayout>
+      </TabsLayout>
       {/* Sección del dialog de eliminación: Usa DeleteDialog para confirmar la eliminación de un tipo. */}
       <DeleteDialog
         open={showDeleteDialog}

@@ -2,7 +2,7 @@
  * Página UsuariosListado
  * 
  * Vista de listado de usuarios dentro del módulo "Seguridad y Acceso".
- * Usa ModuleLayout para navegación por pestañas, DataTable para mostrar usuarios.
+ * Usa TabsLayout para navegación por pestañas, DataTable para mostrar usuarios.
  * Incluye columnas personalizadas con badges para roles y estados.
  * 
  * @author Yariangel Aray
@@ -10,7 +10,7 @@
  */
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
-import { ModuleLayout } from "@/Layouts/ModuleLayout";
+import { TabsLayout } from "@/Layouts/TabsLayout";
 import { DashboardLayout } from "@/Layouts/DashboardLayout";
 import { DataTable } from "@/Components/ui/data-table";
 import { UsuarioColumns, UsuarioInactiveColumns } from "../usuarioColumns";
@@ -31,7 +31,7 @@ export default function UsuariosListado({
   moduloNombre,
 }: UsuarioListadoProps) {
   return (
-    <ModuleLayout
+    <TabsLayout
       moduloNombre={moduloNombre}
       tabs={tabs}
       activeTab={window.location.pathname}
@@ -57,7 +57,7 @@ export default function UsuariosListado({
           />
         </CardContent>
       </Card>
-    </ModuleLayout>
+    </TabsLayout>
   );
 }
 

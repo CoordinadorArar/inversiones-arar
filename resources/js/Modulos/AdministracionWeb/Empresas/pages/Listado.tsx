@@ -2,7 +2,7 @@
  * Componente EmpresasListado.
  * 
  * Propósito: Vista de listado de empresas dentro del módulo "Administración Web".
- * Usa ModuleLayout para navegación por pestañas, DataTable para mostrar empresas con filtros/búsqueda.
+ * Usa TabsLayout para navegación por pestañas, DataTable para mostrar empresas con filtros/búsqueda.
  * Incluye columnas personalizadas con badges, modales de imagen y enlaces externos.
  * 
  * Props:
@@ -18,7 +18,7 @@
  */
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
-import { ModuleLayout } from "@/Layouts/ModuleLayout";
+import { TabsLayout } from "@/Layouts/TabsLayout";
 import { DashboardLayout } from "@/Layouts/DashboardLayout";
 import { DataTable } from "@/Components/ui/data-table";
 import { EmpresaColumns, EmpresaInactiveColumns } from "../empresaColumns";
@@ -35,9 +35,9 @@ interface EmpresasListadoProps {
 
 // Componente funcional EmpresasListado.
 export default function EmpresasListado({ empresas, tabs, moduloNombre }: EmpresasListadoProps) {
-  // Render: ModuleLayout con tabs, Card con DataTable.
+  // Render: TabsLayout con tabs, Card con DataTable.
   return (
-    <ModuleLayout
+    <TabsLayout
       moduloNombre={moduloNombre}  // Nombre del módulo para navegación.
       tabs={tabs}  // Pestañas accesibles.
       activeTab={window.location.pathname}  // Tab activa basada en URL.
@@ -66,7 +66,7 @@ export default function EmpresasListado({ empresas, tabs, moduloNombre }: Empres
           />
         </CardContent>
       </Card>
-    </ModuleLayout>
+    </TabsLayout>
   );
 }
 

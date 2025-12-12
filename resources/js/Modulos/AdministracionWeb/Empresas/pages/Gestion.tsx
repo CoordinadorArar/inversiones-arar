@@ -10,7 +10,7 @@
  * @date 2025-12-01
  */
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
-import { ModuleLayout } from "@/Layouts/ModuleLayout";
+import { TabsLayout } from "@/Layouts/TabsLayout";
 import { DashboardLayout } from "@/Layouts/DashboardLayout";
 import { SearchableSelect } from "@/Components/SearchableSelect";
 import { EMPRESA_INITIAL_DATA } from "../types/empresaForm.types";
@@ -122,8 +122,8 @@ export default function EmpresaGestion({
 
 
   return (
-    // Aquí se usa ModuleLayout para envolver la página con navegación de pestañas y header del módulo.
-    <ModuleLayout
+    // Aquí se usa TabsLayout para envolver la página con navegación de pestañas y header del módulo.
+    <TabsLayout
       moduloNombre={moduloNombre}
       tabs={tabs}
       activeTab={window.location.pathname}
@@ -257,7 +257,7 @@ export default function EmpresaGestion({
           </div>
         </CardContent>
       </Card>
-    </ModuleLayout>
+    </TabsLayout>
   );
 }
 

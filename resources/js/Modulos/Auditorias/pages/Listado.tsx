@@ -31,7 +31,7 @@ interface AuditoriasListadoProps {
 
 // Componente funcional AuditoriasListado.
 export default function AuditoriasListado({ auditorias, moduloNombre }: AuditoriasListadoProps) {
-    // Render: ModuleLayout con tabs, Card con DataTable.
+    // Render: TabsLayout con tabs, Card con DataTable.
     return (
         <>
             <Head title={moduloNombre} />

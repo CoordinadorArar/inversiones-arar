@@ -11,7 +11,7 @@
  */
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
-import { ModuleLayout } from "@/Layouts/ModuleLayout";
+import { TabsLayout } from "@/Layouts/TabsLayout";
 import { DashboardLayout } from "@/Layouts/DashboardLayout";
 import { DataTable } from "@/Components/ui/data-table";
 import { ModuloColumns, ModuloInactiveColumns } from "../moduloColumns";
@@ -32,7 +32,7 @@ interface ModuloListadoProps {
 /**
  * Componente principal para la página de Listado de Módulos.
  * Renderiza tabla con módulos usando DataTable y columnas personalizadas.
- * Envuelto en ModuleLayout para navegación.
+ * Envuelto en TabsLayout para navegación.
  * 
  * @param {ModuloListadoProps} props - Props del componente.
  * @returns {JSX.Element} Elemento JSX renderizado.
@@ -43,8 +43,8 @@ export default function ModulosListado({
   moduloNombre,
 }: ModuloListadoProps) {
   return (
-    // Aquí se usa ModuleLayout para envolver la página con navegación de pestañas y header del módulo.
-    <ModuleLayout
+    // Aquí se usa TabsLayout para envolver la página con navegación de pestañas y header del módulo.
+    <TabsLayout
       moduloNombre={moduloNombre}
       tabs={tabs}
       activeTab={window.location.pathname}
@@ -71,7 +71,7 @@ export default function ModulosListado({
           />
         </CardContent>
       </Card>
-    </ModuleLayout>
+    </TabsLayout>
   );
 }
 

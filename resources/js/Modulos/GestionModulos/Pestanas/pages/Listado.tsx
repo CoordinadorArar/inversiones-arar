@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
-import { ModuleLayout } from "@/Layouts/ModuleLayout";
+import { TabsLayout } from "@/Layouts/TabsLayout";
 import { DashboardLayout } from "@/Layouts/DashboardLayout";
 import { DataTable } from "@/Components/ui/data-table";
 import { TabInterface } from "@/Types/tabInterface";
@@ -18,7 +18,7 @@ export default function PestanasListado({
   moduloNombre,
 }: PestanaListadoProps) {
   return (
-    <ModuleLayout
+    <TabsLayout
       moduloNombre={moduloNombre}
       tabs={tabs}
       activeTab={window.location.pathname}
@@ -37,7 +37,7 @@ export default function PestanasListado({
           />
         </CardContent>
       </Card>
-    </ModuleLayout>
+    </TabsLayout>
   );
 }
 

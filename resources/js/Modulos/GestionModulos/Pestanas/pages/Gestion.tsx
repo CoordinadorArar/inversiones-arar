@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
-import { ModuleLayout } from "@/Layouts/ModuleLayout";
+import { TabsLayout } from "@/Layouts/TabsLayout";
 import { DashboardLayout } from "@/Layouts/DashboardLayout";
 import { TabInterface } from "@/Types/tabInterface";
 import { PestanaInterface, ModuloDisponibleInterface } from "../types/pestanaInterface";
@@ -84,7 +84,7 @@ export default function PestanasGestion({
     }, [selectedPestanaId, mode, initialPestanaId]);
 
     return (
-        <ModuleLayout
+        <TabsLayout
             moduloNombre={moduloNombre}
             tabs={tabs}
             activeTab={window.location.pathname}
@@ -210,7 +210,7 @@ export default function PestanasGestion({
                     </div>
                 </CardContent>
             </Card>
-        </ModuleLayout>
+        </TabsLayout>
     );
 }
 

@@ -11,7 +11,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { Button } from "@/Components/ui/button";
 import { Label } from "@/Components/ui/label";
-import { ModuleLayout } from "@/Layouts/ModuleLayout";
+import { TabsLayout } from "@/Layouts/TabsLayout";
 import { DashboardLayout } from "@/Layouts/DashboardLayout";
 import { Save, MapPin, Phone, Mail, Image, Globe, MapPinHouse } from "lucide-react";
 import { handleEmailKeyDown, handleNumberKeyDown, handleNumberTextKeyDown, handleUrlKeyDown } from "@/lib/keydownValidations";
@@ -92,8 +92,8 @@ export default function InformacionCorporativa({
   };
 
   return (
-    // Aquí se usa ModuleLayout para envolver la página con navegación de pestañas y header del módulo.
-    <ModuleLayout
+    // Aquí se usa TabsLayout para envolver la página con navegación de pestañas y header del módulo.
+    <TabsLayout
       moduloNombre={moduloNombre}
       tabs={tabs}
       activeTab={window.location.pathname}
@@ -329,7 +329,7 @@ export default function InformacionCorporativa({
           )}
         </CardContent>
       </Card>
-    </ModuleLayout>
+    </TabsLayout>
   );
 }
 

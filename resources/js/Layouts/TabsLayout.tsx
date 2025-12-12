@@ -1,5 +1,5 @@
 /**
- * Componente ModuleLayout.
+ * Componente TabsLayout.
  * 
  * Propósito: Layout reutilizable para módulos con pestañas (tabs) en la parte superior.
  * Usa Shadcn Tabs para navegación, con scroll horizontal en mobile. Integra Inertia Link
@@ -29,20 +29,20 @@ import { TabInterface } from "@/Types/tabInterface";
 
 
 // Interface para props del componente.
-interface ModuleLayoutProps {
+interface TabsLayoutProps {
     children: ReactNode;     // Contenido a renderizar (flex-1).
     moduloNombre: string;    // Nombre del módulo para título de página.
     tabs: TabInterface[];             // Array de pestañas disponibles.
     activeTab?: string;      // Ruta de la pestaña activa (opcional).
 }
 
-// Componente funcional ModuleLayout.
-export function ModuleLayout({
+// Componente funcional TabsLayout.
+export function TabsLayout({
     children,
     moduloNombre,
     tabs,
     activeTab
-}: ModuleLayoutProps) {
+}: TabsLayoutProps) {
 
     /**
          * Helper: Determina si un tab está activo

@@ -11,7 +11,7 @@
  */
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
-import { ModuleLayout } from "@/Layouts/ModuleLayout";
+import { TabsLayout } from "@/Layouts/TabsLayout";
 import { DashboardLayout } from "@/Layouts/DashboardLayout";
 import { TabInterface } from "@/Types/tabInterface";
 import { ModuloInterface, ModuloPadreInterface } from "../types/moduloInterface";
@@ -117,7 +117,7 @@ export default function ModulosGestion({
     }, [selectedModuloId, mode, initialModuloId]);
 
     return (
-        <ModuleLayout
+        <TabsLayout
             moduloNombre={moduloNombre}
             tabs={tabs}
             activeTab={window.location.pathname}
@@ -247,7 +247,7 @@ export default function ModulosGestion({
                     </div>
                 </CardContent>
             </Card>
-        </ModuleLayout>
+        </TabsLayout>
     );
 }
 
