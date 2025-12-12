@@ -9,7 +9,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { ModuloInterface } from "./types/moduloInterface";
-import { FolderTree, FolderOpen, AppWindow } from "lucide-react";
+import { FolderTree, FolderOpen, AppWindow, AlertTriangle } from "lucide-react";
 import { DynamicIcon } from "lucide-react/dynamic";
 
 export const ModuloColumns: ColumnDef<ModuloInterface>[] = [
@@ -35,7 +35,7 @@ export const ModuloColumns: ColumnDef<ModuloInterface>[] = [
                     ) : (
                         <AppWindow className="h-4 w-4 text-blue-700" />
                     )}
-                    <span className={esPadre ? "font-semibold" : ""}>{nombre}</span>
+                    <span>{nombre}</span>
                 </div>
             );
         },
@@ -58,7 +58,18 @@ export const ModuloColumns: ColumnDef<ModuloInterface>[] = [
         header: "Ruta Completa",
         cell: ({ row }) => {
             const ruta = row.original.ruta_completa;
-            // Aquí se muestra la ruta con estilo monoespaciado y muted.
+            const padreEliminado = row.original.padre_eliminado
+            if (padreEliminado) {
+                return (
+                    <Badge variant="outline">
+                        <AlertTriangle className="h-3.5 w-3.5 text-destructive" />
+                        <span className="text-xs text-muted-foreground font-mono line-through">
+                            {ruta}
+                        </span>
+                    </Badge>
+                );
+            }
+            // Aquí se muestra la ruta con estilo monoespaciado.
             return (
                 <Badge className="bg-primary/15 text-primary text-xs font-mono border-primary/30">
                     {ruta}
@@ -92,6 +103,7 @@ export const ModuloColumns: ColumnDef<ModuloInterface>[] = [
             } else if (padreEliminado) {  // Si padre eliminado, muestra badge especial
                 return (
                     <Badge className="bg-red-500/10 text-red-700 border-red-500/20">
+                        <AlertTriangle className="h-3 w-3" />
                         Módulo Hijo (Padre eliminado)
                     </Badge>
                 );

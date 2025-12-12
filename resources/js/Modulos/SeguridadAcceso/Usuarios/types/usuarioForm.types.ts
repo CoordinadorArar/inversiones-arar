@@ -58,10 +58,9 @@ export const usuarioSchemaBase = z.object({
     .email("Email inválido")
     .max(USUARIO_LIMITS.email, `Máximo ${USUARIO_LIMITS.email} caracteres`),
 
-  rol_id: z
-    .number()
-    .int("Debe ser un número entero")
-    .positive("Debe seleccionar un rol"),
+  rol_id: z.number({
+    error: "El rol es obligatorio",
+  }).positive("Debe seleccionar un rol válido"),
 });
 
 export type UsuarioSchemaType = z.infer<typeof usuarioSchemaBase>;

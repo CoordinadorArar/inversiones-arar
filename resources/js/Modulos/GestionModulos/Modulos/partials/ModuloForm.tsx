@@ -27,8 +27,9 @@ import IconPicker from "@/Components/IconPicker";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/Components/ui/input-group";
 import { DeleteDialog } from "@/Components/DeleteDialog";
 import { ConfirmDialogModulo } from "./ConfirmDialogModulo";
-import { ModuloCombobox } from "./ModuloCombobox";
+import { ModuloPadreCombobox } from "./ModuloPadreCombobox";
 import { useToast } from "@/hooks/use-toast";
+import { useHandleKeyDown } from "../../hooks/useHandleKeyDown";
 
 /**
  * Interfaz para las props del componente ModuloForm.
@@ -79,8 +80,6 @@ export function ModuloForm({
         handleDeleteClick,
         handleDeleteCancel,
         handleDeleteConfirm,
-        handleRutaModuloKeyDown,
-        handlePermisosExtraKeyDown,
         setErrors
     } = useModuloForm({
         mode,
@@ -90,6 +89,8 @@ export function ModuloForm({
         onDelete,
         externalErrors,
     });
+
+    const { handleRutaKeyDown, handlePermisosExtraKeyDown } = useHandleKeyDown();
 
     // Aquí se usa hook para detectar cambios en el formulario.
     const changes = useFormChanges(initialData || {}, data);
@@ -256,7 +257,7 @@ export function ModuloForm({
 
                 {/* Combo Módulo Padre (solo si NO es padre) */}
                 {!data.es_padre && (
-                    <ModuloCombobox
+                    <ModuloPadreCombobox
                         modulosPadre={modulosPadre}
                         value={data.modulo_padre_id}
                         handleChange={handleChange}
@@ -293,7 +294,7 @@ export function ModuloForm({
                                     id="ruta"
                                     value={data.ruta}
                                     onChange={(e) => handleChange("ruta", e.target.value.replace(/ /g, '-'))}
-                                    onKeyDown={handleRutaModuloKeyDown}
+                                    onKeyDown={handleRutaKeyDown}
                                     maxLength={MODULO_LIMITS.ruta}
                                     disabled={disabled}
                                     className={cn("!pl-0.5 !pb-1.5", getInputClass("ruta"))}
@@ -306,7 +307,7 @@ export function ModuloForm({
                             id="ruta"
                             value={data.ruta}
                             onChange={(e) => handleChange("ruta", e.target.value.replace(/ /g, '-'))}
-                            onKeyDown={handleRutaModuloKeyDown}
+                            onKeyDown={handleRutaKeyDown}
                             maxLength={MODULO_LIMITS.ruta}
                             disabled={disabled}
                             className={getInputClass("ruta")}
@@ -340,7 +341,7 @@ export function ModuloForm({
                             onKeyDown={handlePermisosExtraKeyDown}
                             disabled={disabled}
                             className={getInputClass("permisos_extra")}
-                            placeholder="bloquear,restaurar_password"
+                            placeholder="bloquear,aprobar_factura"
                         />
                         {errors.permisos_extra ? (
                             <InputError message={errors.permisos_extra} />

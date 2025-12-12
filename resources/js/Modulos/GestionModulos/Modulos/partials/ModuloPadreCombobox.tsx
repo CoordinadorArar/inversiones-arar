@@ -1,5 +1,5 @@
 /**
- * Componente ModuloCombobox.
+ * Componente ModuloPadreCombobox.
  * 
  * Combobox para selección de módulo padre con búsqueda: muestra lista de módulos padre disponibles,
  * permite filtrar por nombre, resalta selección con check. Incluye opción para "sin padre".
@@ -22,10 +22,10 @@ import { ModuloPadreInterface } from "../types/moduloInterface";
 import { ModuloFormData } from "../types/moduloForm.types";
 
 /**
- * Interfaz para las props del componente ModuloCombobox.
+ * Interfaz para las props del componente ModuloPadreCombobox.
  * Define los parámetros necesarios para configurar el combobox de módulos padre.
  */
-interface ModuloComboboxProps {
+interface ModuloPadreComboboxProps {
     modulosPadre: ModuloPadreInterface[]; // Lista de módulos padre disponibles.
     value: number | null; // ID del módulo padre seleccionado.
     handleChange: (field: keyof ModuloFormData, value: any) => void; // Callback para cambiar valor.
@@ -37,15 +37,15 @@ interface ModuloComboboxProps {
 }
 
 /**
- * Componente ModuloCombobox.
+ * Componente ModuloPadreCombobox.
  * 
  * Renderiza combobox para selección de módulo padre con búsqueda y filtrado.
  * Incluye opción para "sin padre" y maneja estado de apertura con useState.
  * 
- * @param {ModuloComboboxProps} props - Props del componente.
+ * @param {ModuloPadreComboboxProps} props - Props del componente.
  * @returns {JSX.Element} Elemento JSX renderizado.
  */
-export function ModuloCombobox({
+export function ModuloPadreCombobox({
     modulosPadre,
     value,
     handleChange,
@@ -54,7 +54,7 @@ export function ModuloCombobox({
     error,
     className = "",
     padreEliminado = false,
-}: ModuloComboboxProps) {
+}: ModuloPadreComboboxProps) {
     // Aquí se usa useState para manejar si el combobox está abierto.
     const [open, setOpen] = useState(false);
 

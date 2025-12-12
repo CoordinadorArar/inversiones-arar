@@ -295,6 +295,7 @@ class ModuloController extends Controller
 
 
             Cache::forget('modulos_list');
+            Cache::forget('pestanas_list');
 
             $modulo->load(['moduloPadre', 'modulosHijos']);
 
@@ -358,6 +359,7 @@ class ModuloController extends Controller
 
             $modulo->delete();
             Cache::forget('modulos_list');
+            Cache::forget('pestanas_list');
 
             return response()->json([
                 'message' => 'Módulo eliminado correctamente'

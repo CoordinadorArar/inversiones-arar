@@ -44,7 +44,6 @@ class Modulo extends Model
         'es_padre' => 'boolean',
     ];
 
-    // Deshabilitar timestamps automáticos (usa fecha_creacion/modificacion manuales).
     public $timestamps = true;
     
     const CREATED_AT = 'fecha_creacion';

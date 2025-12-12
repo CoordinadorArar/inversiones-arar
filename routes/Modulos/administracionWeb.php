@@ -131,7 +131,7 @@ Route::middleware('auth')->group(function () {
                 ->redirectToFirstAccessible('/' . $modulosHijos[2]);
         });
 
-        // Grupo de pestañas para Tablas Maestras (comentadas, por implementar).
+        // Grupo de pestañas para Tablas Maestras.
         Route::prefix($modulosHijos[2])->group(function () {
             // Aquí se define la ruta para la pestaña de tipos de identificaciones, con middleware para acceso.
             Route::get('/tipos-identificaciones', [TipoIdentificacionController::class, 'index'])

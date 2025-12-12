@@ -1,23 +1,23 @@
 /**
- * Componente ConfirmDialogModulo.
+ * Componente ConfirmDialogPestana.
  * 
- * Diálogo de confirmación para acciones sensibles en el formulario de módulos.
- * Muestra advertencias para creación de módulos o cambios críticos en edición,
+ * Diálogo de confirmación para acciones sensibles en el formulario de pestañas.
+ * Muestra advertencias para creación de pestañas o cambios críticos en edición,
  * con lista de acciones requeridas. Usa AlertDialog de Radix UI para modal.
- * Se integra con React para formularios de módulos via Inertia.
+ * Se integra con React para formularios de pestañas via Inertia.
  * 
  * @author Yariangel Aray
- * @date 2025-12-11
+ * @date 2025-12-12
  */
 
 import { AlertTriangle } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 /**
- * Interfaz para las props del componente ConfirmDialogModulo.
+ * Interfaz para las props del componente ConfirmDialogPestana.
  * Define los parámetros necesarios para configurar el diálogo de confirmación.
  */
-interface ConfirmDialogModuloProps {
+interface ConfirmDialogPestanaProps {
     open: boolean; // Indica si el diálogo está abierto.
     onOpenChange: (open: boolean) => void; // Callback para cambiar el estado de apertura.
     onConfirm: () => void; // Callback para confirmar la acción.
@@ -28,16 +28,16 @@ interface ConfirmDialogModuloProps {
 }
 
 /**
- * Componente ConfirmDialogModulo.
+ * Componente ConfirmDialogPestana.
  * 
  * Renderiza un diálogo modal con advertencias para creación o cambios sensibles.
  * Incluye lista de acciones requeridas y botones de confirmación/cancelación.
  * Maneja lógica condicional basada en modo y cambios.
  * 
- * @param {ConfirmDialogModuloProps} props - Props del componente.
+ * @param {ConfirmDialogPestanaProps} props - Props del componente.
  * @returns {JSX.Element} Elemento JSX renderizado.
  */
-export function ConfirmDialogModulo({
+export function ConfirmDialogPestana({
     open,
     onOpenChange,
     onConfirm,
@@ -45,34 +45,34 @@ export function ConfirmDialogModulo({
     mode,
     hasCriticalChanges = false,
     changes,
-}: ConfirmDialogModuloProps) {
+}: ConfirmDialogPestanaProps) {
     return (
         <AlertDialog open={open} onOpenChange={onOpenChange}>
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle className="flex items-center gap-2">
                         <AlertTriangle className="h-5 w-5 text-amber-500" />
-                        {mode === "create" ? "Confirmar creación de módulo" : "Advertencia: Datos sensibles"}
+                        {mode === "create" ? "Confirmar creación de pestaña" : "Advertencia: Datos sensibles"}
                     </AlertDialogTitle>
-                    
+
                     <AlertDialogDescription className="font-medium text-foreground">
                         {mode === "create"
-                            ? "Después de crear el módulo, deberás realizar las siguientes acciones:"
-                            : "Los datos del módulo son sensibles y pueden afectar el funcionamiento del sistema."
+                            ? "Después de crear la pestaña, deberás realizar las siguientes acciones:"
+                            : "Los datos de las pestañas son sensibles y pueden afectar el funcionamiento del sistema."
                         }
                     </AlertDialogDescription>
-                    
+
                     <div className="text-sm text-muted-foreground space-y-3 text-left mt-4">
                         {mode === "create" ? (
                             <>
                                 <ul className="list-disc list-inside space-y-1 text-sm">
+                                    <li>Crear o ajustar un controlador según sea necesario</li>
+                                    <li>Crear la vista correspondiente en React usando el Layout para pestañas</li>
                                     <li>Crear las rutas correspondientes en el archivo de rutas de Laravel</li>
-                                    <li>Crear el controlador y las vistas necesarias</li>
-                                    <li>Asignar el módulo a uno o más roles para que sea accesible</li>
-                                    <li>Si tiene pestañas, crear y configurar cada pestaña</li>
+                                    <li>Asignar la pestaña a uno o más roles para que sea accesible</li>
                                 </ul>
                                 <p className="text-amber-600 font-medium">
-                                    ¿Estás seguro de que deseas crear este módulo?
+                                    ¿Estás seguro de que deseas crear esta pestaña?
                                 </p>
                             </>
                         ) : (
@@ -83,13 +83,10 @@ export function ConfirmDialogModulo({
                                             Has modificado datos críticos:
                                         </p>
                                         <ul className="list-disc list-inside space-y-1 text-sm">
-                                            {changes.ruta && <li>Ruta del módulo</li>}
-                                            {changes.es_padre && <li>Confirmación para Modulo Padre</li>}
-                                            {changes.modulo_padre_id && <li>Módulo padre</li>}
+                                            {changes.ruta && <li>Ruta de la pestaña</li>}
+                                            {changes.modulo_id && <li>Módulo asignado</li>}
                                         </ul>
-                                        <p className="text-sm text-foreground">
-                                            Si cambias la ruta o el módulo padre y su confirmación, deberás actualizar:
-                                        </p>
+                                        <p className="text-sm">Si cambias estos datos, deberás actualizar:</p>
                                         <ul className="list-disc list-inside space-y-1 text-sm">
                                             <li>Las rutas en el archivo de rutas de Laravel</li>
                                             <li>Los archivos de vistas y controladores internos</li>
@@ -109,7 +106,7 @@ export function ConfirmDialogModulo({
                         Cancelar
                     </AlertDialogCancel>
                     <AlertDialogAction onClick={onConfirm}>
-                        {mode === "create" ? "Sí, crear módulo" : "Sí, guardar cambios"}
+                        {mode === "create" ? "Sí, crear pestaña" : "Sí, guardar cambios"}
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
