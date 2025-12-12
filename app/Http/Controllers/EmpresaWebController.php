@@ -357,17 +357,4 @@ class EmpresaWebController extends Controller
             ], 500);
         }
     }
-
-    /**
-     * Método auxiliar para obtener dominios de empresas cacheados.
-     * Cachea por 1 hora para evitar consultas repetidas.
-     *
-     * @return array
-     */
-    public function getDominiosCacheados()
-    {
-        return Cache::remember('dominios_empresas', 3600, function () { // 3600 segundos = 1 hora
-            return EmpresaWeb::pluck('dominio')->filter()->values()->toArray();
-        });
-    }
 }

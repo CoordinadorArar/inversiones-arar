@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\GestionModulos\Modulo;
 use App\Models\GestionModulos\Pestana;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 /**

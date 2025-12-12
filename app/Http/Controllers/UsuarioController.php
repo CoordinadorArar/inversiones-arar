@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\SeguridadAcceso\UsuarioRequest;
 use App\Mail\PasswordGeneradaMail;
 use App\Models\ContratoPropietario;
+use App\Models\EmpresaWeb;
 use App\Models\GestionModulos\Modulo;
 use App\Models\Rol;
 use App\Models\User;
@@ -162,7 +163,7 @@ class UsuarioController extends Controller
             'permisos' => $permisos,            // Permisos de la pestaña.
             'moduloNombre' => $this->moduloNombre,  // Nombre del módulo.
             'roles' => Rol::all(),
-            'dominios' => (new EmpresaWebController())->getDominiosCacheados(), // Dominios cacheados.
+            'dominios' => (new EmpresaWeb())->getDominiosCacheados(), // Dominios cacheados.
             'initialMode' => 'idle', // Modo por defecto
             'initialUsuarioId' => null,
         ];
@@ -205,7 +206,7 @@ class UsuarioController extends Controller
         return Inertia::render('Modulos:SeguridadAcceso/Usuarios/pages/Gestion', [
             ...$props,
             'roles' => Rol::all(),
-            'dominios' => (new EmpresaWebController())->getDominiosCacheados(), // Dominios cacheados.
+            'dominios' => (new EmpresaWeb())->getDominiosCacheados(), // Dominios cacheados.
             'initialMode' => 'create', // Modo crear desde URL
         ]);
     }
@@ -259,7 +260,7 @@ class UsuarioController extends Controller
             ...$props,
             'usuarios' => $usuarios,
             'roles' => Rol::all(),
-            'dominios' => (new EmpresaWebController())->getDominiosCacheados(), // Dominios cacheados.
+            'dominios' => (new EmpresaWeb())->getDominiosCacheados(), // Dominios cacheados.
             'initialMode' => 'edit', // Modo editar desde URL
             'initialUsuarioId' => $id, // ID del usuario a editar
         ]);

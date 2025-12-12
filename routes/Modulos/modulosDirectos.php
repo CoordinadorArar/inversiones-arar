@@ -15,18 +15,17 @@ use Illuminate\Support\Facades\Route;
  * - Validación: Middleware 'modulo.access' con ID del módulo (ej. :5) para chequear permisos.
  * - Si no tiene acceso: 403 Forbidden.
  * 
- * @author Yariangel Aray - Rutas para módulos directos con validación por ID.
- 
+ * Rutas disponibles (para copiar/pegar en navegador):
+ * 
+ * // Módulo Directo: Auditorías
+ * /auditorias
+ * 
+ * @author Yariangel Aray
  * @date 2025-12-02
  */
 
 // Grupo de rutas protegidas con middleware 'auth'.
 Route::middleware('auth')->group(function () {
-    // Ruta para módulo Auditorías: Directa, sin pestañas/submodulos.
-    // - Método: GET.
-    // - URI: '/auditorias'.
-    // - Controlador: AuditoriaController@index (renderiza vista única de auditorías).
-    // - Validación: Middleware 'modulo.access:5' (ID del módulo en DB) chequear permisos; si no, 403.
-    // - Propósito: Vista simple de auditorías, accesible solo con permisos.
-    Route::get('/auditorias', [AuditoriaController::class, 'index'])->middleware('modulo.access:5');  // ID del módulo (Según DB).
+    // Módulo directo: Auditorías - Middleware 'modulo.access:5' (ID del módulo en DB) para validar acceso directo.
+    Route::get('/auditorias', [AuditoriaController::class, 'index'])->middleware('modulo.access:5');
 });

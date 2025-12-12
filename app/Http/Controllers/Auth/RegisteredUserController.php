@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\EmpresaWebController;
 use App\Models\ContratoPropietario;
 use App\Models\EmpresaWeb;
 use App\Models\User;
@@ -11,7 +10,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -43,7 +41,7 @@ class RegisteredUserController extends Controller
         return Inertia::render('Auth/Register', [
             'status' => session('status'),  // Mensajes de sesión.
             'document' => $request->document,  // Documento pasado desde login.
-            'dominios' => (new EmpresaWebController())->getDominiosCacheados(), // Dominios cacheados.
+            'dominios' => (new EmpresaWeb())->getDominiosCacheados(), // Dominios cacheados.
         ]);
     }
 

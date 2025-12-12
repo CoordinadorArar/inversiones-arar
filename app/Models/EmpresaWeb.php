@@ -6,6 +6,7 @@ use App\Traits\HasAuditoria;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Modelo EmpresaWeb.
@@ -51,7 +52,7 @@ class EmpresaWeb extends Model
     ];
 
     public $timestamps = true;
-    
+
     const CREATED_AT = 'fecha_creacion';
     const UPDATED_AT = 'fecha_modificacion';
 
@@ -68,4 +69,17 @@ class EmpresaWeb extends Model
         'mostrar_en_portafolio' => 'boolean',
         'permitir_pqrsd' => 'boolean',
     ];
+
+    /**
+     * Método auxiliar para obtener dominios de empresas cacheados.
+     * Cachea por 1 hora para evitar consultas repetidas.
+     *
+     * @return array
+     */
+    public function getDominiosCacheados()
+    {
+        return Cache::remember('dominios_empresas', 3600, function () { // 3600 segundos = 1 hora
+            return EmpresaWeb::pluck('dominio')->filter()->values()->toArray();
+        });
+    }
 }
