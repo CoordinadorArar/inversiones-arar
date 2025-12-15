@@ -190,7 +190,7 @@ export function ModuloForm({
                     <div className="space-y-2">
                         <Label
                             htmlFor="nombre"
-                            className={`flex items-center gap-2 after:ml-0.5 after:text-red-500 after:content-['*'] ${changes.nombre && mode === "edit" ? "text-primary" : ""
+                            className={`flex items-center gap-2  after:text-red-500 after:content-['*'] ${changes.nombre && mode === "edit" ? "text-primary" : ""
                                 }`}
                         >
                             Nombre del Módulo
@@ -216,7 +216,7 @@ export function ModuloForm({
                     <div className="space-y-2">
                         <Label
                             htmlFor="icono"
-                            className={`flex items-center gap-2 after:ml-0.5 after:text-red-500 after:content-['*'] ${changes.icono && mode === "edit" ? "text-primary" : ""
+                            className={`flex items-center gap-2  after:text-red-500 after:content-['*'] ${changes.icono && mode === "edit" ? "text-primary" : ""
                                 }`}
                         >
                             Ícono
@@ -273,7 +273,7 @@ export function ModuloForm({
                 <div className="space-y-2">
                     <Label
                         htmlFor="ruta"
-                        className={`flex items-center gap-2 after:ml-0.5 after:text-red-500 after:content-['*'] ${(changes.ruta || changes.modulo_padre_id) && mode === "edit" ? "text-primary" : ""
+                        className={`flex items-center gap-2  after:text-red-500 after:content-['*'] ${(changes.ruta || changes.modulo_padre_id) && mode === "edit" ? "text-primary" : ""
                             }`}
                     >
                         Ruta del Módulo

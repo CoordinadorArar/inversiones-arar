@@ -101,7 +101,7 @@ export function EmpresaForm({
                     <div className="space-y-2">
                         <Label
                             htmlFor="id_siesa"
-                            className={`flex items-center gap-2 after:ml-0.5 after:text-red-500 after:content-['*'] after:hidden data-[required=true]:after:block ${changes.id_siesa && mode == "edit" ? "text-primary" : ""}`}
+                            className={`flex items-center gap-2  after:text-red-500 after:content-['*'] after:hidden data-[required=true]:after:block ${changes.id_siesa && mode == "edit" ? "text-primary" : ""}`}
                             data-required={data.mostrar_en_header || data.mostrar_en_empresas}
                         >
                             ID Siesa
@@ -129,7 +129,7 @@ export function EmpresaForm({
                     <div className="space-y-2">
                         <Label
                             htmlFor="razon_social"
-                            className={`flex items-center gap-2 after:ml-0.5 after:text-red-500 after:content-['*'] ${changes.razon_social && mode == "edit" ? "text-primary" : ""}`}
+                            className={`flex items-center gap-2  after:text-red-500 after:content-['*'] ${changes.razon_social && mode == "edit" ? "text-primary" : ""}`}
                         >
                             Razón Social
                         </Label>
@@ -192,7 +192,7 @@ export function EmpresaForm({
                     <div className="space-y-2">
                         <Label
                             htmlFor="tipo_empresa"
-                            className={`flex items-center gap-2 after:ml-0.5 after:text-red-500 after:content-['*'] after:hidden data-[required=true]:after:block ${changes.tipo_empresa && mode == "edit" ? "text-primary" : ""}`}
+                            className={`flex items-center gap-2  after:text-red-500 after:content-['*'] after:hidden data-[required=true]:after:block ${changes.tipo_empresa && mode == "edit" ? "text-primary" : ""}`}
                             data-required={data.mostrar_en_empresas}
                         >
                             Tipo de Empresa
@@ -221,7 +221,7 @@ export function EmpresaForm({
                 <div className="space-y-2">
                     <Label
                         htmlFor="descripcion"
-                        className={`flex items-center gap-2 after:ml-0.5 after:text-red-500 after:content-['*'] after:hidden data-[required=true]:after:block ${changes.descripcion && mode == "edit" ? "text-primary" : ""}`}
+                        className={`flex items-center gap-2  after:text-red-500 after:content-['*'] after:hidden data-[required=true]:after:block ${changes.descripcion && mode == "edit" ? "text-primary" : ""}`}
                         data-required={data.mostrar_en_empresas}
                     >
                         Descripción
@@ -251,7 +251,7 @@ export function EmpresaForm({
                     <div className="space-y-2">
                         <Label
                             htmlFor="sitio_web"
-                            className={`flex items-center gap-2 after:ml-0.5 after:text-red-500 after:content-['*'] after:hidden data-[required=true]:after:block ${changes.sitio_web && mode == "edit" ? "text-primary" : ""}`}
+                            className={`flex items-center gap-2  after:text-red-500 after:content-['*'] after:hidden data-[required=true]:after:block ${changes.sitio_web && mode == "edit" ? "text-primary" : ""}`}
                             data-required={data.mostrar_en_empresas}
                         >
                             Sitio Web

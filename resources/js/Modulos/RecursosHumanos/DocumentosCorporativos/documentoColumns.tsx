@@ -19,10 +19,8 @@ export const DocumentoColumns: ColumnDef<DocumentoCorporativoInterface>[] = [
       const icono = row.original.icono;
       return (
         <div className="flex items-center gap-2">
-          {icono ? (
+          {icono && (
             <DynamicIcon name={icono} className="h-4 w-4 text-primary" />
-          ) : (
-            <FileText className="h-4 w-4 text-muted-foreground" />
           )}
           <span>{nombre}</span>
         </div>
@@ -70,7 +68,7 @@ export const DocumentoColumns: ColumnDef<DocumentoCorporativoInterface>[] = [
       const rutaUrl = row.original.ruta;
       return (
         <a
-          href={"/storage" + rutaUrl}
+          href={"/storage/" + rutaUrl}
           target="_blank"
           rel="noopener noreferrer"        
         >

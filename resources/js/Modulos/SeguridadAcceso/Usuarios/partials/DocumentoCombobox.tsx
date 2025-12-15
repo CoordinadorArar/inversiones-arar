@@ -94,7 +94,7 @@ export function DocumentoCombobox({
     <div className="space-y-2">
       <Label
         htmlFor="numero_documento"
-        className={`flex items-center gap-2 after:ml-0.5 after:text-red-500 after:content-['*'] ${hasChanges ? "text-primary" : ""
+        className={`flex items-center gap-2  after:text-red-500 after:content-['*'] ${hasChanges ? "text-primary" : ""
           }`}
       >
         Número de Documento

@@ -133,13 +133,12 @@ export function ImageUpload({
           </div>
         ) : (
           <div
-            className={`w-full max-w-xs border-2 border-dashed rounded-lg p-6 pb-4 text-center transition-all ${
-              disabled
+            className={`w-full max-w-xs border-2 border-dashed rounded-lg p-6 pb-4 text-center transition-all ${disabled
                 ? "bg-muted/20 cursor-not-allowed"
                 : isDragging
-                ? "border-primary bg-primary/10 scale-105"
-                : "border-primary/30 bg-muted/30 hover:border-primary/50 hover:bg-muted/50 cursor-pointer"
-            }`}
+                  ? "border-primary bg-primary/10"
+                  : "border-primary/30 bg-muted/30 hover:border-primary/50 hover:bg-muted/50 cursor-pointer"
+              }`}
             onClick={() => !disabled && fileInputRef.current?.click()}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
@@ -147,19 +146,17 @@ export function ImageUpload({
           >
             <div className="flex flex-col items-center gap-3">
               <div
-                className={`h-12 w-12 rounded-full flex items-center justify-center transition-colors ${
-                  isDragging ? "bg-primary/20" : "bg-primary/10"
-                }`}
+                className={`h-12 w-12 rounded-full flex items-center justify-center transition-colors ${isDragging ? "bg-primary/20" : "bg-primary/10"
+                  }`}
               >
                 <Upload
-                  className={`h-6 w-6 transition-colors ${
-                    isDragging ? "text-primary" : "text-primary"
-                  }`}
+                  className={`h-6 w-6 transition-colors ${isDragging ? "text-primary" : "text-primary"
+                    }`}
                 />
               </div>
               <div>
                 <p className="text-sm font-medium text-foreground mb-1">
-                  {isDragging ? "Suelta el archivo aquí" : "Subir imagen"}
+                  {isDragging ? "Suelta la imagen aquí" : "Subir imagen"}
                 </p>
                 <p className="text-xs text-muted-foreground">
                   {isDragging
@@ -167,19 +164,17 @@ export function ImageUpload({
                     : "Arrastra una imagen o haz clic"}
                 </p>
               </div>
-              {!isDragging && (
-                <Button
-                  type="button"
-                  size="sm"
-                  disabled={disabled}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    fileInputRef.current?.click();
-                  }}
-                >
-                  Seleccionar archivo
-                </Button>
-              )}
+              <Button
+                type="button"
+                size="sm"
+                disabled={disabled}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  fileInputRef.current?.click();
+                }}
+              >
+                Seleccionar archivo
+              </Button>
             </div>
           </div>
         )}

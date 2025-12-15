@@ -35,7 +35,7 @@ class DocumentoCorporativoController extends Controller
                         'id' => $documento->id,
                         'nombre' => $documento->nombre,
                         'icono' => $documento->icono,
-                        'ruta' => $documento->ruta,                        
+                        'ruta' => $documento->ruta,
                         'mostrar_en_dashboard' => $documento->mostrar_en_dashboard,
                         'mostrar_en_footer' => $documento->mostrar_en_footer,
                     ];
@@ -123,7 +123,7 @@ class DocumentoCorporativoController extends Controller
 
         $documentos = $this->getDocumentosCacheados();
 
-        return Inertia::render('Modulos:DocumentosCorporativos/pages/Gestion', [
+        return Inertia::render('Modulos:RecursosHumanos/DocumentosCorporativos/pages/Gestion', [
             'tabs' => $this->tabs,
             'documentos' => $documentos,
             'permisos' => $permisos,
@@ -149,7 +149,9 @@ class DocumentoCorporativoController extends Controller
 
             // Guardar archivo
             $archivo = $request->file('archivo');
-            $ruta = $archivo->store('documentos_corporativos', 'public');
+            $nombreOriginal = $archivo->getClientOriginalName();
+            $ruta = $archivo->storeAs('documentos_corporativos', time() . '_' . $nombreOriginal, 'public');
+
 
             $documento = DocumentoCorporativo::create([
                 'nombre' => $validated['nombre'],
@@ -168,7 +170,6 @@ class DocumentoCorporativoController extends Controller
                     'nombre' => $documento->nombre,
                     'icono' => $documento->icono,
                     'ruta' => $documento->ruta,
-                    'ruta_url' => Storage::url($documento->ruta),
                     'mostrar_en_dashboard' => $documento->mostrar_en_dashboard,
                     'mostrar_en_footer' => $documento->mostrar_en_footer,
                 ]
@@ -212,7 +213,8 @@ class DocumentoCorporativoController extends Controller
 
                 // Guardar nuevo archivo
                 $archivo = $request->file('archivo');
-                $data['ruta'] = $archivo->store('documentos_corporativos', 'public');
+                $nombreOriginal = $archivo->getClientOriginalName();
+                $data['ruta'] = $archivo->storeAs('documentos_corporativos', time() . '_' . $nombreOriginal, 'public');
             }
 
             $documento->update($data);
@@ -225,7 +227,6 @@ class DocumentoCorporativoController extends Controller
                     'nombre' => $documento->nombre,
                     'icono' => $documento->icono,
                     'ruta' => $documento->ruta,
-                    'ruta_url' => Storage::url($documento->ruta),
                     'mostrar_en_dashboard' => $documento->mostrar_en_dashboard,
                     'mostrar_en_footer' => $documento->mostrar_en_footer,
                 ]
@@ -251,11 +252,6 @@ class DocumentoCorporativoController extends Controller
 
         try {
             $documento = DocumentoCorporativo::findOrFail($id);
-
-            // Eliminar archivo físico
-            if (Storage::disk('public')->exists($documento->ruta)) {
-                Storage::disk('public')->delete($documento->ruta);
-            }
 
             $documento->delete();
             Cache::forget('documentos_corporativos_list');

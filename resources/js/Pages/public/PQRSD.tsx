@@ -18,7 +18,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/Components/ui/select';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import InputError from '@/Components/InputError';
 import {
@@ -167,6 +167,9 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
     // Constante para el tipo de PQRSD "Denuncia", usada en lógica condicional.
     // Si el tipo es denuncia se activa lógica especial para selección de empresa y anonimato.
     const tipoDenuncia = tiposPqrs.find(t => t.abreviatura === 'D');
+
+
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
 
     // Array constante con configuración de los 4 pasos del formulario.
@@ -350,6 +353,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
             const newFiles = Array.from(e.target.files).filter((file) => {
                 // Verifica tipo MIME válido.
                 const isValidType = file.type === "application/pdf" ||
+                    file.type === "application/msword" ||
                     file.type === "image/jpeg" ||
                     file.type === "image/jpg";
                 // Verifica tamaño (500KB = 500000 bytes).
@@ -359,7 +363,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                 if (!isValidType) {
                     toast({
                         title: "Formato no válido",
-                        description: `${file.name} debe ser PDF o JPG`,
+                        description: `${file.name} debe ser PDF, DOC o JPG`,
                         variant: "destructive",
                     });
                     return false;
@@ -426,6 +430,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
             // Filtra archivos válidos (reutiliza lógica de handleFileChange).
             const validFiles = droppedFiles.filter((file) => {
                 const isValidType = file.type === "application/pdf" ||
+                    file.type === "application/msword" ||
                     file.type === "image/jpeg" ||
                     file.type === "image/jpg";
                 const isValidSize = file.size <= 500000;
@@ -434,7 +439,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                 if (!isValidType) {
                     toast({
                         title: "Formato no válido",
-                        description: `${file.name} debe ser PDF o JPG`,
+                        description: `${file.name} debe ser PDF, DOC o JPG`,
                         variant: "destructive",
                     });
                     return false;
@@ -733,7 +738,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                             <div className="space-y-6 animate-in fade-in duration-300">
                                                 <div className="grid md:grid-cols-2 gap-6">
                                                     <div className="space-y-2">
-                                                        <Label htmlFor="tipoPqrs" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
+                                                        <Label htmlFor="tipoPqrs" className=' after:text-red-500 after:content-["*"]'>
                                                             Tipo de PQRSD
                                                         </Label>
                                                         <Select
@@ -776,7 +781,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                     </div>
 
                                                     <div className="space-y-2">
-                                                        <Label htmlFor="empresa" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
+                                                        <Label htmlFor="empresa" className=' after:text-red-500 after:content-["*"]'>
                                                             Empresa
                                                         </Label>
                                                         <Select
@@ -838,7 +843,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                             <div className="space-y-6 animate-in fade-in duration-300">
                                                 <div className="grid md:grid-cols-2 gap-6">
                                                     <div className="space-y-2">
-                                                        <Label htmlFor="nombre" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
+                                                        <Label htmlFor="nombre" className=' after:text-red-500 after:content-["*"]'>
                                                             Nombres
                                                         </Label>
                                                         <Input
@@ -860,7 +865,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                     </div>
 
                                                     <div className="space-y-2">
-                                                        <Label htmlFor="apellido" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
+                                                        <Label htmlFor="apellido" className=' after:text-red-500 after:content-["*"]'>
                                                             Apellidos
                                                         </Label>
                                                         <Input
@@ -882,7 +887,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                     </div>
 
                                                     <div className="space-y-2">
-                                                        <Label htmlFor="tipoId" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
+                                                        <Label htmlFor="tipoId" className=' after:text-red-500 after:content-["*"]'>
                                                             Tipo de Identificación
                                                         </Label>
                                                         <Select
@@ -909,7 +914,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                     </div>
 
                                                     <div className="space-y-2">
-                                                        <Label htmlFor="numId" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
+                                                        <Label htmlFor="numId" className=' after:text-red-500 after:content-["*"]'>
                                                             N° Documento
                                                         </Label>
                                                         <Input
@@ -939,7 +944,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                             <div className="space-y-6 animate-in fade-in duration-300">
                                                 <div className="grid md:grid-cols-2 gap-6">
                                                     <div className="space-y-2">
-                                                        <Label htmlFor="correo" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
+                                                        <Label htmlFor="correo" className=' after:text-red-500 after:content-["*"]'>
                                                             Correo electrónico
                                                         </Label>
                                                         <Input
@@ -962,7 +967,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                     </div>
 
                                                     <div className="space-y-2">
-                                                        <Label htmlFor="telefono" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
+                                                        <Label htmlFor="telefono" className=' after:text-red-500 after:content-["*"]'>
                                                             Teléfono
                                                         </Label>
                                                         <Input
@@ -985,7 +990,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                     </div>
 
                                                     <div className="space-y-2">
-                                                        <Label htmlFor="dpto" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
+                                                        <Label htmlFor="dpto" className=' after:text-red-500 after:content-["*"]'>
                                                             Departamento
                                                         </Label>
                                                         <Select
@@ -1012,7 +1017,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                     </div>
 
                                                     <div className="space-y-2">
-                                                        <Label htmlFor="ciudad" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
+                                                        <Label htmlFor="ciudad" className=' after:text-red-500 after:content-["*"]'>
                                                             Ciudad
                                                         </Label>
                                                         <Select
@@ -1061,7 +1066,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                     </div>
 
                                                     <div className="space-y-2 md:col-span-2">
-                                                        <Label htmlFor="relacion" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
+                                                        <Label htmlFor="relacion" className=' after:text-red-500 after:content-["*"]'>
                                                             Relación con la empresa
                                                         </Label>
                                                         <Select
@@ -1091,7 +1096,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                         {(currentStep === 4 || (data.esAnonimo && currentStep === 2)) && (
                                             <div className="space-y-6 animate-in fade-in duration-300">
                                                 <div className="space-y-2 !mb-8">
-                                                    <Label htmlFor="mensaje" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
+                                                    <Label htmlFor="mensaje" className=' after:text-red-500 after:content-["*"]'>
                                                         Descripción de su {tipoDenuncia?.nombre.toLowerCase() || "PQRS"}
                                                     </Label>
                                                     <Textarea
@@ -1118,22 +1123,24 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                             Archivos adjuntos (opcional)
                                                         </Label>
                                                         <div
-                                                            className={`border-2  border-dashed rounded-lg p-6 pb-2 text-center transition-colors 
+                                                            className={`border-2 cursor-pointer border-dashed rounded-lg p-6 pb-2 text-center transition-colors 
                                                                 ${isDragging ? 'border-primary bg-primary/5'
                                                                     : 'border-primary/30 bg-muted/30 hover:border-primary/50 hover:bg-muted/50'}`}
                                                             onDragOver={handleDragOver}
                                                             onDragLeave={handleDragLeave}
                                                             onDrop={handleDrop}
+                                                            onClick={() => !processing && fileInputRef.current?.click()}
                                                         >
                                                             <div className="h-12 w-12 rounded-full bg-primary/10 inline-flex items-center justify-center">
                                                                 <FileText className="h-6 w-6 text-primary" />
                                                             </div>
-                                                            <p className="text-sm font-medium text-muted-foreground mb-1 mt-2">
-                                                                Subir archivos
+                                                            <p className="text-sm font-medium text-foreground mb-1 mt-2">
+                                                                {isDragging ? "Suelta el archivo aqui" : "Subir archivos"}
                                                             </p>
-                                                            <Input
+                                                            <input
+                                                                ref={fileInputRef}
                                                                 type="file"
-                                                                accept=".pdf,.jpg,.jpeg"
+                                                                accept=".pdf,.jpg,.jpeg,.doc"
                                                                 multiple
                                                                 onChange={handleFileChange}
                                                                 className="hidden"
@@ -1141,7 +1148,8 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                                 disabled={files.length >= 5}
                                                             />
                                                             <p className="text-xs text-muted-foreground">
-                                                                PDF o JPG (máx 500KB). Hasta 5 archivos.
+                                                                
+                                                                {isDragging ? "Suelta para cargar" : "PDF, DOC o JPG (máx 500KB). Hasta 5 archivos."}
                                                             </p>
                                                             <Label
                                                                 htmlFor="file-upload"

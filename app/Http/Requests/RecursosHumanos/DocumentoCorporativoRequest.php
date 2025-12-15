@@ -45,8 +45,8 @@ class DocumentoCorporativoRequest extends FormRequest
                 'regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/',
                 Rule::unique('documentos_corporativos', 'nombre')->ignore($documentoId),
             ],
-            'mostrar_en_dashboard' => 'required|boolean',
-            'mostrar_en_footer' => 'required|boolean',
+            'mostrar_en_dashboard' => 'boolean',
+            'mostrar_en_footer' => 'boolean',
         ];
 
         // Ícono es obligatorio si mostrar_en_footer o mostrar_en_dashboard está activo
@@ -108,10 +108,8 @@ class DocumentoCorporativoRequest extends FormRequest
             'archivo.mimes' => 'El archivo debe ser PDF, DOC o DOCX',
             'archivo.max' => 'El archivo no debe superar 10MB',
 
-            'mostrar_en_dashboard.required' => 'Debe especificar si se muestra en dashboard',
             'mostrar_en_dashboard.boolean' => 'El campo debe ser verdadero o falso',
 
-            'mostrar_en_footer.required' => 'Debe especificar si se muestra en footer',
             'mostrar_en_footer.boolean' => 'El campo debe ser verdadero o falso',
         ];
     }

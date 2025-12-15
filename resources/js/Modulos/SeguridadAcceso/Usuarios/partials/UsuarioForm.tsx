@@ -118,7 +118,7 @@ export function UsuarioForm({
         <div className="space-y-2">
           <Label
             htmlFor="email"
-            className={`flex items-center gap-2 after:ml-0.5 after:text-red-500 after:content-['*'] ${changes.email && mode === "edit" ? "text-primary" : ""
+            className={`flex items-center gap-2  after:text-red-500 after:content-['*'] ${changes.email && mode === "edit" ? "text-primary" : ""
               }`}
           >
             Correo Electrónico Empresarial

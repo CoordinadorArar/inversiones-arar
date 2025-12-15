@@ -16,13 +16,13 @@ class DocumentoCorporativoSeeder extends Seeder
             [
                 'nombre' => 'Política de privacidad',
                 'icono' => 'shield',
-                'ruta' => '/documentos-corporativos/Politica-Privacidad.pdf',
+                'ruta' => '/documentos_corporativos/Politica-Privacidad.pdf',
                 'mostrar_en_footer' => true,
             ],
             [
                 'nombre' => 'Manual Sagrilaft',
                 'icono' => 'file-text',
-                'ruta' => '/documentos-corporativos/Manual-Sagrilaft.pdf',
+                'ruta' => '/documentos_corporativos/Manual-Sagrilaft.pdf',
                 'mostrar_en_footer' => true,
             ],
         ];

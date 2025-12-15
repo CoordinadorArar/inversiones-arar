@@ -159,7 +159,7 @@ export default function ResetPassword({ token, numero_documento }) {
                 <div>
                     <Label
                         htmlFor="password"
-                        className='text-xs sm:text-sm after:ml-0.5 after:text-red-500 after:content-["*"]'
+                        className='text-xs sm:text-sm  after:text-red-500 after:content-["*"]'
                     >
                         Nueva Contraseña
                     </Label>
@@ -191,7 +191,7 @@ export default function ResetPassword({ token, numero_documento }) {
                 <div>
                     <Label
                         htmlFor="password_confirmation"
-                        className='text-xs sm:text-sm after:ml-0.5 after:text-red-500 after:content-["*"]'
+                        className='text-xs sm:text-sm  after:text-red-500 after:content-["*"]'
                     >
                         Confirmar Contraseña
                     </Label>

@@ -140,7 +140,7 @@ export function PestanaForm({
         <div className="space-y-2">
           <Label
             htmlFor="nombre"
-            className={`flex items-center gap-2 after:ml-0.5 after:text-red-500 after:content-['*'] ${changes.nombre && mode === "edit" ? "text-primary" : ""
+            className={`flex items-center gap-2  after:text-red-500 after:content-['*'] ${changes.nombre && mode === "edit" ? "text-primary" : ""
               }`}
           >
             Nombre de la Pestaña
@@ -180,7 +180,7 @@ export function PestanaForm({
         <div className="space-y-2">
           <Label
             htmlFor="ruta"
-            className={`flex items-center gap-2 after:ml-0.5 after:text-red-500 after:content-['*'] ${(changes.ruta || changes.modulo_id) && mode === "edit" ? "text-primary" : ""
+            className={`flex items-center gap-2  after:text-red-500 after:content-['*'] ${(changes.ruta || changes.modulo_id) && mode === "edit" ? "text-primary" : ""
               }`}
           >
             Ruta de la Pestaña

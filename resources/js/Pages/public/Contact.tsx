@@ -391,7 +391,7 @@ export default function Contact({ contact }: { contact: ConfiguracionContacto })
                                             <div className="grid md:grid-cols-2 gap-4 md:gap-6">
                                                 {/* Asunto */}
                                                 <div className="md:col-span-2 space-y-2">
-                                                    <Label htmlFor="subject" className='flex items-center gap-2 after:ml-0.5 after:text-red-500 after:content-["*"]'>
+                                                    <Label htmlFor="subject" className='flex items-center gap-2  after:text-red-500 after:content-["*"]'>
                                                         <MessageSquare className="w-4 h-4 text-primary" />
                                                         Asunto
                                                     </Label>
@@ -414,7 +414,7 @@ export default function Contact({ contact }: { contact: ConfiguracionContacto })
 
                                                 {/* Nombre */}
                                                 <div className="space-y-2">
-                                                    <Label htmlFor="name" className='flex items-center gap-2 after:ml-0.5 after:text-red-500 after:content-["*"]'>
+                                                    <Label htmlFor="name" className='flex items-center gap-2  after:text-red-500 after:content-["*"]'>
                                                         <User className="w-4 h-4 text-primary" />
                                                         Nombre completo
                                                     </Label>
@@ -438,7 +438,7 @@ export default function Contact({ contact }: { contact: ConfiguracionContacto })
 
                                                 {/* Email */}
                                                 <div className="space-y-2">
-                                                    <Label htmlFor="email" className='flex items-center gap-2 after:ml-0.5 after:text-red-500 after:content-["*"]'>
+                                                    <Label htmlFor="email" className='flex items-center gap-2  after:text-red-500 after:content-["*"]'>
                                                         <Mail className="w-4 h-4 text-primary" />
                                                         Correo electrónico
                                                     </Label>
@@ -463,7 +463,7 @@ export default function Contact({ contact }: { contact: ConfiguracionContacto })
 
                                                 {/* Teléfono */}
                                                 <div className="space-y-2">
-                                                    <Label htmlFor="phone" className='flex items-center gap-2 after:ml-0.5 after:text-red-500 after:content-["*"]'>
+                                                    <Label htmlFor="phone" className='flex items-center gap-2  after:text-red-500 after:content-["*"]'>
                                                         <Phone className="w-4 h-4 text-primary" />
                                                         Teléfono
                                                     </Label>
@@ -512,7 +512,7 @@ export default function Contact({ contact }: { contact: ConfiguracionContacto })
 
                                             {/* Mensaje */}
                                             <div className="space-y-2">
-                                                <Label htmlFor="message" className='flex items-center gap-2 after:ml-0.5 after:text-red-500 after:content-["*"]'>
+                                                <Label htmlFor="message" className='flex items-center gap-2  after:text-red-500 after:content-["*"]'>
                                                     <MessageSquare className="w-4 h-4 text-primary" />
                                                     Mensaje
                                                 </Label>

@@ -179,7 +179,7 @@ export default function Register({ status, document, dominios }) {
             <form onSubmit={submit} className='mt-2 grid md:grid-cols-2 gap-4 md:gap-5' noValidate>
                 {/* Campo de número de documento, deshabilitado */}
                 <div className="space-y-2">
-                    <Label htmlFor="numero_documento" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
+                    <Label htmlFor="numero_documento" className=' after:text-red-500 after:content-["*"]'>
                         Número de Documento
                     </Label>
                     <Input
@@ -196,7 +196,7 @@ export default function Register({ status, document, dominios }) {
 
                 {/* Campo de correo electrónico */}
                 <div className="space-y-2">
-                    <Label htmlFor="email" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
+                    <Label htmlFor="email" className=' after:text-red-500 after:content-["*"]'>
                         Correo Electrónico Empresarial
                     </Label>
                     <Input
@@ -214,7 +214,7 @@ export default function Register({ status, document, dominios }) {
 
                 {/* Campo de contraseña */}
                 <div className="space-y-2">
-                    <Label htmlFor="password" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
+                    <Label htmlFor="password" className=' after:text-red-500 after:content-["*"]'>
                         Contraseña
                     </Label>
                     <PasswordInput
@@ -241,7 +241,7 @@ export default function Register({ status, document, dominios }) {
 
                 {/* Campo de confirmación de contraseña */}
                 <div className="space-y-2">
-                    <Label htmlFor="password_confirmation" className='after:ml-0.5 after:text-red-500 after:content-["*"]'>
+                    <Label htmlFor="password_confirmation" className=' after:text-red-500 after:content-["*"]'>
                         Confirmación de Contraseña
                     </Label>
                     <PasswordInput
