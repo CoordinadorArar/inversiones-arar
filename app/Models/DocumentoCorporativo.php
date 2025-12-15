@@ -36,4 +36,9 @@ class DocumentoCorporativo extends Model
         'fecha_modificacion',
         'deleted_at'
     ];
+
+    protected $casts = [
+        'mostrar_en_dashboard' => 'boolean',
+        'mostrar_en_footer' => 'boolean',
+    ];
 }

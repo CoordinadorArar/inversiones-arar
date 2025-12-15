@@ -75,7 +75,7 @@ class HandleInertiaRequests extends Middleware
                 'user' => $user ?? null,
             ],
             'status' => fn() => session('status'),
-            'menu' => $menu ?? [],
+            ...($user ? ['menu' => $menu] : []),            
             'images' => ConfiguracionService::getGroup('image')
         ];
     }

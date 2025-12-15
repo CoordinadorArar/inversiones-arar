@@ -44,7 +44,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Vite::prefetch(concurrency: 3);
         // Solo ejecuta si la tabla 'configuracions' existe (para evitar errores durante migraciones)
-        if (Schema::hasTable('configuracions')) {
+        if (Schema::hasTable('configuraciones')) {
             
             $images = ConfiguracionService::getGroup('image');
             View::share('images', $images);

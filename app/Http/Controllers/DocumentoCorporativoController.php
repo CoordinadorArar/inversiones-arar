@@ -35,8 +35,7 @@ class DocumentoCorporativoController extends Controller
                         'id' => $documento->id,
                         'nombre' => $documento->nombre,
                         'icono' => $documento->icono,
-                        'ruta' => $documento->ruta,
-                        'ruta_url' => Storage::url($documento->ruta),
+                        'ruta' => $documento->ruta,                        
                         'mostrar_en_dashboard' => $documento->mostrar_en_dashboard,
                         'mostrar_en_footer' => $documento->mostrar_en_footer,
                     ];
@@ -56,7 +55,7 @@ class DocumentoCorporativoController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Modulos:DocumentosCorporativos/pages/Listado', [
+        return Inertia::render('Modulos:RecursosHumanos/DocumentosCorporativos/pages/Listado', [
             'tabs' => $this->tabs,
             'documentos' => $this->getDocumentosCacheados(),
             'moduloNombre' => $this->moduloNombre,
@@ -71,7 +70,7 @@ class DocumentoCorporativoController extends Controller
         $permisos = $this->rol->getPermisosPestana(18); // ID pestaña gestión
         $documentos = in_array('editar', $permisos) ? $this->getDocumentosCacheados() : [];
 
-        return Inertia::render('Modulos:DocumentosCorporativos/pages/Gestion', [
+        return Inertia::render('Modulos:RecursosHumanos/DocumentosCorporativos/pages/Gestion', [
             'tabs' => $this->tabs,
             'documentos' => $documentos,
             'permisos' => $permisos,
@@ -96,7 +95,7 @@ class DocumentoCorporativoController extends Controller
             ? $this->getDocumentosCacheados()
             : [];
 
-        return Inertia::render('Modulos:DocumentosCorporativos/pages/Gestion', [
+        return Inertia::render('Modulos:RecursosHumanos/DocumentosCorporativos/pages/Gestion', [
             'tabs' => $this->tabs,
             'documentos' => $documentos,
             'permisos' => $permisos,

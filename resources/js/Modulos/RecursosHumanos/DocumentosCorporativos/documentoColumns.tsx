@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { FileText, Eye, EyeOff } from "lucide-react";
 import { DynamicIcon } from "lucide-react/dynamic";
 import { DocumentoCorporativoInterface } from "./types/documentoInterface";
+import { Button } from "@/components/ui/button";
 
 export const DocumentoColumns: ColumnDef<DocumentoCorporativoInterface>[] = [
   {
@@ -23,7 +24,7 @@ export const DocumentoColumns: ColumnDef<DocumentoCorporativoInterface>[] = [
           ) : (
             <FileText className="h-4 w-4 text-muted-foreground" />
           )}
-          <span className="font-medium">{nombre}</span>
+          <span>{nombre}</span>
         </div>
       );
     },
@@ -48,13 +49,13 @@ export const DocumentoColumns: ColumnDef<DocumentoCorporativoInterface>[] = [
         <div className="flex flex-wrap gap-1">
           {dashboard && (
             <Badge className="bg-blue-500/10 text-blue-700 border-blue-500/20 text-xs">
-              <Eye className="h-3 w-3 mr-1" />
+              <Eye />
               Dashboard
             </Badge>
           )}
           {footer && (
             <Badge className="bg-green-500/10 text-green-700 border-green-500/20 text-xs">
-              <Eye className="h-3 w-3 mr-1" />
+              <Eye />
               Footer
             </Badge>
           )}
@@ -66,16 +67,18 @@ export const DocumentoColumns: ColumnDef<DocumentoCorporativoInterface>[] = [
     accessorKey: "archivo",
     header: "Archivo",
     cell: ({ row }) => {
-      const rutaUrl = row.original.ruta_url;
+      const rutaUrl = row.original.ruta;
       return (
         <a
-          href={rutaUrl}
+          href={"/storage" + rutaUrl}
           target="_blank"
-          rel="noopener noreferrer"
-          className="text-xs text-primary hover:underline flex items-center gap-1.5"
+          rel="noopener noreferrer"        
         >
-          <FileText className="h-3.5 w-3.5" />
-          Ver documento
+          <Button variant="link" className="py-0 h-auto">
+            <FileText className="h-3.5 w-3.5" />
+            Ver documento
+
+          </Button>
         </a>
       );
     },

@@ -5,6 +5,7 @@ import { TabInterface } from "@/Types/tabInterface";
 import HelpManualButton from "@/Components/HelpManualButton";
 import { TabsLayout } from "@/Layouts/TabsLayout";
 import { DocumentoCorporativoInterface } from "../types/documentoInterface";
+import { DocumentoColumns, DocumentoInactiveColumns } from "../documentoColumns";
 
 export interface DocumentoListadoProps {
     tabs: TabInterface[];
@@ -25,7 +26,7 @@ export default function DocumentosListado({
         >
             <Card className="py-6 h-full flex flex-col shadow border-none gap-4">
                 <CardHeader>
-                    <CardTitle>
+                    <CardTitle className="flex items-center gap-5">
                         Listado de Documentos Corporativos
                         {/* Aquí se incluye HelpManualButton para acceder al manual. */}
                         <HelpManualButton
