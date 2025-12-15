@@ -42,7 +42,7 @@ return new class extends Migration
             
             $table->dateTime('fecha_creacion')->useCurrent();  // Timestamp de creación automático.
             $table->dateTime('fecha_modificacion')->useCurrent()->useCurrentOnUpdate();  // Timestamp de modificación automático.
-            $table->softDeletes();  // Soft deletes: agrega deleted_at.
+            $table->dateTimeTz('deleted_at', 0)->nullable();
         });
     }
 

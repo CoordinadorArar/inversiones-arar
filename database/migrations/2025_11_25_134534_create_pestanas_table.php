@@ -51,7 +51,7 @@ return new class extends Migration
 
             $table->dateTimeTz('fecha_creacion', 0)->default(DB::raw('SYSDATETIME()'));
             $table->dateTimeTz('fecha_modificacion', 0)->default(DB::raw('SYSDATETIME()'));
-            $table->softDeletes();
+            $table->dateTimeTz('deleted_at', 0)->nullable();
         });
     }
 
