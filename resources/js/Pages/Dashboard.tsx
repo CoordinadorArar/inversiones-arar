@@ -8,23 +8,24 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DashboardLayout } from "@/Layouts/DashboardLayout";
+import { formatToSpanishDate } from "@/lib/formatUtils";
 import { Head } from "@inertiajs/react";
 import {  DollarSign, ChevronUp, ChevronDown, FileText, CalendarIcon, Cake } from "lucide-react";
 import { useState } from "react";
 
-export default function Dashboard({auth: { user: { info_corta }}}) {
+export default function Dashboard({auth: { user: { info_corta }}, documentos}) {
 
   const [showAllDocs, setShowAllDocs] = useState(false);
 
   const nombreCorto = (info_corta.nombres.split(" ")[0] + " " + info_corta.apellidos.split(" ")[0]).toLowerCase();
 
-  const documentos = [
-    { nombre: "Reglamento interno", tipo: "PDF", fecha: "reatens" },
-    { nombre: "Código Ética", tipo: "PDF", fecha: "15 de abril" },
-    { nombre: "Reunión de quipo", tipo: "PDF", fecha: "23 de abril" },
-    { nombre: "Política SST", tipo: "PDF", fecha: "10 de marzo" },
-    { nombre: "Manual de convivencia", tipo: "PDF", fecha: "5 de febrero" },
-  ];
+  // const documentos = [
+  //   { nombre: "Reglamento interno", tipo: "PDF", fecha: "reatens" },
+  //   { nombre: "Código Ética", tipo: "PDF", fecha: "15 de abril" },
+  //   { nombre: "Reunión de quipo", tipo: "PDF", fecha: "23 de abril" },
+  //   { nombre: "Política SST", tipo: "PDF", fecha: "10 de marzo" },
+  //   { nombre: "Manual de convivencia", tipo: "PDF", fecha: "5 de febrero" },
+  // ];
 
   const eventos = [
     { titulo: "Reunión de equipo", fecha: "15 de abril", tipo: "evento" },
@@ -133,7 +134,7 @@ export default function Dashboard({auth: { user: { info_corta }}}) {
                         <FileText className="h-5 w-5 text-primary" />
                         <div>
                           <p className="font-medium text-sm">{doc.nombre}</p>
-                          <p className="text-xs text-muted-foreground">{doc.fecha}</p>
+                          <p className="text-xs text-muted-foreground">{formatToSpanishDate(doc.fecha_creacion)}</p>
                         </div>
                       </div>
                       <Button variant="ghost" size="sm">

@@ -22,6 +22,9 @@ namespace App\Http\Middleware;
  
  * @date 2025-11-25
  */
+
+use App\Http\Controllers\DocumentoCorporativoController;
+use App\Models\DocumentoCorporativo;
 use App\Models\EmpresaWeb;
 use App\Services\ConfiguracionService;
 use Closure;
@@ -65,7 +68,10 @@ class SharePublicData
                 'contact' => $contact,
                 'images' => $images,
                 'rrss' => $rrss,
-            ]
+            ],
+            'documentos' => DocumentoCorporativo::select()
+                ->where('mostrar_en_footer', true)   // Solo las que deben mostrarse en footer.                
+                ->get(),
         ]);
         
         // Continuar con el request.

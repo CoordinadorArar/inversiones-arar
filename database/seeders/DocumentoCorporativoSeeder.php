@@ -24,6 +24,7 @@ class DocumentoCorporativoSeeder extends Seeder
                 'icono' => 'file-text',
                 'ruta' => '/documentos_corporativos/Manual-Sagrilaft.pdf',
                 'mostrar_en_footer' => true,
+                'mostrar_en_dashboard' => true,
             ],
         ];
 

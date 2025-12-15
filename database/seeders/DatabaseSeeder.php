@@ -44,5 +44,7 @@ class DatabaseSeeder extends Seeder
         $this->call(PestanaRolSeeder::class);
 
         $this->call(DocumentoCorporativoSeeder::class);
+        
+        $this->call(UsuarioSedeer::class);
     }
 }

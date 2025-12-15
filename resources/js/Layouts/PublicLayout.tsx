@@ -12,6 +12,7 @@ import { Empresa } from "@/Components/Header/header.types";
 import { PublicHeader } from "@/Components/Header/Public/PublicHeader";
 import ScrollToTop from "@/Components/ScrollToTop";
 import { Toaster } from "@/components/ui/toaster"
+import { DocumentoCorporativoInterface } from "@/Modulos/RecursosHumanos/DocumentosCorporativos/types/documentoInterface";
 import { ConfiguracionContacto, ConfiguracionImages, ConfiguracionRRSS } from "@/Types/configuracionInterface";
 import { PageProps } from '@inertiajs/core';
 import { usePage } from "@inertiajs/react";
@@ -24,6 +25,7 @@ interface PagePropsHeader extends PageProps {
         images: ConfiguracionImages;
         rrss: ConfiguracionRRSS;
     };
+    documentos: DocumentoCorporativoInterface[]
     [key: string]: any;
 }
 
@@ -35,6 +37,7 @@ export default function PublicLayout({ children }) {
     const empresas: Empresa[] = usePage<PagePropsHeader>().props.empresasHeader;
 
     const configuracion = usePage<PagePropsHeader>().props.configuracion
+    const documentos = usePage<PagePropsHeader>().props.documentos
 
     return (
         <div className="min-h-screen bg-background">
@@ -46,7 +49,7 @@ export default function PublicLayout({ children }) {
             {/* Toaster: Componente para mostrar notificaciones/toasts (ej. éxito/error)*/}
             <Toaster />
             {/* Footer: Pie de página común con info/contacto. */}
-            <Footer configuracion={configuracion} />
+            <Footer configuracion={configuracion} documentos={documentos} />
         </div>
     );
 }

@@ -25,7 +25,7 @@ class DocumentoCorporativoController extends Controller
     /**
      * Obtener documentos cacheados
      */
-    private function getDocumentosCacheados()
+    public function getDocumentosCacheados()
     {
         return Cache::remember('documentos_corporativos_list', 300, function () {
             return DocumentoCorporativo::orderByDesc('id')
@@ -45,8 +45,8 @@ class DocumentoCorporativoController extends Controller
 
     public function __construct()
     {
-        $this->rol = Auth::user()->rol;
-        $this->tabs = $this->rol->getPestanasModulo($this->moduloId);
+        $this->rol = Auth::user()?->rol;
+        $this->tabs = $this->rol?->getPestanasModulo($this->moduloId);
         $this->moduloNombre = 'Documentos Corporativos';
     }
 

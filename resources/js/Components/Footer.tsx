@@ -10,6 +10,8 @@ import { Mail, Phone, FileText, Shield, Linkedin, ArrowUpRight, MapPin, Instagra
 import Copyright from './Copyright';
 import { ConfiguracionContacto, ConfiguracionImages, ConfiguracionRRSS } from '@/Types/configuracionInterface';
 import { formatLandlinePhoneNumberCO } from '@/lib/formatUtils';
+import { DocumentoCorporativoInterface } from '@/Modulos/RecursosHumanos/DocumentosCorporativos/types/documentoInterface';
+import { DynamicIcon } from 'lucide-react/dynamic';
 
 interface FooterProps {
     configuracion: {
@@ -17,9 +19,10 @@ interface FooterProps {
         images: ConfiguracionImages;
         rrss: ConfiguracionRRSS;
     }
+    documentos: DocumentoCorporativoInterface[]
 }
 
-export default function Footer({ configuracion }: FooterProps) {
+export default function Footer({ configuracion, documentos }: FooterProps) {
 
     // Configuración de redes sociales con metadata: define íconos, placeholders y nombres.
     const rrss = [
@@ -154,30 +157,20 @@ export default function Footer({ configuracion }: FooterProps) {
                             <div className="h-px flex-1 bg-gradient-to-r from-primary/20 to-transparent" />
                         </h3>
                         <ul className="space-y-3">
-                            <li>
-                                <a
-                                    href="docs/Politica-Privacidad.pdf"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="group flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
-                                >
-                                    <Shield className="h-4 w-4 text-primary" />
-                                    <span>Política de privacidad</span>
-                                    <ArrowUpRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                </a>
-                            </li>
-                            <li>
-                                <a
-                                    href="docs/Manual-Sagrilaft.pdf"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="group flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
-                                >
-                                    <FileText className="h-4 w-4 text-primary" />
-                                    <span>Manual Sagrilaft</span>
-                                    <ArrowUpRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                </a>
-                            </li>
+                            {documentos.map((documento, index) => (
+                                <li key={index}>
+                                    <a
+                                        href={"/storage/" + documento.ruta}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="group flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+                                    >                                        
+                                        <DynamicIcon name={documento.icono} className="h-4 w-4 text-primary"/>
+                                        <span>{documento.nombre}</span>
+                                        <ArrowUpRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    </a>
+                                </li>
+                            ))}
                         </ul>
                     </div>
                 </div>

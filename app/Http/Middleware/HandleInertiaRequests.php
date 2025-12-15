@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\DocumentoCorporativo;
 use App\Models\GestionModulos\Modulo;
 use App\Services\ConfiguracionService;
 use Illuminate\Http\Request;
@@ -76,6 +77,9 @@ class HandleInertiaRequests extends Middleware
             ],
             'status' => fn() => session('status'),
             ...($user ? ['menu' => $menu] : []),            
+            ...($user ? ['documentos' => DocumentoCorporativo::select()
+                ->where('mostrar_en_dashboard', true)   // Solo las que deben mostrarse en dashboard                
+                ->get()] : []),            
             'images' => ConfiguracionService::getGroup('image')
         ];
     }

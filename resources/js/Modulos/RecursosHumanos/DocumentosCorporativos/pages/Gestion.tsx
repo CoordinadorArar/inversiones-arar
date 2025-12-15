@@ -11,6 +11,7 @@ import { TabsLayout } from "@/Layouts/TabsLayout";
 import { DOCUMENTO_INITIAL_DATA } from "../types/documentoForm.types";
 import { DocumentoForm } from "../partials/DocumentoForm";
 import { useDocumentoGestion } from "../hooks/useDocumentoGestion";
+import HelpManualButton from "@/Components/HelpManualButton";
 
 export interface DocumentoGestionProps {
   tabs: TabInterface[];
@@ -91,15 +92,21 @@ export default function DocumentosGestion({
     >
       <Card className="py-6 h-full flex flex-col shadow border-none gap-4">
         <CardHeader>
-          <CardTitle>Gestión de Documentos Corporativos</CardTitle>
+          <CardTitle className="flex items-center gap-5">
+            Gestión de Documentos Corporativos
+            {/* Aquí se incluye HelpManualButton para acceder al manual. */}
+            <HelpManualButton
+              url="/docs/Manual-Documentos-Gestion.pdf"
+              variant="muted"
+            />
+          </CardTitle>          
         </CardHeader>
 
         <CardContent className="flex-1 flex flex-col space-y-6">
           <div>
             <div
-              className={`grid gap-4 items-end${
-                puedeCrear ? " md:grid-cols-[1fr_auto]" : ""
-              }`}
+              className={`grid gap-4 items-end${puedeCrear ? " md:grid-cols-[1fr_auto]" : ""
+                }`}
             >
               <div>
                 <Label>Seleccionar documento para editar</Label>
@@ -164,9 +171,8 @@ export default function DocumentosGestion({
 
           <div className="flex-1 relative">
             <div
-              className={`transition-opacity duration-300 ${
-                isFormDisabled ? "opacity-50 pointer-events-none" : ""
-              }`}
+              className={`transition-opacity duration-300 ${isFormDisabled ? "opacity-50 pointer-events-none" : ""
+                }`}
             >
               {(puedeCrear || puedeEditar) && (
                 <DocumentoForm

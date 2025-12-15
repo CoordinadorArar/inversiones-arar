@@ -100,7 +100,15 @@ class PestanaRolSeeder extends Seeder
                 ]),
             ],
             ['pestana_id' => 17, 'rol_id' => 1],
-            ['pestana_id' => 18, 'rol_id' => 1],
+            [
+                'pestana_id' => 18,
+                'rol_id' => 1,
+                'permisos' => json_encode([
+                    "crear",
+                    "editar",
+                    "eliminar",
+                ]),
+            ],
             ['pestana_id' => 19, 'rol_id' => 1],
             ['pestana_id' => 20, 'rol_id' => 1],
         ];
