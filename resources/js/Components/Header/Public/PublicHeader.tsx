@@ -35,10 +35,20 @@ export function PublicHeader({ empresas, images }: PublicHeaderProps) {
 
     const currentRoute = route().current() || '';
 
-    const handleEmpresaClick = (empresa: Empresa, e: Event) => {
+    const handleEmpresaClick = (empresa: Empresa, e: Event) => {        
         e.preventDefault();
         setSelectedEmpresa(empresa);
-        setShowVideoModal(true);
+        // setShowVideoModal(true); // Se abre el modal con el video informativo, documentado temporalmente para acceso directo.
+
+        // Lógica para acceso directo, documentar si se decide utilizar el modal nuevamente 
+        if (selectedEmpresa) {
+            window.open(
+                `http://gh.inversionesarar.com:8900/AuthAG/LoginFormAG?IdCia=${selectedEmpresa.id}&NroConexion=1`,
+                '_blank',
+                'noopener,noreferrer'
+            );            
+            setSelectedEmpresa(null);
+        }
     };
 
     const handleContinuar = () => {
