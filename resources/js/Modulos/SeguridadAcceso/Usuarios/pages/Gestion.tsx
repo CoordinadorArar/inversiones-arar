@@ -131,7 +131,7 @@ export default function UsuariosGestion({
       <Card className="py-6 h-full flex flex-col shadow border-none gap-4">
         <CardHeader>
           <CardTitle className="flex items-center gap-5">Gestión de Usuarios
-            {/* Aquí se incluye HelpManualButton para acceder al manual de gestión de empresas. */}
+            {/* Aquí se incluye HelpManualButton para acceder al manual. */}
             <HelpManualButton
               url="/docs/Manual-Usuarios-Gestion.pdf"
               variant="muted"

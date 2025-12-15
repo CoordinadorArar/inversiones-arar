@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -35,8 +36,8 @@ return new class extends Migration
             $table->string('nombre', 50)->unique();  // Nombre único de la config (ej. "sitio_activo"). Longitud limitada para evitar nombres largos.
             $table->string('valor', 255)->nullable(); // Valor de la config (ej. "true"). Nullable para configs sin valor inicial.
 
-            $table->dateTime('fecha_creacion')->useCurrent();         // Timestamp creación (se setea automáticamente al insertar).
-            $table->dateTime('fecha_modificacion')->useCurrent()->useCurrentOnUpdate(); // Timestamp modificación (se actualiza en cada update).
+            $table->dateTimeTz('fecha_creacion', 0)->default(DB::raw('SYSDATETIME()'));
+            $table->dateTimeTz('fecha_modificacion', 0)->default(DB::raw('SYSDATETIME()'));            
         });
     }
 

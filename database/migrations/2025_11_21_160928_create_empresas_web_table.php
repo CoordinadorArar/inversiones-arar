@@ -69,10 +69,9 @@ return new class extends Migration
             $table->boolean('mostrar_en_portafolio')->default(false); // Mostrar en portafolio.
             $table->boolean('permitir_pqrsd')->default(false);        // Permitir PQRSD para esta empresa.
 
-            $table->dateTime('fecha_creacion')->useCurrent();         // Timestamp creación.
-            $table->dateTime('fecha_modificacion')->useCurrent()->useCurrentOnUpdate(); // Timestamp modificación.
-
-            $table->softDeletes(); // Soft deletes.
+            $table->dateTimeTz('fecha_creacion', 0)->default(DB::raw('SYSDATETIME()'));
+            $table->dateTimeTz('fecha_modificacion', 0)->default(DB::raw('SYSDATETIME()'));
+            $table->softDeletes();
         });
 
         // Índice único para id_siesa solo si no es null (permite múltiples nulls).

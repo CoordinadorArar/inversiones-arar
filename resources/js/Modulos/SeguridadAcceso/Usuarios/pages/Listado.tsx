@@ -40,7 +40,7 @@ export default function UsuariosListado({
         <CardHeader>
           <CardTitle className="flex items-center gap-5">
             Listado de Usuarios
-            {/* Aquí se incluye HelpManualButton para acceder al manual de gestión de empresas. */}
+            {/* Aquí se incluye HelpManualButton para acceder al manual. */}
             <HelpManualButton
               url="/docs/Manual-Usuarios-Listado.pdf"
               variant="muted"

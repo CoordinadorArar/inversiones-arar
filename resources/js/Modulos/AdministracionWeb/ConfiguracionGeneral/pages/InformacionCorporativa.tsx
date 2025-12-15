@@ -102,7 +102,7 @@ export default function InformacionCorporativa({
         <CardHeader>
           <CardTitle className="flex items-center gap-5">
             Información Corporativa
-            {/* Aquí se incluye HelpManualButton para acceder al manual de gestión de empresas. */}
+            {/* Aquí se incluye HelpManualButton para acceder al manual.*/}
             <HelpManualButton
               url="/docs/Manual-Informacion-Corporativa.pdf"
               variant="muted"

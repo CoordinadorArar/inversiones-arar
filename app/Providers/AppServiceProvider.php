@@ -8,6 +8,7 @@ use Illuminate\Support\ServiceProvider;
 
 use App\Providers\CustomSqlServerConnector; // Importamos la clase del conector personalizado
 use App\Services\ConfiguracionService;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Inertia\Inertia;
 
@@ -42,8 +43,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Vite::prefetch(concurrency: 3);
-        $images = ConfiguracionService::getGroup('image');
-
-        View::share('images', $images);
+        // Solo ejecuta si la tabla 'configuracions' existe (para evitar errores durante migraciones)
+        if (Schema::hasTable('configuracions')) {
+            
+            $images = ConfiguracionService::getGroup('image');
+            View::share('images', $images);
+        }
     }
 }

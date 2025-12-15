@@ -42,5 +42,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call(ModuloRolSeeder::class);
         $this->call(PestanaRolSeeder::class);
+
+        $this->call(DocumentoCorporativoSeeder::class);
     }
 }

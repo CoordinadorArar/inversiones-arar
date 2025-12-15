@@ -101,7 +101,7 @@ export default function EstadosPQRS({ estados: estadosIniciales, tabs, moduloNom
             <CardHeader>
               <CardTitle className="flex items-center gap-5">
                 Listado de Estados de PQRS
-                {/* Aquí se incluye HelpManualButton para acceder al manual de usuario. */}
+                {/* Aquí se incluye HelpManualButton para acceder al manual. */}
                 <HelpManualButton
                   url="/docs/Manual-Tablas-Maestras.pdf"
                   variant="muted"

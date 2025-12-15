@@ -4,6 +4,7 @@ namespace App\Http\Requests\SeguridadAcceso;
 
 use App\Models\EmpresaWeb;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 /**
  * Form Request para validar datos de usuarios.
@@ -38,6 +39,8 @@ class UsuarioRequest extends FormRequest
     {
         // Obtiene dominios permitidos de empresas
         $dominiosPermitidos = EmpresaWeb::pluck('dominio')->filter()->values()->toArray();
+        $id = $this->route()->parameter('id') ?? null;
+
 
         $rules = [
             'numero_documento' => [
@@ -45,6 +48,7 @@ class UsuarioRequest extends FormRequest
                 'string',
                 'max:20',
                 'regex:/^[0-9]+$/',
+                Rule::unique('usuarios', 'numero_documento')->ignore($id),
             ],
             'email' => [
                 'required',

@@ -100,7 +100,7 @@ export default function TiposPQRS({ tipos: tiposIniciales, tabs, moduloNombre, p
             <CardHeader>
               <CardTitle className="flex items-center gap-5">
                 Listado de Tipos de PQRS
-                {/* Aquí se incluye HelpManualButton para acceder al manual de usuario. */}
+                {/* Aquí se incluye HelpManualButton para acceder al manual*/}
                 <HelpManualButton
                   url="/docs/Manual-Tablas-Maestras.pdf"
                   variant="muted"

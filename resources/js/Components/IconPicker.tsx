@@ -4,22 +4,11 @@ import { DynamicIcon } from "lucide-react/dynamic";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 /**
- * 🔧 FUNCIÓN HELPER: Normaliza nombres de íconos
+ * FUNCIÓN HELPER: Normaliza nombres de íconos
  * 
  * Convierte nombres como:
  * - "HomeIcon" → "home"
@@ -42,7 +31,7 @@ function normalizeIconName(name: string): string {
 }
 
 /**
- * 🔧 FUNCIÓN HELPER: Capitaliza primera letra de cada palabra
+ * FUNCIÓN HELPER: Capitaliza primera letra de cada palabra
  * 
  * Convierte "arrow-big-up" → "Arrow Big Up" para mostrar bonito en el UI
  * 
@@ -54,16 +43,16 @@ function toDisplayName(str: string): string {
     .split("-")                           // Separa por guiones ["arrow", "big", "up"]
     .map(word =>
       word.charAt(0).toUpperCase() +      // Primera letra mayúscula
-      word.slice(1)                        // Resto en minúscula
+      word.slice(1)                       // Resto en minúscula
     )
-    .join(" ");                            // Une con espacios "Arrow Big Up"
+    .join(" ");                           // Une con espacios "Arrow Big Up"
 }
 
 interface IconPickerProps {
-  value: string;                    // Valor actual del ícono (ej: "home")
+  value: string;                     // Valor actual del ícono (ej: "home")
   onChange: (value: string) => void; // Función que se ejecuta al seleccionar
-  disabled?: boolean; // Indica si el combobox está deshabilitado.
-  className?: string; // Mensaje de error opcional.
+  disabled?: boolean;                // Indica si el combobox está deshabilitado.
+  className?: string;                // Mensaje de error opcional.
 }
 
 export default function IconPicker({ value, onChange, disabled = false, className = "" }: IconPickerProps) {
@@ -71,7 +60,7 @@ export default function IconPicker({ value, onChange, disabled = false, classNam
   const [search, setSearch] = useState("");  // Guarda el texto de búsqueda
 
   /**
-   * 📋 LISTA DE ICONOS DISPONIBLES
+   * LISTA DE ICONOS DISPONIBLES
    * 
    * Se ejecuta solo una vez al montar el componente (useMemo)
    * 1. Obtiene todos los nombres de íconos exportados por lucide-react
@@ -84,7 +73,7 @@ export default function IconPicker({ value, onChange, disabled = false, classNam
       const allIconNames = Object.keys(Icons)           // ["Home", "HomeIcon", "LucideHome", ...]
         .filter(name => typeof name === "string")       // Solo strings válidos
         .map(name => normalizeIconName(name))           // Normaliza: "home", "home", "home"    
-        .filter(name => name.length > 0);                // Elimina strings vacíos
+        .filter(name => name.length > 0);               // Elimina strings vacíos
 
       // Elimina duplicados usando Set (home, home, home → home)
       return Array.from(new Set(allIconNames)).sort();  // Ordena alfabéticamente
@@ -96,7 +85,7 @@ export default function IconPicker({ value, onChange, disabled = false, classNam
   }, []); // Array vacío = solo se ejecuta una vez
 
   /**
-   * 🔍 ICONOS FILTRADOS POR BÚSQUEDA
+   * ICONOS FILTRADOS POR BÚSQUEDA
    * 
    * Se recalcula cada vez que cambia `search` o `iconNames`
    * 1. Si no hay búsqueda, muestra los primeros 50 (rendimiento)
@@ -112,7 +101,7 @@ export default function IconPicker({ value, onChange, disabled = false, classNam
       const searchLower = search.toLowerCase();
       return iconNames
         .filter(name => name.includes(searchLower))  // Filtra por coincidencia
-        .slice(0, 50);                                // Máximo 50 resultados
+        .slice(0, 50);                               // Máximo 50 resultados
     } catch (error) {
       console.error("❌ Error en filtrado:", error);
       return [];
@@ -124,7 +113,7 @@ export default function IconPicker({ value, onChange, disabled = false, classNam
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      {/* 🔘 BOTÓN TRIGGER */}
+      {/* BOTÓN TRIGGER */}
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -148,7 +137,7 @@ export default function IconPicker({ value, onChange, disabled = false, classNam
         </Button>
       </PopoverTrigger>
 
-      {/* 📦 POPOVER CON LISTA DE ICONOS */}
+      {/* POPOVER CON LISTA DE ICONOS */}
       <PopoverContent className="w-[300px] p-0" align="start">
         <Command>
           {/* 🔍 Input de búsqueda */}
@@ -158,7 +147,7 @@ export default function IconPicker({ value, onChange, disabled = false, classNam
             onValueChange={setSearch}
           />
 
-          {/* 📋 Lista de resultados */}
+          {/* Lista de resultados */}
           <CommandList>
             {/* Mensaje si no hay resultados */}
             <CommandEmpty>No se encontraron íconos.</CommandEmpty>

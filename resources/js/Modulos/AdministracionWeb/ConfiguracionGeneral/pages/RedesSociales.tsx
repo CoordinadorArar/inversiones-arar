@@ -104,7 +104,7 @@ export default function RedesSociales({
                 <CardHeader>
                     <CardTitle className="flex items-center gap-5">
                         Enlaces de Redes Sociales
-                        {/* Aquí se incluye HelpManualButton para acceder al manual de gestión de empresas. */}
+                        {/* Aquí se incluye HelpManualButton para acceder al manual. */}
                         <HelpManualButton
                             url="/docs/Manual-RRSS.pdf"
                             variant="muted"

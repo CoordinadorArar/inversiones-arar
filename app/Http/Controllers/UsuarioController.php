@@ -248,9 +248,7 @@ class UsuarioController extends Controller
      */
     public function store(UsuarioRequest $request)
     {
-        $permisos = $this->rol->getPermisosPestana(9);
-
-        if (!in_array('crear', $permisos)) {
+        if (!$this->rol->tienePermisoPestana(9, 'crear')) {
             return response()->json([
                 'error' => 'No tienes permiso para crear usuarios'
             ], 403);
@@ -328,9 +326,7 @@ class UsuarioController extends Controller
      */
     public function update(UsuarioRequest $request, int $id)
     {
-        $permisos = $this->rol->getPermisosPestana(9);
-
-        if (!in_array('editar', $permisos)) {
+        if (!$this->rol->tienePermisoPestana(9, 'editar')) {
             return response()->json([
                 'error' => 'No tienes permiso para editar usuarios'
             ], 403);
@@ -380,9 +376,7 @@ class UsuarioController extends Controller
      */
     public function bloquear(int $id)
     {
-        $permisos = $this->rol->getPermisosPestana(9);
-
-        if (!in_array('bloquear', $permisos)) {
+        if (!$this->rol->tienePermisoPestana(9, 'bloquear')) {
             return response()->json([
                 'error' => 'No tienes permiso para bloquear usuarios'
             ], 403);
@@ -413,9 +407,7 @@ class UsuarioController extends Controller
      */
     public function desbloquear(int $id)
     {
-        $permisos = $this->rol->getPermisosPestana(9);
-
-        if (!in_array('bloquear', $permisos)) {
+        if (!$this->rol->tienePermisoPestana(9, 'bloquear')) {
             return response()->json([
                 'error' => 'No tienes permiso para desbloquear usuarios'
             ], 403);
@@ -446,9 +438,7 @@ class UsuarioController extends Controller
      */
     public function restaurarPassword(int $id)
     {
-        $permisos = $this->rol->getPermisosPestana(9);
-
-        if (!in_array('restaurar_password', $permisos)) {
+        if (!$this->rol->tienePermisoPestana(9, 'restaurar_password')) {
             return response()->json([
                 'error' => 'No tienes permiso para restaurar contraseñas'
             ], 403);

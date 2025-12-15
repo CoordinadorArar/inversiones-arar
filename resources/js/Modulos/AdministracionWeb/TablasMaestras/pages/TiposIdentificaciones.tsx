@@ -99,7 +99,7 @@ export default function TiposIdentificaciones({ tipos: tiposIniciales, tabs, mod
             <CardHeader>
               <CardTitle className="flex items-center gap-5">
                 Listado de Tipos de Identificaciones
-                {/* Aquí se incluye HelpManualButton para acceder al manual de usuario. */}
+                {/* Aquí se incluye HelpManualButton para acceder al manual. */}
                 <HelpManualButton
                   url="/docs/Manual-Tablas-Maestras.pdf"
                   variant="muted"

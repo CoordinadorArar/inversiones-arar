@@ -53,7 +53,7 @@ export default function ModulosListado({
         <CardHeader>
           <CardTitle className="flex items-center gap-5">
             Listado de Módulos
-            {/* Aquí se incluye HelpManualButton para acceder al manual de gestión de empresas. */}
+            {/* Aquí se incluye HelpManualButton para acceder al manual. */}
             <HelpManualButton
               url="/docs/Manual-Modulos-Listado.pdf"
               variant="muted"

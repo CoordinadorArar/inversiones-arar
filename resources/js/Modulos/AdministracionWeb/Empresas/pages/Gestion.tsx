@@ -132,7 +132,7 @@ export default function EmpresaGestion({
         <CardHeader>
           <CardTitle className="flex items-center gap-5">
             Gestión de Empresas
-            {/* Aquí se incluye HelpManualButton para acceder al manual de gestión de empresas. */}
+            {/* Aquí se incluye HelpManualButton para acceder al manual. */}
             <HelpManualButton
               url="/docs/Manual-Empresas-Gestion.pdf"
               variant="muted"

@@ -46,10 +46,9 @@ return new class extends Migration
             // - Propósito: Flexibilidad para acciones custom sin hardcodear en código.
             $table->json('permisos_extra')->nullable();
 
-            $table->dateTime('fecha_creacion')->useCurrent();  // Timestamp creación.
-            $table->dateTime('fecha_modificacion')->useCurrent()->useCurrentOnUpdate();  // Timestamp modificación.
-
-            $table->softDeletes();  // Soft deletes.
+            $table->dateTimeTz('fecha_creacion', 0)->default(DB::raw('SYSDATETIME()'));
+            $table->dateTimeTz('fecha_modificacion', 0)->default(DB::raw('SYSDATETIME()'));
+            $table->softDeletes();
         });
     }
 

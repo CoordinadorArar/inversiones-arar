@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -77,11 +78,13 @@ return new class extends Migration
                 ->nullable()
                 ->constrained('usuarios');
 
-            $table->dateTime('fecha_creacion')->useCurrent();
-            $table->dateTime('fecha_modificacion')->useCurrent()->useCurrentOnUpdate();
-            $table->dateTime('fecha_finalizacion')->nullable();
-
+            $table->dateTimeTz('fecha_creacion', 0)->default(DB::raw('SYSDATETIME()'));
+            $table->dateTimeTz('fecha_modificacion', 0)->default(DB::raw('SYSDATETIME()'));
+            $table->dateTime('fecha_finalizacion')->nullable();        
             $table->softDeletes();
+
+
+
 
             // Índices para búsquedas            
             $table->index('tipo_pqrs_id');

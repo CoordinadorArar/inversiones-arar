@@ -93,7 +93,7 @@ export default function PestanasGestion({
                 <CardHeader>
                     <CardTitle className="flex items-center gap-5">
                         Gestión de Pestañas
-                        {/* Aquí se incluye HelpManualButton para acceder al manual de gestión de módulos. */}
+                        {/* Aquí se incluye HelpManualButton para acceder al manual. */}
                         <HelpManualButton
                             url="/docs/Manual-Modulos-Gestion.pdf"
                             variant="muted"
