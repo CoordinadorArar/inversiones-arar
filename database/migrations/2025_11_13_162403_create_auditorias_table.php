@@ -38,7 +38,7 @@ return new class extends Migration
         Schema::create('auditorias', function (Blueprint $table) {
             $table->id();
             $table->string('tabla_afectada', 100);
-            $table->unsignedBigInteger('id_registro_afectado');
+            $table->string('id_registro_afectado', 10);
             $table->enum('accion', ['INSERT', 'UPDATE', 'DELETE']);
 
             // Clave foránea a la tabla users (permite NULL si no hay usuario autenticado)

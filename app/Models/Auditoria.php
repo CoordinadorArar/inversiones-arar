@@ -98,4 +98,28 @@ class Auditoria extends Model
     {
         return $this->belongsTo(User::class, 'usuario_id', 'id');
     }
+
+    // En Auditoria.php
+    /**
+     * Registra una acción de auditoría sin modelo Eloquent.
+     * Útil para tablas pivote o cambios manuales.
+     *
+     * @param string $tabla Nombre de la tabla afectada.
+     * @param mixed $idRegistro ID único del registro afectado.
+     * @param string $accion 'INSERT', 'UPDATE' o 'DELETE'.
+     * @param array|null $cambios Array de cambios (solo para UPDATE).
+     * @return void
+     */
+    public static function registrarSinModelo($tabla, $idRegistro, $accion, $cambios = null)
+    {
+        $usuario = Auth::check() ? Auth::user()->id : null;
+
+        self::create([
+            'tabla_afectada'        => $tabla,
+            'id_registro_afectado'  => $idRegistro,
+            'accion'                => $accion,
+            'usuario_id'            => $usuario,
+            'cambios'               => $cambios ? json_encode($cambios) : null,
+        ]);
+    }
 }

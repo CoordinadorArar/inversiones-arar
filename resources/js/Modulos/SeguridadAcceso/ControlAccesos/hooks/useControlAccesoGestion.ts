@@ -1,81 +1,96 @@
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { ModuloAsignacionInterface, RolSimpleInterface } from "../types/controlAccesoInterface";
+import { ModuloAsignacionInterface, PestanaAsignacionInterface, RolSimpleInterface } from "../types/controlAccesoInterface";
 
 interface UseControlAccesoGestionProps {
-  roles: RolSimpleInterface[]; // Lista de roles
-  modulosIniciales: ModuloAsignacionInterface[]; // Módulos iniciales (sin rol seleccionado)
+  roles: RolSimpleInterface[];
+  itemsIniciales: ModuloAsignacionInterface[] | PestanaAsignacionInterface[];
   initialRolId?: number | null;
+  tipo: "modulos" | "pestanas";
 }
 
 export function useControlAccesoGestion({
   roles,
-  modulosIniciales,
+  itemsIniciales,
   initialRolId = null,
+  tipo,
 }: UseControlAccesoGestionProps) {
   const { toast } = useToast();
 
   const [selectedRolId, setSelectedRolId] = useState<number | null>(initialRolId);
-  const [modulos, setModulos] = useState<ModuloAsignacionInterface[]>(modulosIniciales);
-  const [loadingModulos, setLoadingModulos] = useState(false);
+  const [items, setItems] = useState<ModuloAsignacionInterface[] | PestanaAsignacionInterface[]>(itemsIniciales);
+  const [loadingItems, setLoadingItems] = useState(false);
 
-  const selectedRol = roles.find((r) => r.id === selectedRolId);
+  // const selectedRol = roles.find((r) => r.id === selectedRolId);
 
   const navigateTo = (url: string) => {
     window.history.pushState({}, "", url);
   };
 
-  // Sincroniza con URL
   useEffect(() => {
     const handlePopState = () => {
       const path = window.location.pathname;
-      const rolMatch = path.match(/\/accesos-modulos\/(\d+)/);
+      const rutaBase = tipo === "modulos" ? "/accesos-modulos/" : "/accesos-pestanas/";
+      const rolMatch = path.match(new RegExp(`${rutaBase}(\\d+)`));
+      
       if (rolMatch) {
         const rolId = Number(rolMatch[1]);
         setSelectedRolId(rolId);
-        loadModulosForRol(rolId); // Carga módulos al cambiar URL
+        loadItemsForRol(rolId);
       } else {
         setSelectedRolId(null);
-        setModulos(modulosIniciales); // Reset a iniciales
+        setItems(itemsIniciales);
       }
     };
 
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
-  }, [modulosIniciales]);
+  }, [itemsIniciales, tipo]);
 
-  // Función para cargar módulos dinámicamente por rol
-  const loadModulosForRol = async (rolId: number) => {
-    setLoadingModulos(true);
+  const loadItemsForRol = async (rolId: number) => {
+    setLoadingItems(true);
+    const rutaCargar = tipo === "modulos" 
+      ? route("control-acceso.cargar-modulos", rolId)
+      : route("control-acceso.cargar-pestanas", rolId);
+    
+    const dataKey = tipo === "modulos" ? "modulos" : "pestanas";
+
     try {
-      const response = await fetch(route("control-acceso.cargar-modulos", rolId), {
+      const response = await fetch(rutaCargar, {
         headers: { Accept: "application/json" },
       });
       if (response.ok) {
         const data = await response.json();
-        setModulos(data.modulos);
+        setItems(data[dataKey]);
       } else {
-        toast({ title: "Error", description: "No se pudieron cargar los módulos", variant: "destructive" });
+        toast({ 
+          title: "Error", 
+          description: `No se pudieron cargar ${tipo === "modulos" ? "los módulos" : "las pestañas"}`, 
+          variant: "destructive" 
+        });
       }
     } catch (error: any) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } finally {
-      setLoadingModulos(false);
+      setLoadingItems(false);
     }
   };
 
   const handleRolChange = (rolId: number) => {
     setSelectedRolId(rolId);
-    navigateTo(route("control-acceso.modulos.rol", rolId)); // Cambia URL sin recargar
-    loadModulosForRol(rolId); // Carga módulos
+    const rutaRol = tipo === "modulos"
+      ? route("control-acceso.modulos.rol", rolId)
+      : route("control-acceso.pestanas.rol", rolId);
+    
+    navigateTo(rutaRol);
+    loadItemsForRol(rolId);
   };
 
   return {
     selectedRolId,
-    selectedRol,
-    modulos,
-    loadingModulos,
+    items,
+    loadingItems,
     handleRolChange,
-    loadModulosForRol
+    loadItemsForRol
   };
 }

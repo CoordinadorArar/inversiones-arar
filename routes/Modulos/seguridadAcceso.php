@@ -110,12 +110,12 @@ Route::middleware('auth')->group(function () {
             // Middleware: pestana.access:10 (ID de la pestaña Módulos en DB)
             Route::get('/accesos-modulos', [ControlAccesoController::class, 'modulos'])
                 ->name('control-acceso.modulos')
-                ->middleware('pestana.access:16');
+                ->middleware('pestana.access:10');
 
             // Vista con rol seleccionado
             Route::get('/accesos-modulos/{rolId}', [ControlAccesoController::class, 'modulos'])
                 ->name('control-acceso.modulos.rol')
-                ->middleware('pestana.access:16');
+                ->middleware('pestana.access:10');
 
             // API - Asignación y desasignación de módulos
             Route::post('/asignar-modulo', [ControlAccesoController::class, 'asignarModulo'])
@@ -123,17 +123,21 @@ Route::middleware('auth')->group(function () {
 
             Route::post('/desasignar-modulo', [ControlAccesoController::class, 'desasignarModulo'])
                 ->name('control-acceso.desasignar-modulo');
-                
+
+            // API para cargar módulos por rol
+            Route::get('/accesos-modulos/cargar/{rolId}', [ControlAccesoController::class, 'cargarModulosPorRol'])
+                ->name('control-acceso.cargar-modulos');
+
 
             // Vistas - Pestaña Pestañas (para cuando la implementes)
-            // Middleware: pestana.access:17 (ID de la pestaña Pestañas en DB)
+            // Middleware: pestana.access:11 (ID de la pestaña Pestañas en DB)
             Route::get('/accesos-pestanas', [ControlAccesoController::class, 'pestanas'])
                 ->name('control-acceso.pestanas')
-                ->middleware('pestana.access:17');
+                ->middleware('pestana.access:11');
 
             Route::get('/accesos-pestanas/{rolId}', [ControlAccesoController::class, 'pestanas'])
                 ->name('control-acceso.pestanas.rol')
-                ->middleware('pestana.access:17');
+                ->middleware('pestana.access:11');
 
             // API - Asignación y desasignación de pestañas (para cuando las implementes)
             Route::post('/asignar-pestana', [ControlAccesoController::class, 'asignarPestana'])
@@ -142,9 +146,9 @@ Route::middleware('auth')->group(function () {
             Route::post('/desasignar-pestana', [ControlAccesoController::class, 'desasignarPestana'])
                 ->name('control-acceso.desasignar-pestana');
 
-            // API para cargar módulos por rol
-            Route::get('/accesos-modulos/cargar/{rolId}', [ControlAccesoController::class, 'cargarModulosPorRol'])
-                ->name('control-acceso.cargar-modulos');
+            // API para cargar pestañas por rol
+            Route::get('/accesos-pestanas/cargar/{rolId}', [ControlAccesoController::class, 'cargarPestanasPorRol'])
+                ->name('control-acceso.cargar-pestanas');
         });
     });
 });

@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { ModuloAsignacionInterface } from "../types/controlAccesoInterface";
 import { DynamicIcon } from "lucide-react/dynamic";
-import { Folder, Check, ChevronDown, ChevronRight, Expand, ListChevronsDownUp, ListChevronsUpDown } from "lucide-react";
+import { Check, ChevronDown, ListChevronsDownUp, ListChevronsUpDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -89,8 +89,8 @@ export function ModulosList({
                           "h-5 w-5 text-primary transition-transform duration-300",
                           openGroups.includes(modulo.nombre) && "rotate-180" // Rota flecha al abrir
                         )}
-                      />
-                      <Folder className="h-5 w-5 text-primary" />
+                      />                      
+                      <DynamicIcon name={modulo.icono} className="h-5 w-5 text-primary" />
                       <span className="font-semibold text-sm">{modulo.nombre}</span>
                       <Badge variant="outline" className="ml-auto text-xs">
                         {modulo.hijos?.length || 0} módulos

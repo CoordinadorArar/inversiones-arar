@@ -57,7 +57,7 @@ export const MenuItemLink = ({
     <Link
       href={url}  // URL para navegación.
       className={cn(
-        "flex items-start gap-2 w-full p-[8px] transition-all duration-300 rounded-md ",
+        "flex items-start gap-2 w-full p-[8px] transition-all duration-300 rounded-md whitespace-nowrap ",
         // Estilos específicos para subitems (padding y tamaño de texto reducido).
         isSubItem ? "px-3 py-1.5 text-sm" : "",
         // Estilos cuando está activo: bg primary, texto primary, hover, border derecho.

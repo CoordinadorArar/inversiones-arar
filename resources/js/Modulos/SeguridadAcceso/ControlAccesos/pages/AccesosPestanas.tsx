@@ -2,57 +2,59 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { DashboardLayout } from "@/Layouts/DashboardLayout";
 import { TabInterface } from "@/Types/tabInterface";
-import { RolSimpleInterface, ModuloAsignacionInterface } from "../types/controlAccesoInterface";
+import { RolSimpleInterface, PestanaAsignacionInterface } from "../types/controlAccesoInterface";
 import { Label } from "@/components/ui/label";
 import { SearchableSelect } from "@/Components/SearchableSelect";
-import { router } from "@inertiajs/react";
 import { TabsLayout } from "@/Layouts/TabsLayout";
-import { ModulosList } from "../partials/ModulosList";
+import { PestanasList } from "../partials/PestanasList";
 import { PermisosPanel } from "../partials/PermisosPanel";
 import { useControlAccesoGestion } from "../hooks/useControlAccesoGestion";
-import { Loader2 } from "lucide-react";
 
-export interface ControlAccesoModulosProps {
+export interface ControlAccesoPestanasProps {
     tabs: TabInterface[];
     roles: RolSimpleInterface[];
-    modulos: ModuloAsignacionInterface[];
+    pestanas: PestanaAsignacionInterface[];
     permisosBase: string[];
     selectedRolId: number | null;
     permisos: string[];
     moduloNombre: string;
 }
 
-export default function ControlAccesoModulos({
+export default function ControlAccesoPestanas({
     tabs,
     roles,
-    modulos: modulosIniciales,
+    pestanas: pestanasIniciales,
     permisosBase,
     selectedRolId: initialRolId,
     permisos,
     moduloNombre,
-}: ControlAccesoModulosProps) {
-    const [selectedModuloId, setSelectedModuloId] = useState<number | null>(null);
+}: ControlAccesoPestanasProps) {
+    const [selectedPestanaId, setSelectedPestanaId] = useState<number | null>(null);
 
-    const { selectedRolId, items: modulos, loadingItems, handleRolChange, loadItemsForRol } = useControlAccesoGestion({
+    const { selectedRolId, items: pestanas, loadingItems, handleRolChange, loadItemsForRol } = useControlAccesoGestion({
         roles,
-        itemsIniciales: modulosIniciales,
+        itemsIniciales: pestanasIniciales,
         initialRolId,
-        tipo: 'modulos',
+        tipo: 'pestanas',
     });
 
     const rolOptions = roles.map((rol) => ({
         value: rol.id.toString(),
         label: rol.nombre,
     }));
+    
+    // Encontrar pestaña seleccionada (aplana padres → hijos → pestañas)
+    const selectedPestana = pestanas
+        .flatMap((padre) => padre.hijos.flatMap((hijo) => hijo.pestanas || []))
+        .find((p) => p.id === selectedPestanaId);
 
-    // Encontrar módulo seleccionado
-    const selectedModulo = modulos
-        .flatMap((m) => [m, ...(m.hijos || [])])
-        .find((m) => m.id == selectedModuloId);
 
-    const handleModuloSelect = (moduloId: number) => {
-        setSelectedModuloId(moduloId);
+    const handlePestanaSelect = (pestanaId: number) => {
+        setSelectedPestanaId(pestanaId);
+        console.log('pestanaId', pestanaId);
     };
+
+    console.log('selectedPestana', selectedPestana, selectedPestanaId);
 
     return (
         <TabsLayout
@@ -64,7 +66,7 @@ export default function ControlAccesoModulos({
                 {/* Header con selector de rol */}
                 <Card className="py-6 shadow border-none gap-4">
                     <CardHeader>
-                        <CardTitle>Asignación de Módulos a Roles</CardTitle>
+                        <CardTitle>Asignación de Pestañas a Roles</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <Label>Seleccionar rol para configurar permisos</Label>
@@ -75,28 +77,28 @@ export default function ControlAccesoModulos({
                             placeholder="Buscar rol..."
                             searchPlaceholder="Escribir para buscar..."
                             emptyText="No se encontraron roles"
-                            disabled={loadingItems} // Deshabilita mientras carga
+                            disabled={loadingItems}
                         />
                     </CardContent>
                 </Card>
 
-                {/* Contenido principal: Lista de módulos + Panel de permisos */}
+                {/* Contenido principal: Lista de pestañas + Panel de permisos */}
                 {selectedRolId && (
                     <div className={"flex-1 grid md:grid-cols-[1fr_400px] gap-4 min-h-0 relative " + (loadingItems ? "opacity-60 pointer-events-none" : "")}>
-                        {/* Lista de módulos */}
-                        <ModulosList
-                            modulos={modulos}
-                            selectedModuloId={selectedModuloId}
-                            onModuloSelect={handleModuloSelect}
+                        {/* Lista de pestañas */}
+                        <PestanasList
+                            pestanas={pestanas}
+                            selectedPestanaId={selectedPestanaId}
+                            onPestanaSelect={handlePestanaSelect}
                         />
 
                         {/* Panel de permisos */}
                         <PermisosPanel
-                            item={selectedModulo}
+                            item={selectedPestana}
                             rolId={selectedRolId}
                             permisosBase={permisosBase}
                             permisos={permisos}
-                            tipo="modulo"
+                            tipo="pestana"
                             onSuccess={() => {
                                 loadItemsForRol(selectedRolId);
                             }}
@@ -108,6 +110,6 @@ export default function ControlAccesoModulos({
     );
 }
 
-ControlAccesoModulos.layout = (page: any) => (
+ControlAccesoPestanas.layout = (page: any) => (
     <DashboardLayout header={page.props.moduloNombre} children={page} />
 );
