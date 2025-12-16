@@ -87,14 +87,14 @@ class PestanaController extends Controller
 
     /**
      * Muestra la vista de gestión de pestañas en React via Inertia.
-     * Renderiza el componente 'Gestion' con pestañas (si tiene permiso de editar), módulos disponibles para asignar, permisos de la pestaña 16 y datos del módulo.
+     * Renderiza el componente 'Gestion' con pestañas (si tiene permiso de editar), módulos disponibles para asignar, permisos de la pestaña 15 y datos del módulo.
      *
      * @return \Inertia\Response Respuesta de Inertia con la vista y datos necesarios.
      */
     public function gestion()
     {
-        // Obtiene permisos específicos de la pestaña 16 (Gestión) para el rol.
-        $permisos = $this->rol->getPermisosPestana(16);
+        // Obtiene permisos específicos de la pestaña 15 (Gestión) para el rol.
+        $permisos = $this->rol->getPermisosPestana(15);
 
         // Si puede editar, enviar pestañas; si no, array vacío.
         $pestanas = in_array('editar', $permisos) 
@@ -122,8 +122,8 @@ class PestanaController extends Controller
      */
     public function create()
     {
-        // Obtiene permisos específicos de la pestaña 16 (Gestión) para el rol.
-        $permisos = $this->rol->getPermisosPestana(16);
+        // Obtiene permisos específicos de la pestaña 15 (Gestión) para el rol.
+        $permisos = $this->rol->getPermisosPestana(15);
 
         if (!in_array('crear', $permisos)) {
             // Retorna la vista de gestión con un error adicional (sin re-renderizar, solo agrega prop 'error').
@@ -157,8 +157,8 @@ class PestanaController extends Controller
      */
     public function edit(int $id)
     {
-        // Obtiene permisos específicos de la pestaña 16 (Gestión) para el rol.
-        $permisos = $this->rol->getPermisosPestana(16);
+        // Obtiene permisos específicos de la pestaña 15 (Gestión) para el rol.
+        $permisos = $this->rol->getPermisosPestana(15);
 
         if (!in_array('editar', $permisos)) {
             // Retorna la vista de gestión con un error adicional (sin re-renderizar, solo agrega prop 'error').
@@ -196,8 +196,8 @@ class PestanaController extends Controller
      */
     public function store(PestanaRequest $request)
     {
-        // Obtiene permisos específicos de la pestaña 16 (Gestión) para el rol.
-        $permisos = $this->rol->getPermisosPestana(16);
+        // Obtiene permisos específicos de la pestaña 15 (Gestión) para el rol.
+        $permisos = $this->rol->getPermisosPestana(15);
 
         // Validar permiso.
         if (!in_array('crear', $permisos)) {
@@ -281,8 +281,8 @@ class PestanaController extends Controller
      */
     public function update(PestanaRequest $request, int $id)
     {
-        // Obtiene permisos específicos de la pestaña 16 (Gestión) para el rol.
-        $permisos = $this->rol->getPermisosPestana(16);
+        // Obtiene permisos específicos de la pestaña 15 (Gestión) para el rol.
+        $permisos = $this->rol->getPermisosPestana(15);
 
         // Validar permiso.
         if (!in_array('editar', $permisos)) {
@@ -366,8 +366,8 @@ class PestanaController extends Controller
      */
     public function destroy(int $id)
     {
-        // Obtiene permisos específicos de la pestaña 16 (Gestión) para el rol.
-        $permisos = $this->rol->getPermisosPestana(16);
+        // Obtiene permisos específicos de la pestaña 15 (Gestión) para el rol.
+        $permisos = $this->rol->getPermisosPestana(15);
 
         // Validar permiso.
         if (!in_array('eliminar', $permisos)) {

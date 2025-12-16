@@ -7,7 +7,7 @@
  * Se integra con React para formularios de pestañas via Inertia.
  * 
  * @author Yariangel Aray
- * @date 2024-12-12
+ * @date 2025-12-12
  */
 
 import { Button } from "@/components/ui/button";

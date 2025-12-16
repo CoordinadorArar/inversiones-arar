@@ -85,14 +85,14 @@ class ModuloController extends Controller
 
     /**
      * Muestra la vista de gestión de módulos en React via Inertia.
-     * Renderiza el componente 'Gestion' con módulos (si tiene permiso de editar), módulos padre para selector, permisos de la pestaña 14 y datos del módulo.
+     * Renderiza el componente 'Gestion' con módulos (si tiene permiso de editar), módulos padre para selector, permisos de la pestaña 13 y datos del módulo.
      *
      * @return \Inertia\Response Respuesta de Inertia con la vista y datos necesarios.
      */
     public function gestion()
     {
-        // Obtiene permisos específicos de la pestaña 14 (Gestión) para el rol.
-        $permisos = $this->rol->getPermisosPestana(14);
+        // Obtiene permisos específicos de la pestaña 13 (Gestión) para el rol.
+        $permisos = $this->rol->getPermisosPestana(13);
 
         // Si puede editar, enviar módulos; si no, array vacío.
         $modulos = in_array('editar', $permisos)
@@ -108,6 +108,7 @@ class ModuloController extends Controller
                 'nombre' => $m->nombre,
                 'ruta' => $m->ruta,
             ]);
+        Cache::forget('modulos_list');
 
         // Renderiza vista Inertia con datos.
         return Inertia::render('Modulos:GestionModulos/Modulos/pages/Gestion', [
@@ -130,8 +131,8 @@ class ModuloController extends Controller
      */
     public function create()
     {
-        // Obtiene permisos específicos de la pestaña 14 (Gestión) para el rol.
-        $permisos = $this->rol->getPermisosPestana(14);
+        // Obtiene permisos específicos de la pestaña 13 (Gestión) para el rol.
+        $permisos = $this->rol->getPermisosPestana(13);
 
         if (!in_array('crear', $permisos)) {
             // Retorna la vista de gestión con un error adicional (sin re-renderizar, solo agrega prop 'error').
@@ -175,8 +176,8 @@ class ModuloController extends Controller
      */
     public function edit(int $id)
     {
-        // Obtiene permisos específicos de la pestaña 14 (Gestión) para el rol.
-        $permisos = $this->rol->getPermisosPestana(14);
+        // Obtiene permisos específicos de la pestaña 13 (Gestión) para el rol.
+        $permisos = $this->rol->getPermisosPestana(13);
 
         if (!in_array('editar', $permisos)) {
             // Retorna la vista de gestión con un error adicional (sin re-renderizar, solo agrega prop 'error').
@@ -225,8 +226,8 @@ class ModuloController extends Controller
      */
     public function store(ModuloRequest $request)
     {
-        // Obtiene permisos específicos de la pestaña 14 (Gestión) para el rol.
-        $permisos = $this->rol->getPermisosPestana(14);
+        // Obtiene permisos específicos de la pestaña 13 (Gestión) para el rol.
+        $permisos = $this->rol->getPermisosPestana(13);
 
         // Validar permiso.
         if (!in_array('crear', $permisos)) {
@@ -296,8 +297,8 @@ class ModuloController extends Controller
      */
     public function update(ModuloRequest $request, int $id)
     {
-        // Obtiene permisos específicos de la pestaña 14 (Gestión) para el rol.
-        $permisos = $this->rol->getPermisosPestana(14);
+        // Obtiene permisos específicos de la pestaña 13 (Gestión) para el rol.
+        $permisos = $this->rol->getPermisosPestana(13);
 
         // Validar permiso.
         if (!in_array('editar', $permisos)) {
@@ -368,8 +369,8 @@ class ModuloController extends Controller
      */
     public function destroy(int $id)
     {
-        // Obtiene permisos específicos de la pestaña 14 (Gestión) para el rol.
-        $permisos = $this->rol->getPermisosPestana(14);
+        // Obtiene permisos específicos de la pestaña 13 (Gestión) para el rol.
+        $permisos = $this->rol->getPermisosPestana(13);
 
         // Validar permiso.
         if (!in_array('eliminar', $permisos)) {

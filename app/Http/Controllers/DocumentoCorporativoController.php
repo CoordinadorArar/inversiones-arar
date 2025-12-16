@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\RecursosHumanos\DocumentoCorporativoRequest;
 use App\Models\DocumentoCorporativo;
+use App\Models\GestionModulos\Modulo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
@@ -47,7 +48,7 @@ class DocumentoCorporativoController extends Controller
     {
         $this->rol = Auth::user()?->rol;
         $this->tabs = $this->rol?->getPestanasModulo($this->moduloId);
-        $this->moduloNombre = 'Documentos Corporativos';
+        $this->moduloNombre = Modulo::find($this->moduloId)->nombre;
     }
 
     /**
@@ -67,7 +68,7 @@ class DocumentoCorporativoController extends Controller
      */
     public function gestion()
     {
-        $permisos = $this->rol->getPermisosPestana(18); // ID pestaña gestión
+        $permisos = $this->rol->getPermisosPestana(17); // ID pestaña gestión
         $documentos = in_array('editar', $permisos) ? $this->getDocumentosCacheados() : [];
 
         return Inertia::render('Modulos:RecursosHumanos/DocumentosCorporativos/pages/Gestion', [
@@ -85,7 +86,7 @@ class DocumentoCorporativoController extends Controller
      */
     public function create()
     {
-        $permisos = $this->rol->getPermisosPestana(18);
+        $permisos = $this->rol->getPermisosPestana(17);
 
         if (!in_array('eliminar', $permisos)) {
             return $this->gestion()->with('error', 'No tienes permiso para eliminar documentos');
@@ -110,7 +111,7 @@ class DocumentoCorporativoController extends Controller
      */
     public function edit(int $id)
     {
-        $permisos = $this->rol->getPermisosPestana(18);
+        $permisos = $this->rol->getPermisosPestana(17);
 
         if (!in_array('editar', $permisos)) {
             return $this->gestion()->with('error', 'No tienes permiso para editar documentos');
@@ -138,7 +139,7 @@ class DocumentoCorporativoController extends Controller
      */
     public function store(DocumentoCorporativoRequest $request)
     {
-        if (!$this->rol->tienePermisoPestana(18, 'eliminar')) {
+        if (!$this->rol->tienePermisoPestana(17, 'eliminar')) {
             return response()->json([
                 'error' => 'No tienes permiso para eliminar documentos'
             ], 403);
@@ -187,7 +188,7 @@ class DocumentoCorporativoController extends Controller
      */
     public function update(DocumentoCorporativoRequest $request, int $id)
     {
-        if (!$this->rol->tienePermisoPestana(18, 'editar')) {
+        if (!$this->rol->tienePermisoPestana(17, 'editar')) {
             return response()->json([
                 'error' => 'No tienes permiso para editar documentos'
             ], 403);
@@ -244,7 +245,7 @@ class DocumentoCorporativoController extends Controller
      */
     public function destroy(int $id)
     {
-        if (!$this->rol->tienePermisoPestana(18, 'eliminar')) {
+        if (!$this->rol->tienePermisoPestana(17, 'eliminar')) {
             return response()->json([
                 'error' => 'No tienes permiso para eliminar documentos'
             ], 403);

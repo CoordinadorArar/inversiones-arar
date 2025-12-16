@@ -27,13 +27,13 @@ export const ModuloColumns: ColumnDef<ModuloInterface>[] = [
             const moduloPadre = row.original.modulo_padre_nombre;
             // Aquí se renderiza el nombre con ícono según tipo: FolderTree para padre con hijos, FolderOpen para hijo, AppWindow para independiente.
             return (
-                <div className="flex items-center gap-2">
+                <div className="flex md:items-center gap-2">
                     {(esPadre) ? (
-                        <FolderTree className="h-4 w-4 text-primary" />
+                        <FolderTree className="h-4 min-w-4 text-primary max-md:mt-1" />
                     ) : (!esPadre && moduloPadre) ? (
-                        <FolderOpen className="h-4 w-4 text-muted-foreground" />
+                        <FolderOpen className="h-4 min-w-4 text-muted-foreground max-md:mt-1" />
                     ) : (
-                        <AppWindow className="h-4 w-4 text-blue-700" />
+                        <AppWindow className="h-4 min-w-4 text-blue-700 max-md:mt-1" />
                     )}
                     <span>{nombre}</span>
                 </div>

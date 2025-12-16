@@ -24,6 +24,7 @@ class ModuloRolSeeder extends Seeder
             ['modulo_id' => 12, 'rol_id' => 1],
             ['modulo_id' => 13, 'rol_id' => 1],
             ['modulo_id' => 14, 'rol_id' => 1],            
+            ['modulo_id' => 15, 'rol_id' => 1],            
         ];
 
         foreach ($accesos as $acceso) {

@@ -85,7 +85,7 @@ export function DashboardLayout({ children, header }: DashboardLayoutProps) {
           {/* Main: Contenido principal con padding, bg muted, shadow inset. */}
           <main className="flex-1 p-3 sm:p-4 md:p-6 bg-muted/60 shadow-[inset_2px_2px_4px_0_rgb(0_0_0_/_0.05)]">
             {/* Contenedor max-width centrado. */}
-            <div className="max-w-7xl mx-auto h-full">
+            <div className="lg:max-w-2xl xl:max-w-5xl 2xl:max-w-7xl mx-auto h-full">
               {children}  {/* Renderiza children (páginas del dashboard). */}
             </div>
           </main>

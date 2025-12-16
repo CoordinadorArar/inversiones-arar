@@ -148,9 +148,8 @@ const CollapsedMenuItemWithSubitems = ({
         {/* Lista de subitems con espacio vertical. */}
         <div className="space-y-1">
           {item.items?.map((subItem) => (
-            <SidebarMenuButton asChild>
-              <MenuItemLink
-                key={subItem.url}
+            <SidebarMenuButton asChild key={subItem.url}>
+              <MenuItemLink                
                 url={`${item.url}${subItem.url}`}  // Concatena URLs padre+hijo.
                 icon={subItem.icon}
                 title={subItem.title}

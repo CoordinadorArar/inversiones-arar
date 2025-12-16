@@ -88,21 +88,16 @@ class PestanaSeeder extends Seeder
                 ]
             ],
 
-            // Seguridad y Acceso → Roles: Pestañas para roles y permisos.
+            // Seguridad y Acceso → Control de Accesos: Pestañas para asignacion de roles a modulos y pestañas.
             [
-                'modulo' => 'Roles',
-                'nombre' => 'Listado Roles',
-                'ruta'   => '/listado'
+                'modulo' => 'Control de Accesos',
+                'nombre' => 'Accesos a Módulos',
+                'ruta'   => '/accesos-modulos'
             ],
             [
-                'modulo' => 'Roles',
-                'nombre' => 'Gestión Roles',
-                'ruta'   => '/gestion'
-            ],
-            [
-                'modulo' => 'Roles',
-                'nombre' => 'Asignar Permisos',
-                'ruta'   => '/asignar-permisos'
+                'modulo' => 'Control de Accesos',
+                'nombre' => 'Accesos a Pestañas',
+                'ruta'   => '/accesos-pestanas'
             ],
 
             // Gestión de Módulos → Módulos: Pestañas para módulos.

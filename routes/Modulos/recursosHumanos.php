@@ -61,23 +61,23 @@ Route::middleware('auth')->group(function () {
         Route::prefix($modulosHijos[0])->group(function () {
 
             // Vistas
-            // Middleware: pestana.access:17 (ID de la pestaña en DB) para validar acceso a listado de módulos.
+            // Middleware: pestana.access:16 (ID de la pestaña en DB) para validar acceso a listado de módulos.
             Route::get('/listado', [DocumentoCorporativoController::class, 'index'])
                 ->name('documento.listado')
-                ->middleware('pestana.access:17');
+                ->middleware('pestana.access:16');
 
-            // Middleware: pestana.access:18 para gestión de módulos.
+            // Middleware: pestana.access:17 para gestión de módulos.
             Route::get('/gestion', [DocumentoCorporativoController::class, 'gestion'])
                 ->name('documento.gestion')
-                ->middleware('pestana.access:18');
+                ->middleware('pestana.access:17');
 
             Route::get('/gestion/crear', [DocumentoCorporativoController::class, 'create'])
                 ->name('documento.create')
-                ->middleware('pestana.access:18');
+                ->middleware('pestana.access:17');
 
             Route::get('/gestion/{id}', [DocumentoCorporativoController::class, 'edit'])
                 ->name('documento.edit')
-                ->middleware('pestana.access:18');
+                ->middleware('pestana.access:17');
 
             // CRUD
             Route::prefix('gestion')->group(function () {

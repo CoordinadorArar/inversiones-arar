@@ -66,23 +66,23 @@ Route::middleware('auth')->group(function () {
         Route::prefix($modulosHijos[0])->group(function () {
 
             // Vistas
-            // Middleware: pestana.access:13 (ID de la pestaña en DB) para validar acceso a listado de módulos.
+            // Middleware: pestana.access:12 (ID de la pestaña en DB) para validar acceso a listado de módulos.
             Route::get('/listado', [ModuloController::class, 'index'])
                 ->name('modulo.listado')
-                ->middleware('pestana.access:13');
+                ->middleware('pestana.access:12');
 
-            // Middleware: pestana.access:14 para gestión de módulos.
+            // Middleware: pestana.access:13 para gestión de módulos.
             Route::get('/gestion', [ModuloController::class, 'gestion'])
                 ->name('modulo.gestion')
-                ->middleware('pestana.access:14');
+                ->middleware('pestana.access:13');
 
             Route::get('/gestion/crear', [ModuloController::class, 'create'])
                 ->name('modulo.create')
-                ->middleware('pestana.access:14');
+                ->middleware('pestana.access:13');
 
             Route::get('/gestion/{id}', [ModuloController::class, 'edit'])
                 ->name('modulo.edit')
-                ->middleware('pestana.access:14');
+                ->middleware('pestana.access:13');
 
             // CRUD
             Route::prefix('gestion')->group(function () {
@@ -102,23 +102,23 @@ Route::middleware('auth')->group(function () {
         Route::prefix($modulosHijos[1])->group(function () {
 
             // Vistas
-            // Middleware: pestana.access:15 (ID de la pestaña en DB) para validar acceso a listado de pestañas.
+            // Middleware: pestana.access:14 (ID de la pestaña en DB) para validar acceso a listado de pestañas.
             Route::get('/listado', [PestanaController::class, 'index'])
                 ->name('pestana.listado')
-                ->middleware('pestana.access:15');
+                ->middleware('pestana.access:14');
 
-            // Middleware: pestana.access:16 para gestión de pestañas.
+            // Middleware: pestana.access:15 para gestión de pestañas.
             Route::get('/gestion', [PestanaController::class, 'gestion'])
                 ->name('pestana.gestion')
-                ->middleware('pestana.access:16');
+                ->middleware('pestana.access:15');
 
             Route::get('/gestion/crear', [PestanaController::class, 'create'])
                 ->name('pestana.create')
-                ->middleware('pestana.access:16');
+                ->middleware('pestana.access:15');
 
             Route::get('/gestion/{id}', [PestanaController::class, 'edit'])
                 ->name('pestana.edit')
-                ->middleware('pestana.access:16');
+                ->middleware('pestana.access:15');
 
             // CRUD
             Route::prefix('gestion')->group(function () {

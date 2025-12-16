@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ControlAccesoController;
 use App\Http\Controllers\ModuloRedirectController;
 use App\Http\Controllers\UsuarioController;
 use Illuminate\Support\Facades\Route;
@@ -47,7 +48,7 @@ Route::middleware('auth')->group(function () {
     // Prefijo para subrutas del módulo padre.
     Route::prefix($moduloPadre)->group(function () {
 
-        $modulosHijos = ['usuarios', 'roles'];
+        $modulosHijos = ['usuarios', 'roles', 'control-accesos'];
 
         // Módulo hijo: Usuarios - Usa ModuloRedirectController para redirigir a primera pestaña accesible.
         Route::get('/' . $modulosHijos[0], function () use ($modulosHijos) {
@@ -92,6 +93,58 @@ Route::middleware('auth')->group(function () {
                 Route::post('/desbloquear/{id}', [UsuarioController::class, 'desbloquear'])->name('usuario.desbloquear');
                 Route::post('/restaurar-password/{id}', [UsuarioController::class, 'restaurarPassword'])->name('usuario.restaurar-password');
             });
+        });
+
+        // ---
+
+        // Módulo hijo: Control de Acceso - Usa ModuloRedirectController para redirigir a primera pestaña accesible.
+        Route::get('/' . $modulosHijos[2], function () use ($modulosHijos) {
+            return app(ModuloRedirectController::class)
+                ->redirectToFirstAccessible('/' . $modulosHijos[2]);
+        });
+
+        // Grupo de pestañas para Control de Acceso.
+        Route::prefix($modulosHijos[2])->group(function () {
+
+            // Vistas - Pestaña Accesos a Módulos
+            // Middleware: pestana.access:10 (ID de la pestaña Módulos en DB)
+            Route::get('/accesos-modulos', [ControlAccesoController::class, 'modulos'])
+                ->name('control-acceso.modulos')
+                ->middleware('pestana.access:16');
+
+            // Vista con rol seleccionado
+            Route::get('/accesos-modulos/{rolId}', [ControlAccesoController::class, 'modulos'])
+                ->name('control-acceso.modulos.rol')
+                ->middleware('pestana.access:16');
+
+            // API - Asignación y desasignación de módulos
+            Route::post('/asignar-modulo', [ControlAccesoController::class, 'asignarModulo'])
+                ->name('control-acceso.asignar-modulo');
+
+            Route::post('/desasignar-modulo', [ControlAccesoController::class, 'desasignarModulo'])
+                ->name('control-acceso.desasignar-modulo');
+                
+
+            // Vistas - Pestaña Pestañas (para cuando la implementes)
+            // Middleware: pestana.access:17 (ID de la pestaña Pestañas en DB)
+            Route::get('/accesos-pestanas', [ControlAccesoController::class, 'pestanas'])
+                ->name('control-acceso.pestanas')
+                ->middleware('pestana.access:17');
+
+            Route::get('/accesos-pestanas/{rolId}', [ControlAccesoController::class, 'pestanas'])
+                ->name('control-acceso.pestanas.rol')
+                ->middleware('pestana.access:17');
+
+            // API - Asignación y desasignación de pestañas (para cuando las implementes)
+            Route::post('/asignar-pestana', [ControlAccesoController::class, 'asignarPestana'])
+                ->name('control-acceso.asignar-pestana');
+
+            Route::post('/desasignar-pestana', [ControlAccesoController::class, 'desasignarPestana'])
+                ->name('control-acceso.desasignar-pestana');
+
+            // API para cargar módulos por rol
+            Route::get('/accesos-modulos/cargar/{rolId}', [ControlAccesoController::class, 'cargarModulosPorRol'])
+                ->name('control-acceso.cargar-modulos');
         });
     });
 });

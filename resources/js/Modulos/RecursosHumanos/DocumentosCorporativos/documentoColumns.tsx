@@ -18,9 +18,9 @@ export const DocumentoColumns: ColumnDef<DocumentoCorporativoInterface>[] = [
       const nombre = row.original.nombre;
       const icono = row.original.icono;
       return (
-        <div className="flex items-center gap-2">
+        <div className="flex md:items-center gap-2">
           {icono && (
-            <DynamicIcon name={icono} className="h-4 w-4 text-primary" />
+            <DynamicIcon name={icono} className="h-4 min-w-4 text-primary max-md:mt-1" />
           )}
           <span>{nombre}</span>
         </div>

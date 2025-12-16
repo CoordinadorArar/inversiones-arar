@@ -119,6 +119,9 @@ export default {
 				"collapsible-up": "collapsible-up 0.3s ease-out",
 				"fade": "fade 0.15s ease-out",
 			},
+			screens: {
+				'tablet': '992px',
+			}
 		}
 	},
 

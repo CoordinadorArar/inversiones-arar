@@ -92,7 +92,6 @@ class ModuloSeeder extends Seeder
                 'ruta' => '/usuarios',
                 'padre' => 'Seguridad y Acceso',
             ],
-
             [
                 'nombre' => 'Roles',
                 'icono' => 'shield-user',
@@ -106,7 +105,6 @@ class ModuloSeeder extends Seeder
                 'ruta' => '/modulos',
                 'padre' => 'Gestión de Módulos',
             ],
-
             [
                 'nombre' => 'Pestañas',
                 'icono' => 'panel-top-dashed',
@@ -120,12 +118,18 @@ class ModuloSeeder extends Seeder
                 'ruta' => '/documentos',
                 'padre' => 'Recursos Humanos',
             ],
-
             [
                 'nombre' => 'Calendario Corporativo',
                 'icono' => 'calendar-cog',
                 'ruta' => '/calendario',
                 'padre' => 'Recursos Humanos',
+            ],
+
+            [
+                'nombre' => 'Control de Accesos',
+                'icono' => 'shield-check',
+                'ruta' => '/control-accesos',
+                'padre' => 'Seguridad y Acceso',
             ],
         ];
 
