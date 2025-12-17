@@ -7,14 +7,19 @@ use Illuminate\Validation\Rule;
 
 /**
  * Form Request para validar datos de documentos corporativos.
- * 
+ * Valida campos como nombre, ícono, archivo, y flags de visualización.
+ * Asegura unicidad del nombre, tipos de archivo permitidos y lógica condicional para ícono.
+ *
  * @author Yariangel Aray
- * @date 2025-12-11
+ * @date 2025-12-15
  */
 class DocumentoCorporativoRequest extends FormRequest
 {
     /**
-     * Determina si el usuario está autorizado.
+     * Determina si el usuario está autorizado para hacer esta petición.
+     * Retorna true para permitir acceso (autorización manejada en controlador).
+     *
+     * @return bool
      */
     public function authorize(): bool
     {
@@ -23,6 +28,7 @@ class DocumentoCorporativoRequest extends FormRequest
 
     /**
      * Prepara la petición para validación.
+     * Fuerza header Accept a JSON para respuestas consistentes.
      */
     protected function prepareForValidation(): void
     {
@@ -30,7 +36,10 @@ class DocumentoCorporativoRequest extends FormRequest
     }
 
     /**
-     * Reglas de validación.
+     * Reglas de validación para los campos del documento.
+     * Incluye lógica condicional: ícono obligatorio si se muestra en footer/dashboard, archivo obligatorio solo en creación.
+     *
+     * @return array Reglas de validación.
      */
     public function rules(): array
     {
@@ -49,7 +58,7 @@ class DocumentoCorporativoRequest extends FormRequest
             'mostrar_en_footer' => 'boolean',
         ];
 
-        // Ícono es obligatorio si mostrar_en_footer o mostrar_en_dashboard está activo
+        // Ícono: Obligatorio si mostrar_en_footer está activo, opcional si no.
         $mostrarEnFooter = $this->boolean('mostrar_en_footer');
 
         if ($mostrarEnFooter) {
@@ -68,7 +77,7 @@ class DocumentoCorporativoRequest extends FormRequest
             ];
         }
 
-        // Archivo es obligatorio en creación, opcional en edición
+        // Archivo: Obligatorio en creación, opcional en edición.
         if ($isCreating) {
             $rules['archivo'] = [
                 'required',
@@ -89,7 +98,10 @@ class DocumentoCorporativoRequest extends FormRequest
     }
 
     /**
-     * Mensajes de error personalizados.
+     * Mensajes de error personalizados para validaciones.
+     * Proporciona mensajes amigables en español para cada regla.
+     *
+     * @return array Mensajes de error.
      */
     public function messages(): array
     {

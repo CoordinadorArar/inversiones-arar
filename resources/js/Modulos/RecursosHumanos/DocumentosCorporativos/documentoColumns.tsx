@@ -1,3 +1,11 @@
+/**
+ * Columnas para la tabla de documentos corporativos usando TanStack Table.
+ * Incluye personalización de celdas con íconos dinámicos, badges para visibilidad y enlace a archivos.
+ * 
+ * @author Yariangel Aray
+ * @date 2025-12-15
+ */
+
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { FileText, Eye, EyeOff } from "lucide-react";
@@ -5,11 +13,17 @@ import { DynamicIcon } from "lucide-react/dynamic";
 import { DocumentoCorporativoInterface } from "./types/documentoInterface";
 import { Button } from "@/components/ui/button";
 
+/**
+ * Definición de columnas activas para la tabla de documentos corporativos.
+ * Incluye ID, nombre con ícono, visibilidad con badges y enlace al archivo.
+ * 
+ * @type {ColumnDef<DocumentoCorporativoInterface>[]}
+ */
 export const DocumentoColumns: ColumnDef<DocumentoCorporativoInterface>[] = [
   {
     accessorKey: "id",
     header: "ID",
-    enableHiding: false,
+    enableHiding: false, // Aquí se define que la columna ID no se puede ocultar.
   },
   {
     accessorKey: "nombre",
@@ -17,6 +31,7 @@ export const DocumentoColumns: ColumnDef<DocumentoCorporativoInterface>[] = [
     cell: ({ row }) => {
       const nombre = row.original.nombre;
       const icono = row.original.icono;
+      // Aquí se renderiza el nombre con ícono dinámico si existe.
       return (
         <div className="flex md:items-center gap-2">
           {icono && (
@@ -35,6 +50,7 @@ export const DocumentoColumns: ColumnDef<DocumentoCorporativoInterface>[] = [
       const footer = row.original.mostrar_en_footer;
 
       if (!dashboard && !footer) {
+        // Aquí se muestra ícono de no visible si no está en dashboard ni footer.
         return (
           <div className="flex items-center gap-1.5">
             <EyeOff className="h-3.5 w-3.5 text-muted-foreground" />
@@ -43,6 +59,7 @@ export const DocumentoColumns: ColumnDef<DocumentoCorporativoInterface>[] = [
         );
       }
 
+      // Aquí se muestran badges para dashboard y footer si están activos.
       return (
         <div className="flex flex-wrap gap-1">
           {dashboard && (
@@ -66,16 +83,16 @@ export const DocumentoColumns: ColumnDef<DocumentoCorporativoInterface>[] = [
     header: "Archivo",
     cell: ({ row }) => {
       const rutaUrl = row.original.ruta;
+      // Aquí se renderiza enlace al archivo en nueva pestaña con botón de link.
       return (
         <a
           href={"/storage/" + rutaUrl}
           target="_blank"
-          rel="noopener noreferrer"        
+          rel="noopener noreferrer"
         >
           <Button variant="link" className="py-0 h-auto">
             <FileText className="h-3.5 w-3.5" />
             Ver documento
-
           </Button>
         </a>
       );
@@ -83,4 +100,10 @@ export const DocumentoColumns: ColumnDef<DocumentoCorporativoInterface>[] = [
   },
 ];
 
-export const DocumentoInactiveColumns = {};
+/**
+ * Definición de columnas inactivas por defecto para la tabla de documentos corporativos.
+ * Vacío, ya que todas las columnas están activas inicialmente.
+ * 
+ * @type {Object}
+ */
+export const DocumentoInactiveColumns = {}; 

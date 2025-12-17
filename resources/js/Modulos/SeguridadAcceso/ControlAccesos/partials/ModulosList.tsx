@@ -1,3 +1,15 @@
+/**
+ * Componente ModulosList.
+ * 
+ * Lista jerárquica de módulos con colapsables: muestra padres con hijos,
+ * permite expandir/colapsar grupos, seleccionar módulos y ver estado de asignación.
+ * Usa Collapsible para animaciones y badges para estado asignado.
+ * Se integra con control de acceso para gestión de permisos.
+ * 
+ * @author Yariangel Aray
+ * @date 2025-12-16
+ */
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { ModuloAsignacionInterface } from "../types/controlAccesoInterface";
 import { DynamicIcon } from "lucide-react/dynamic";
@@ -6,23 +18,35 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/Components/ui/collapsible"; // Agrega este import
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/Components/ui/collapsible";
 
+/**
+ * Interfaz para las props del componente ModulosList.
+ * Define la estructura de datos para la lista de módulos.
+ */
 interface ModulosListProps {
-  modulos: ModuloAsignacionInterface[];
-  selectedModuloId: number | null;
-  onModuloSelect: (moduloId: number) => void;
+  modulos: ModuloAsignacionInterface[]; // Lista de módulos jerárquicos.
+  selectedModuloId: number | null; // ID del módulo seleccionado.
+  onModuloSelect: (moduloId: number) => void; // Callback al seleccionar módulo.
 }
 
+/**
+ * Componente principal para la lista de módulos jerárquicos.
+ * Maneja estado de grupos abiertos, renderiza padres con hijos colapsables.
+ * Permite selección y muestra badges de asignación.
+ * 
+ * @param {ModulosListProps} props - Props del componente.
+ * @returns {JSX.Element} Elemento JSX renderizado.
+ */
 export function ModulosList({
   modulos,
   selectedModuloId,
   onModuloSelect,
 }: ModulosListProps) {
-  // Estado para grupos abiertos (array de nombres de módulos, como en el sidebar)
+  // Estado para grupos abiertos (array de nombres de módulos).
   const [openGroups, setOpenGroups] = useState<string[]>([]);
 
-  // Toggle de grupo (agrega/quita nombre del array)
+  // Toggle de grupo (agrega/quita nombre del array).
   const toggleGroup = (groupName: string) => {
     setOpenGroups((prev) =>
       prev.includes(groupName)
@@ -31,13 +55,13 @@ export function ModulosList({
     );
   };
 
-  // Expandir todos los módulos padres
+  // Expandir todos los módulos padres.
   const expandAll = () => {
     const allParentNames = modulos.filter((m) => m.es_padre).map((m) => m.nombre);
     setOpenGroups(allParentNames);
   };
 
-  // Colapsar todos
+  // Colapsar todos.
   const collapseAll = () => {
     setOpenGroups([]);
   };
@@ -78,8 +102,8 @@ export function ModulosList({
             {/* Módulo Padre o Directo */}
             {modulo.es_padre ? (
               <Collapsible
-                open={openGroups.includes(modulo.nombre)} // Abre si nombre está en openGroups
-                onOpenChange={() => toggleGroup(modulo.nombre)} // Toggle al cambiar
+                open={openGroups.includes(modulo.nombre)} // Abre si nombre está en openGroups.
+                onOpenChange={() => toggleGroup(modulo.nombre)} // Toggle al cambiar.
               >
                 <CollapsibleTrigger asChild>
                   <button className="w-full p-3 rounded-lg bg-muted/50 border border-border hover:bg-muted/70 transition-colors text-left">
@@ -87,9 +111,9 @@ export function ModulosList({
                       <ChevronDown
                         className={cn(
                           "h-5 w-5 text-primary transition-transform duration-300",
-                          openGroups.includes(modulo.nombre) && "rotate-180" // Rota flecha al abrir
+                          openGroups.includes(modulo.nombre) && "rotate-180" // Rota flecha al abrir.
                         )}
-                      />                      
+                      />
                       <DynamicIcon name={modulo.icono} className="h-5 w-5 text-primary" />
                       <span className="font-semibold text-sm">{modulo.nombre}</span>
                       <Badge variant="outline" className="ml-auto text-xs">
@@ -101,8 +125,8 @@ export function ModulosList({
                 <CollapsibleContent
                   className={cn(
                     "ml-6 space-y-2 overflow-hidden mt-3",
-                    "data-[state=open]:animate-collapsible-down", // Animación al abrir
-                    "data-[state=closed]:animate-collapsible-up"   // Animación al cerrar
+                    "data-[state=open]:animate-collapsible-down", // Animación al abrir.
+                    "data-[state=closed]:animate-collapsible-up"   // Animación al cerrar.
                   )}
                 >
                   {/* Módulos Hijos */}

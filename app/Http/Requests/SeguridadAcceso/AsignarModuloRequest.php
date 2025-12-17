@@ -17,17 +17,19 @@ class AsignarModuloRequest extends FormRequest
 {
     /**
      * Determinar si el usuario está autorizado para hacer esta request.
+     * Retorna true (autorización se maneja en el controlador por permisos de pestaña).
      * 
      * @return bool
      */
     public function authorize(): bool
     {
-        // Autorización se maneja en el controlador (permisos por pestaña)
+        // Autorización se maneja en el controlador (permisos por pestaña).
         return true;
     }
 
     /**
-     * Reglas de validación.
+     * Reglas de validación para campos de asignación.
+     * Valida existencia de rol y módulo, y formato de permisos.
      * 
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
@@ -37,27 +39,28 @@ class AsignarModuloRequest extends FormRequest
             'rol_id' => [
                 'required',
                 'integer',
-                'exists:roles,id', // Verifica que el rol exista
+                'exists:roles,id', // Verifica que el rol exista.
             ],
             'modulo_id' => [
                 'required',
                 'integer',
-                'exists:modulos,id', // Verifica que el módulo exista
+                'exists:modulos,id', // Verifica que el módulo exista.
             ],
             'permisos' => [                
                 'array',
-                'max:50', // Límite razonable para evitar arrays enormes
+                'max:50', // Límite razonable para evitar arrays enormes.
             ],
             'permisos.*' => [
                 'string',
-                'max:50', // Longitud máxima por permiso
-                'regex:/^[a-zA-Z_]+$/', // Solo letras y guiones bajos (seguridad)
+                'max:50', // Longitud máxima por permiso.
+                'regex:/^[a-zA-Z_]+$/', // Solo letras y guiones bajos (seguridad).
             ],
         ];
     }
 
     /**
      * Mensajes de error personalizados en español.
+     * Proporciona mensajes amigables para cada regla.
      * 
      * @return array<string, string>
      */
@@ -82,16 +85,16 @@ class AsignarModuloRequest extends FormRequest
     }
 
     /**
-     * Preparar datos para validación (opcional).
-     * 
-     * Sanitiza el array de permisos (trim, unique).
+     * Preparar datos para validación.
+     * Fuerza header Accept a JSON y sanitiza permisos (trim y unique).
      */
     protected function prepareForValidation(): void
     {
         $this->headers->set('Accept', 'application/json');
 
+        // Sanitiza permisos: Elimina duplicados y espacios.
         $this->merge([
-            'permisos' => array_unique(array_map('trim', $this->input('permisos', []))), // Elimina duplicados y espacios
+            'permisos' => array_unique(array_map('trim', $this->input('permisos', []))),
         ]);
     }
 }

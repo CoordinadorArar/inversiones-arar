@@ -1,3 +1,15 @@
+/**
+ * Componente PermisosPanel.
+ * 
+ * Panel lateral para gestión de permisos de módulos/pestañas: switch para asignar/desasignar,
+ * checkboxes para permisos base y extra, validaciones de permisos de usuario.
+ * Maneja asignación/desasignación via API, toasts de éxito/error y estado de carga.
+ * Se integra con control de acceso para gestión de roles.
+ * 
+ * @author Yariangel Aray
+ * @date 2025-12-16
+ */
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { ModuloAsignacionInterface, PestanaItemInterface } from "../types/controlAccesoInterface";
@@ -10,15 +22,27 @@ import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 
+/**
+ * Interfaz para las props del componente PermisosPanel.
+ * Define la configuración para gestión de permisos de un item específico.
+ */
 interface PermisosPanelProps {
-  item: ModuloAsignacionInterface | PestanaItemInterface | undefined;
-  rolId: number;
-  permisosBase: string[];
-  permisos: string[];
-  tipo: "modulo" | "pestana";
-  onSuccess: () => void;
+  item: ModuloAsignacionInterface | PestanaItemInterface | undefined; // Item seleccionado (módulo o pestaña).
+  rolId: number; // ID del rol al que asignar.
+  permisosBase: string[]; // Permisos base del sistema.
+  permisos: string[]; // Permisos del usuario en la pestaña.
+  tipo: "modulo" | "pestana"; // Tipo de item.
+  onSuccess: () => void; // Callback al éxito de operación.
 }
 
+/**
+ * Componente principal para el panel de permisos.
+ * Maneja estado de asignación, permisos seleccionados, validaciones y operaciones CRUD.
+ * Renderiza switch, checkboxes, mensajes de estado y botón de guardar.
+ * 
+ * @param {PermisosPanelProps} props - Props del componente.
+ * @returns {JSX.Element} Elemento JSX renderizado.
+ */
 export function PermisosPanel({
   item,
   rolId,
@@ -37,6 +61,7 @@ export function PermisosPanel({
   const puedeEditar = permisos.includes("editar");
   const puedeEliminar = permisos.includes("eliminar");
 
+  // Aquí se construyen mensajes de error basados en permisos faltantes.
   const mensajesError: string[] = [];
   if (!puedeCrear && !item?.asignado) {
     mensajesError.push("crear asignaciones");
@@ -48,6 +73,7 @@ export function PermisosPanel({
     mensajesError.push("eliminar asignaciones");
   }
 
+  // Aquí se inicializa estado cuando cambia el item seleccionado.
   useEffect(() => {
     if (item) {
       setAsignar(item.asignado);
@@ -61,6 +87,7 @@ export function PermisosPanel({
     }
   }, [item]);
 
+  // Aquí se maneja toggle de permisos individuales.
   const handlePermisoToggle = (permiso: string, checked: boolean) => {
     if (checked) {
       setPermisosSeleccionados([...permisosSeleccionados, permiso]);
@@ -69,13 +96,16 @@ export function PermisosPanel({
     }
   };
 
+  // Aquí se verifica si hay cambios en permisos para habilitar guardar.
   const hayCambiosPermisos = item?.asignado && JSON.stringify(permisosSeleccionados.sort()) !== JSON.stringify(permisosIniciales.sort());
 
+  // Aquí se determina si se puede guardar basado en permisos y cambios.
   const puedeGuardar = !processing && (
     (!item?.asignado && asignar && puedeCrear) ||
     (item?.asignado && (hayCambiosPermisos || !asignar) && (puedeEditar || puedeEliminar))
   );
 
+  // Aquí se maneja submit: asignar o desasignar via API con validaciones.
   const handleSubmit = async () => {
     if (!item) return;
 
@@ -194,9 +224,10 @@ export function PermisosPanel({
     }
   };
 
+  // Aquí se determina si se puede interactuar con el switch basado en permisos.
   const puedeInteractuarSwitch = !processing && (item?.asignado ? puedeEliminar : puedeCrear);
 
-  // Verificar si es módulo con pestañas (solo aplica si tipo === "modulo")
+  // Aquí se verifica si es módulo con pestañas para mostrar advertencia.
   const esModuloConPestanas = tipo === "modulo" && (item as ModuloAsignacionInterface)?.tiene_pestanas;
 
   return (

@@ -14,17 +14,52 @@ use Inertia\Inertia;
 
 /**
  * Controlador para Control de Acceso - Asignación de módulos/pestañas a roles.
- * 
+ * Maneja vistas de asignación de módulos y pestañas, operaciones de asignar/desasignar con permisos,
+ * integrándose con React via Inertia y verificando permisos por rol y pestaña.
+ * Maneja dos pestañas: Módulos y Pestañas.
+ *
  * @author Yariangel Aray
- * @date 2025-12-15
+ * @date 2025-12-16
  */
 class ControlAccesoController extends Controller
 {
-    protected int $moduloId = 15; // ID del módulo Control de Acceso
+    /**
+     * ID fijo del módulo Control de Acceso (no cambia).
+     * Usado para acceder a datos relacionados con el módulo.
+     *
+     * @var int
+     */
+    protected int $moduloId = 15;
+
+    /**
+     * Rol del usuario autenticado (cargado en constructor).
+     * Contiene el objeto rol para acceder a permisos y pestañas.
+     *
+     * @var mixed
+     */
     protected $rol;
+
+    /**
+     * Pestañas accesibles del módulo para el rol (array de pestañas).
+     * Lista de pestañas que el usuario puede ver según su rol.
+     *
+     * @var mixed
+     */
     protected $tabs;
+
+    /**
+     * Nombre del módulo (para pasar a vistas).
+     * Nombre del módulo obtenido de la base de datos, usado en las vistas de Inertia.
+     *
+     * @var mixed
+     */
     protected $moduloNombre;
 
+    /**
+     * Constructor: Inicializa propiedades con datos del usuario autenticado.
+     * Carga rol, pestañas accesibles y nombre del módulo para usar en métodos.
+     * Se ejecuta automáticamente al instanciar el controlador.
+     */
     public function __construct()
     {
         $this->rol = Auth::user()->rol;
@@ -33,22 +68,26 @@ class ControlAccesoController extends Controller
     }
 
     /**
-     * Vista: Asignación de Módulos a Roles
+     * Muestra la vista de asignación de módulos a roles en React via Inertia.
+     * Renderiza el componente 'AccesosModulos' con roles, módulos jerárquicos, permisos y datos del módulo.
+     *
+     * @param int|null $rolId ID opcional del rol seleccionado para cargar asignaciones.
+     * @return \Inertia\Response Respuesta de Inertia con la vista y datos necesarios.
      */
     public function modulos($rolId = null)
     {
         $permisos = $this->rol->getPermisosPestana(10); // ID pestaña módulos
 
-        // Obtener todos los roles para el select
+        // Obtener todos los roles para el select.
         $roles = Rol::orderBy('nombre')->get()->map(fn($r) => [
             'id' => $r->id,
             'nombre' => $r->nombre,
         ]);
 
-        // Obtener módulos con estructura jerárquica
+        // Obtener módulos con estructura jerárquica.
         $modulos = $this->obtenerModulosJerarquicos($rolId);
 
-        // Permisos base del sistema
+        // Permisos base del sistema.
         $permisosBase = config('permisos.base', ['crear', 'editar', 'eliminar']);
 
         return Inertia::render('Modulos:SeguridadAcceso/ControlAccesos/pages/AccesosModulos', [
@@ -63,22 +102,26 @@ class ControlAccesoController extends Controller
     }
 
     /**
-     * Vista: Asignación de Pestañas a Roles
+     * Muestra la vista de asignación de pestañas a roles en React via Inertia.
+     * Renderiza el componente 'AccesosPestanas' con roles, pestañas jerárquicas, permisos y datos del módulo.
+     *
+     * @param int|null $rolId ID opcional del rol seleccionado para cargar asignaciones.
+     * @return \Inertia\Response Respuesta de Inertia con la vista y datos necesarios.
      */
     public function pestanas($rolId = null)
     {
         $permisos = $this->rol->getPermisosPestana(11); // ID pestaña pestañas
 
-        // Obtener todos los roles para el select
+        // Obtener todos los roles para el select.
         $roles = Rol::orderBy('nombre')->get()->map(fn($r) => [
             'id' => $r->id,
             'nombre' => $r->nombre,
         ]);
 
-        // Obtener pestañas con estructura jerárquica
+        // Obtener pestañas con estructura jerárquica.
         $pestanas = $this->obtenerPestanasJerarquicas($rolId);
 
-        // Permisos base del sistema
+        // Permisos base del sistema.
         $permisosBase = config('permisos.base', ['crear', 'editar', 'eliminar']);
 
         return Inertia::render('Modulos:SeguridadAcceso/ControlAccesos/pages/AccesosPestanas', [
@@ -93,165 +136,18 @@ class ControlAccesoController extends Controller
     }
 
     /**
-     * Obtener módulos con estructura jerárquica y estado de asignación
-     */
-    private function obtenerModulosJerarquicos($rolId = null)
-    {
-        $modulos = Modulo::with(['modulosHijos', 'pestanas'])
-            ->whereNull('modulo_padre_id')
-            // ->orderBy('nombre')
-            ->get();
-
-        return $modulos->map(function ($modulo) use ($rolId) {
-            $asignacion = null;
-            if ($rolId) {
-                $asignacion = DB::table('modulo_rol')
-                    ->where('rol_id', $rolId)
-                    ->where('modulo_id', $modulo->id)
-                    ->first();
-            }
-
-            $data = [
-                'id' => $modulo->id,
-                'nombre' => $modulo->nombre,
-                'icono' => $modulo->icono,
-                'es_padre' => $modulo->es_padre,
-                'permisos_extra' => $modulo->permisos_extra ?? [],
-                'tiene_pestanas' => $modulo->pestanas->count() > 0,
-                'cant_pestanas' => $modulo->pestanas->count(),
-                'asignado' => $asignacion !== null,
-                'permisos_asignados' => $asignacion ? json_decode($asignacion->permisos, true) : [],
-            ];
-
-            // Si es padre, incluir hijos
-            if ($modulo->es_padre) {
-                $data['hijos'] = $modulo->modulosHijos->map(function ($hijo) use ($rolId) {
-                    $asignacionHijo = null;
-                    if ($rolId) {
-                        $asignacionHijo = DB::table('modulo_rol')
-                            ->where('rol_id', $rolId)
-                            ->where('modulo_id', $hijo->id)
-                            ->first();
-                    }
-
-                    return [
-                        'id' => $hijo->id,
-                        'nombre' => $hijo->nombre,
-                        'icono' => $hijo->icono,
-                        'es_padre' => false,
-                        'permisos_extra' => $hijo->permisos_extra ?? [],
-                        'tiene_pestanas' => $hijo->pestanas()->count() > 0,
-                        'cant_pestanas' => $hijo->pestanas()->count(),
-                        'asignado' => $asignacionHijo !== null,
-                        'permisos_asignados' => $asignacionHijo ? json_decode($asignacionHijo->permisos, true) : [],
-                    ];
-                });
-            }
-
-            return $data;
-        });
-    }
-
-    /**
-     * Obtener pestañas con estructura jerárquica y estado de asignación
-     */
-    private function obtenerPestanasJerarquicas($rolId = null)
-    {
-        // Obtener módulos padres
-        $modulosPadres = Modulo::with(['modulosHijos.pestanas'])
-            ->whereNull('modulo_padre_id')
-            // ->orderBy('nombre')
-            ->get();
-
-        $resultado = [];
-
-        foreach ($modulosPadres as $padre) {
-            $hijosConPestanas = $padre->modulosHijos->filter(fn($hijo) => $hijo->pestanas->count() > 0);
-
-            if ($hijosConPestanas->count() > 0) {
-                $resultado[] = [
-                    'id' => $padre->id,
-                    'nombre' => $padre->nombre,
-                    'icono' => $padre->icono,
-                    'es_padre' => true,
-                    'hijos' => $hijosConPestanas->map(function ($hijo) use ($rolId) {
-                        return [
-                            'modulo_id' => $hijo->id,
-                            'modulo_nombre' => $hijo->nombre,
-                            'modulo_icono' => $hijo->icono,
-                            'pestanas' => $hijo->pestanas->map(function ($pestana) use ($rolId) {
-                                $asignacion = null;
-                                if ($rolId) {
-                                    $asignacion = DB::table('pestana_rol')
-                                        ->where('rol_id', $rolId)
-                                        ->where('pestana_id', $pestana->id)
-                                        ->first();
-                                }
-
-                                return [
-                                    'id' => $pestana->id,
-                                    'nombre' => $pestana->nombre,
-                                    'permisos_extra' => $pestana->permisos_extra ?? [],
-                                    'asignado' => $asignacion !== null,
-                                    'permisos_asignados' => $asignacion ? json_decode($asignacion->permisos, true) : [],
-                                ];
-                            }),
-                        ];
-                    })->values(),
-                ];
-            }
-        }
-
-        // Agregar módulos sin padre que tengan pestañas
-        $modulosSinPadre = Modulo::with('pestanas')
-            ->whereNull('modulo_padre_id')
-            ->has('pestanas')
-            ->orderBy('nombre')
-            ->get();
-
-        foreach ($modulosSinPadre as $modulo) {
-            $resultado[] = [
-                'id' => $modulo->id,
-                'nombre' => $modulo->nombre,
-                'icono' => $modulo->icono,
-                'es_padre' => false,
-                'hijos' => [[
-                    'modulo_id' => $modulo->id,
-                    'modulo_nombre' => $modulo->nombre,
-                    'modulo_icono' => $modulo->icono,
-                    'pestanas' => $modulo->pestanas->map(function ($pestana) use ($rolId) {
-                        $asignacion = null;
-                        if ($rolId) {
-                            $asignacion = DB::table('pestana_rol')
-                                ->where('rol_id', $rolId)
-                                ->where('pestana_id', $pestana->id)
-                                ->first();
-                        }
-
-                        return [
-                            'id' => $pestana->id,
-                            'nombre' => $pestana->nombre,
-                            'icono' => $pestana->icono,
-                            'permisos_extra' => $pestana->permisos_extra ?? [],
-                            'asignado' => $asignacion !== null,
-                            'permisos_asignados' => $asignacion ? json_decode($asignacion->permisos, true) : [],
-                        ];
-                    }),
-                ]],
-            ];
-        }
-
-        return $resultado;
-    }
-
-    /**
-     * Asignar/actualizar módulo a rol con permisos
+     * Asigna o actualiza un módulo a un rol con permisos específicos.
+     * Usa syncWithoutDetaching para evitar duplicados: Si NO existe la relación → la crea, Si YA existe → la actualiza (permisos), Nunca duplica registros.
+     * Si el módulo tiene padre, lo asigna automáticamente sin permisos.
+     *
+     * @param AsignarModuloRequest $request Solicitud con datos validados.
+     * @return \Illuminate\Http\JsonResponse Respuesta JSON con mensaje de éxito o error.
      */
     public function asignarModulo(AsignarModuloRequest $request)
     {
         $permisos = $this->rol->getPermisosPestana(10);
 
-        // Validar permisos: necesita "crear" para asignar nuevos o "editar" para modificar existentes
+        // Validar permisos: necesita "crear" para asignar nuevos o "editar" para modificar existentes.
         $asignacionExistente = DB::table('modulo_rol')
             ->where('rol_id', $request->rol_id)
             ->where('modulo_id', $request->modulo_id)
@@ -269,7 +165,7 @@ class ControlAccesoController extends Controller
 
         $validated = $request->validated();
 
-        // Preparar permisos: si está vacío, usar null
+        // Preparar permisos: si está vacío, usar null.
         $permisosParaGuardar = !empty($validated['permisos']) ? json_encode($validated['permisos']) : null;
         try {
             DB::beginTransaction();
@@ -277,16 +173,17 @@ class ControlAccesoController extends Controller
             $modulo = Modulo::findOrFail($validated['modulo_id']);
             $rol = Rol::find($validated['rol_id']);
 
-            // Si tiene padre, asignar también al padre (sin permisos) y registrar auditoría
+            // Si tiene padre, asignar también al padre (sin permisos) y registrar auditoría.
             if ($modulo->modulo_padre_id) {
                 $asignacionPadreExistente = DB::table('modulo_rol')
                     ->where('rol_id', $validated['rol_id'])
                     ->where('modulo_id', $modulo->modulo_padre_id)
                     ->first();
 
+                // syncWithoutDetaching: Si NO existe la relación → la crea, Si YA existe → la actualiza (permisos), Nunca duplica registros.
                 $rol->modulos()->syncWithoutDetaching($modulo->modulo_padre_id, ['permisos' => null]);
 
-                // Registrar auditoría para el padre (si no existía)
+                // Registrar auditoría para el padre (si no existía).
                 if (!$asignacionPadreExistente) {
                     Auditoria::registrarSinModelo(
                         'modulo_rol',
@@ -297,11 +194,12 @@ class ControlAccesoController extends Controller
                 }
             }
 
+            // syncWithoutDetaching: Si NO existe la relación → la crea, Si YA existe → la actualiza (permisos), Nunca duplica registros.
             $rol->modulos()->syncWithoutDetaching($validated['modulo_id'], ['permisos' => $permisosParaGuardar]);
 
             DB::commit();
 
-            // Registrar auditoría
+            // Registrar auditoría.
             $esNuevaAsignacion = !$asignacionExistente;
             Auditoria::registrarSinModelo(
                 'modulo_rol',
@@ -329,13 +227,17 @@ class ControlAccesoController extends Controller
     }
 
     /**
-     * Asignar/actualizar pestaña a rol con permisos
+     * Asigna o actualiza una pestaña a un rol con permisos específicos.
+     * Usa syncWithoutDetaching para evitar duplicados: Si NO existe la relación → la crea, Si YA existe → la actualiza (permisos), Nunca duplica registros.
+     *
+     * @param AsignarPestanaRequest $request Solicitud con datos validados.
+     * @return \Illuminate\Http\JsonResponse Respuesta JSON con mensaje de éxito o error.
      */
     public function asignarPestana(AsignarPestanaRequest $request)
     {
         $permisos = $this->rol->getPermisosPestana(11);
 
-        // Validar permisos
+        // Validar permisos.
         $asignacionExistente = DB::table('pestana_rol')
             ->where('rol_id', $request->rol_id)
             ->where('pestana_id', $request->pestana_id)
@@ -352,7 +254,7 @@ class ControlAccesoController extends Controller
         }
 
         $validated = $request->validated();
-        // Preparar permisos: si está vacío, usar null
+        // Preparar permisos: si está vacío, usar null.
         $permisosParaGuardar = !empty($validated['permisos']) ? json_encode($validated['permisos']) : null;
 
         try {
@@ -360,11 +262,12 @@ class ControlAccesoController extends Controller
 
             $rol = Rol::find($validated['rol_id']);
 
+            // syncWithoutDetaching: Si NO existe la relación → la crea, Si YA existe → la actualiza (permisos), Nunca duplica registros.
             $rol->pestanas()->syncWithoutDetaching([$validated['pestana_id'] => ['permisos' => $permisosParaGuardar]]);
 
             DB::commit();
 
-            // Registrar auditoría
+            // Registrar auditoría.
             $esNuevaAsignacion = !$asignacionExistente;
             Auditoria::registrarSinModelo(
                 'pestana_rol',
@@ -392,11 +295,15 @@ class ControlAccesoController extends Controller
     }
 
     /**
-     * Desasignar módulo de rol
+     * Desasigna un módulo de un rol.
+     * Si el módulo tiene padre y no quedan hermanos asignados, desasigna también al padre.
+     *
+     * @param Request $request Solicitud con rol_id y modulo_id.
+     * @return \Illuminate\Http\JsonResponse Respuesta JSON con mensaje de éxito o error.
      */
     public function desasignarModulo(Request $request)
     {
-        // Validación
+        // Validación.
         $validated = $request->validate([
             'rol_id' => 'required|integer|exists:roles,id',
             'modulo_id' => 'required|integer|exists:modulos,id',
@@ -415,15 +322,15 @@ class ControlAccesoController extends Controller
             $modulo = Modulo::findOrFail($validated['modulo_id']);
             $rol = Rol::findOrFail($validated['rol_id']);
 
-            // Eliminar asignación del módulo
+            // Eliminar asignación del módulo.
             $rol->modulos()->detach($validated['modulo_id']);
 
-            // Si tiene padre y no tiene hermanos asignados, desasignar padre también
+            // Si tiene padre y no tiene hermanos asignados, desasignar padre también.
             if ($modulo->modulo_padre_id) {
-                // Verificar si quedan hermanos asignados al rol
+                // Verificar si quedan hermanos asignados al rol.
                 $hermanosAsignados = $rol->modulos()
                     ->where('modulo_padre_id', $modulo->modulo_padre_id)
-                    ->where('modulos.id', '!=', $validated['modulo_id']) // Excluir el actual si ya se desasignó
+                    ->where('modulos.id', '!=', $validated['modulo_id']) // Excluir el actual si ya se desasignó.
                     ->count();
                 if ($hermanosAsignados === 0) {
                     $rol->modulos()->detach($modulo->modulo_padre_id);
@@ -459,7 +366,10 @@ class ControlAccesoController extends Controller
     }
 
     /**
-     * Desasignar pestaña de rol
+     * Desasigna una pestaña de un rol.
+     *
+     * @param Request $request Solicitud con rol_id y pestana_id.
+     * @return \Illuminate\Http\JsonResponse Respuesta JSON con mensaje de éxito o error.
      */
     public function desasignarPestana(Request $request)
     {
@@ -483,7 +393,7 @@ class ControlAccesoController extends Controller
 
             DB::commit();
 
-            // Registrar auditoría
+            // Registrar auditoría.
             Auditoria::registrarSinModelo(
                 'pestana_rol',
                 "{$validated['rol_id']}-{$validated['pestana_id']}",
@@ -504,7 +414,10 @@ class ControlAccesoController extends Controller
     }
 
     /**
-     * API: Cargar módulos para un rol específico (para carga dinámica)
+     * API: Carga módulos jerárquicos para un rol específico (para carga dinámica).
+     *
+     * @param int $rolId ID del rol.
+     * @return \Illuminate\Http\JsonResponse Lista de módulos con asignaciones.
      */
     public function cargarModulosPorRol($rolId)
     {
@@ -515,7 +428,10 @@ class ControlAccesoController extends Controller
     }
 
     /**
-     * API: Cargar pestañas para un rol específico (para carga dinámica)
+     * API: Carga pestañas jerárquicas para un rol específico (para carga dinámica).
+     *
+     * @param int $rolId ID del rol.
+     * @return \Illuminate\Http\JsonResponse Lista de pestañas con asignaciones.
      */
     public function cargarPestanasPorRol($rolId)
     {
@@ -523,5 +439,168 @@ class ControlAccesoController extends Controller
         return response()->json([
             'pestanas' => $pestanas,
         ]);
+    }
+    /**
+     * Método auxiliar para obtener módulos con estructura jerárquica y estado de asignación.
+     * Incluye padres e hijos, con info de asignación al rol si se pasa $rolId.
+     *
+     * @param int|null $rolId ID del rol para cargar asignaciones (opcional).
+     * @return array Lista de módulos jerárquicos con asignaciones.
+     */
+    private function obtenerModulosJerarquicos($rolId = null)
+    {
+        // Obtener módulos padres con hijos y pestañas.
+        $modulos = Modulo::with(['modulosHijos', 'pestanas'])
+            ->whereNull('modulo_padre_id')
+            ->get();
+
+        return $modulos->map(function ($modulo) use ($rolId) {
+            // Verificar asignación del módulo al rol.
+            $asignacion = null;
+            if ($rolId) {
+                $asignacion = DB::table('modulo_rol')
+                    ->where('rol_id', $rolId)
+                    ->where('modulo_id', $modulo->id)
+                    ->first();
+            }
+
+            $data = [
+                'id' => $modulo->id,
+                'nombre' => $modulo->nombre,
+                'icono' => $modulo->icono,
+                'es_padre' => $modulo->es_padre,
+                'permisos_extra' => $modulo->permisos_extra ?? [],
+                'tiene_pestanas' => $modulo->pestanas->count() > 0,
+                'cant_pestanas' => $modulo->pestanas->count(),
+                'asignado' => $asignacion !== null,
+                'permisos_asignados' => $asignacion ? json_decode($asignacion->permisos, true) : [],
+            ];
+
+            // Si es padre, incluir hijos con su asignación.
+            if ($modulo->es_padre) {
+                $data['hijos'] = $modulo->modulosHijos->map(function ($hijo) use ($rolId) {
+                    // Verificar asignación del hijo al rol.
+                    $asignacionHijo = null;
+                    if ($rolId) {
+                        $asignacionHijo = DB::table('modulo_rol')
+                            ->where('rol_id', $rolId)
+                            ->where('modulo_id', $hijo->id)
+                            ->first();
+                    }
+
+                    return [
+                        'id' => $hijo->id,
+                        'nombre' => $hijo->nombre,
+                        'icono' => $hijo->icono,
+                        'es_padre' => false,
+                        'permisos_extra' => $hijo->permisos_extra ?? [],
+                        'tiene_pestanas' => $hijo->pestanas()->count() > 0,
+                        'cant_pestanas' => $hijo->pestanas()->count(),
+                        'asignado' => $asignacionHijo !== null,
+                        'permisos_asignados' => $asignacionHijo ? json_decode($asignacionHijo->permisos, true) : [],
+                    ];
+                });
+            }
+
+            return $data;
+        });
+    }
+
+    /**
+     * Método auxiliar para obtener pestañas con estructura jerárquica y estado de asignación.
+     * Agrupa por módulos padres e hijos, con info de asignación al rol si se pasa $rolId.
+     *
+     * @param int|null $rolId ID del rol para cargar asignaciones (opcional).
+     * @return array Lista de pestañas jerárquicas con asignaciones.
+     */
+    private function obtenerPestanasJerarquicas($rolId = null)
+    {
+        // Obtener módulos padres con hijos y pestañas.
+        $modulosPadres = Modulo::with(['modulosHijos.pestanas'])
+            ->whereNull('modulo_padre_id')
+            ->get();
+
+        $resultado = [];
+
+        foreach ($modulosPadres as $padre) {
+            // Filtrar hijos que tienen pestañas.
+            $hijosConPestanas = $padre->modulosHijos->filter(fn($hijo) => $hijo->pestanas->count() > 0);
+
+            if ($hijosConPestanas->count() > 0) {
+                $resultado[] = [
+                    'id' => $padre->id,
+                    'nombre' => $padre->nombre,
+                    'icono' => $padre->icono,
+                    'es_padre' => true,
+                    'hijos' => $hijosConPestanas->map(function ($hijo) use ($rolId) {
+                        return [
+                            'modulo_id' => $hijo->id,
+                            'modulo_nombre' => $hijo->nombre,
+                            'modulo_icono' => $hijo->icono,
+                            'pestanas' => $hijo->pestanas->map(function ($pestana) use ($rolId) {
+                                // Verificar asignación de la pestaña al rol.
+                                $asignacion = null;
+                                if ($rolId) {
+                                    $asignacion = DB::table('pestana_rol')
+                                        ->where('rol_id', $rolId)
+                                        ->where('pestana_id', $pestana->id)
+                                        ->first();
+                                }
+
+                                return [
+                                    'id' => $pestana->id,
+                                    'nombre' => $pestana->nombre,
+                                    'permisos_extra' => $pestana->permisos_extra ?? [],
+                                    'asignado' => $asignacion !== null,
+                                    'permisos_asignados' => $asignacion ? json_decode($asignacion->permisos, true) : [],
+                                ];
+                            }),
+                        ];
+                    })->values(),
+                ];
+            }
+        }
+
+        // Agregar módulos sin padre que tengan pestañas.
+        $modulosSinPadre = Modulo::with('pestanas')
+            ->whereNull('modulo_padre_id')
+            ->has('pestanas')
+            ->orderBy('nombre')
+            ->get();
+
+        foreach ($modulosSinPadre as $modulo) {
+            $resultado[] = [
+                'id' => $modulo->id,
+                'nombre' => $modulo->nombre,
+                'icono' => $modulo->icono,
+                'es_padre' => false,
+                'hijos' => [[
+                    'modulo_id' => $modulo->id,
+                    'modulo_nombre' => $modulo->nombre,
+                    'modulo_icono' => $modulo->icono,
+                    'pestanas' => $modulo->pestanas->map(function ($pestana) use ($rolId) {
+                        // Verificar asignación de la pestaña al rol.
+                        $asignacion = null;
+                        if ($rolId) {
+                            $asignacion = DB::table('pestana_rol')
+                                ->where('rol_id', $rolId)
+                                ->where('pestana_id', $pestana->id)
+                                ->first();
+                        }
+
+                        return [
+                            'id' => $pestana->id,
+                            'nombre' => $pestana->nombre,
+                            'icono' => $pestana->icono,
+                            'permisos_extra' => $pestana->permisos_extra ?? [],
+                            'asignado' => $asignacion !== null,
+                            'permisos_asignados' => $asignacion ? json_decode($asignacion->permisos, true) : [],
+                        ];
+                    }),
+                ]],
+            ];
+        }
+
+        return $resultado;
     }
 }

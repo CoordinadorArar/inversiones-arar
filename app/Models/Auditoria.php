@@ -99,7 +99,6 @@ class Auditoria extends Model
         return $this->belongsTo(User::class, 'usuario_id', 'id');
     }
 
-    // En Auditoria.php
     /**
      * Registra una acción de auditoría sin modelo Eloquent.
      * Útil para tablas pivote o cambios manuales.

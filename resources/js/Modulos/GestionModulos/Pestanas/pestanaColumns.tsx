@@ -1,15 +1,29 @@
+/**
+ * Definiciones de columnas para tabla de pestañas.
+ * 
+ * Define columnas para la tabla de pestañas usando @tanstack/react-table: ID, nombre, ruta completa y jerarquía.
+ * Incluye celdas personalizadas con badges, íconos y estilos condicionales basados en estado del módulo.
+ * Usa componentes UI para badges e íconos, y lógica para mostrar jerarquía y módulos eliminados.
+ * Se integra con React para tablas de pestañas via Inertia.
+ * 
+ * @author Yariangel Aray
+ * @date 2025-12-12
+ */
+
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { PestanaInterface } from "./types/pestanaInterface";
-import { EmptyBadge } from "@/Components/EmptyBadge";
 import { FileText, AlertTriangle, ChevronRight } from "lucide-react";
 
+// Aquí se definen las columnas activas para la tabla de pestañas.
 export const PestanaColumns: ColumnDef<PestanaInterface>[] = [
+    // Aquí se define la columna de ID, no ocultable.
     {
         accessorKey: "id",
         header: "ID",
         enableHiding: false,
     },
+    // Aquí se define la columna de nombre con ícono y estilo.
     {
         accessorKey: "nombre",
         header: "Nombre",
@@ -23,6 +37,7 @@ export const PestanaColumns: ColumnDef<PestanaInterface>[] = [
             );
         },
     },
+    // Aquí se define la columna de ruta completa con badge condicional si módulo eliminado.
     {
         accessorKey: "ruta_completa",
         header: "Ruta Completa",
@@ -48,6 +63,7 @@ export const PestanaColumns: ColumnDef<PestanaInterface>[] = [
             );
         },
     },
+    // Aquí se define la columna de jerarquía con partes separadas por flechas.
     {
         accessorKey: "jerarquia",
         header: "Jerarquía",
@@ -80,36 +96,7 @@ export const PestanaColumns: ColumnDef<PestanaInterface>[] = [
             );
         },
     },
-    // {
-    //     accessorKey: "permisos_extra",
-    //     header: "Permisos Extra",
-    //     cell: ({ row }) => {
-    //         const permisos = row.original.permisos_extra;
-
-    //         if (!permisos || permisos.length === 0) {
-    //             return <EmptyBadge />;
-    //         }
-
-    //         return (
-    //             <div className="flex flex-wrap gap-1">
-    //                 {permisos.slice(0, 2).map((permiso, idx) => (
-    //                     <Badge
-    //                         key={idx}
-    //                         variant="outline"
-    //                         className="text-xs bg-orange-500/10 text-orange-700 border-orange-500/20"
-    //                     >
-    //                         {permiso}
-    //                     </Badge>
-    //                 ))}
-    //                 {permisos.length > 2 && (
-    //                     <Badge variant="outline" className="text-xs">
-    //                         +{permisos.length - 2}
-    //                     </Badge>
-    //                 )}
-    //             </div>
-    //         );
-    //     },
-    // },
 ];
 
+// Aquí se define un objeto vacío para columnas inactivas
 export const PestanaInactiveColumns = {};

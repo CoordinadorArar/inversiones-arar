@@ -1,5 +1,5 @@
 /**
- * Página UsuariosListado
+ * Componente UsuariosListado.
  * 
  * Vista de listado de usuarios dentro del módulo "Seguridad y Acceso".
  * Usa TabsLayout para navegación por pestañas, DataTable para mostrar usuarios.
@@ -18,19 +18,32 @@ import { TabInterface } from "@/Types/tabInterface";
 import { RolInterface, UsuarioInterface } from "../types/usuarioInterface";
 import HelpManualButton from "@/Components/HelpManualButton";
 
+/**
+ * Interfaz para las props del componente UsuariosListado.
+ * Define la estructura de datos pasados desde el backend via Inertia.
+ */
 export interface UsuarioListadoProps {
-  tabs: TabInterface[];
-  usuarios: UsuarioInterface[];
-  roles: RolInterface[];
-  moduloNombre: string;
+  tabs: TabInterface[]; // Pestañas accesibles del módulo.
+  usuarios: UsuarioInterface[]; // Lista de usuarios a mostrar.
+  roles: RolInterface[]; // Lista de roles disponibles.
+  moduloNombre: string; // Nombre del módulo para el header.
 }
 
+/**
+ * Componente principal para la página de Listado de Usuarios.
+ * Renderiza tabla con usuarios usando DataTable y columnas personalizadas.
+ * Envuelto en TabsLayout para navegación.
+ * 
+ * @param {UsuarioListadoProps} props - Props del componente.
+ * @returns {JSX.Element} Elemento JSX renderizado.
+ */
 export default function UsuariosListado({
   usuarios,
   tabs,
   moduloNombre,
 }: UsuarioListadoProps) {
   return (
+    // Aquí se usa TabsLayout para envolver la página con navegación de pestañas y header del módulo.
     <TabsLayout
       moduloNombre={moduloNombre}
       tabs={tabs}
@@ -49,6 +62,7 @@ export default function UsuariosListado({
         </CardHeader>
 
         <CardContent className="flex-1">
+          {/* Aquí se usa DataTable para renderizar la tabla con columnas personalizadas y búsqueda. */}
           <DataTable
             columns={UsuarioColumns}
             data={usuarios}
@@ -61,6 +75,13 @@ export default function UsuariosListado({
   );
 }
 
+/**
+ * Layout del componente: Envuelve la página en DashboardLayout con header dinámico.
+ * Se usa para renderizar el componente dentro del layout principal.
+ * 
+ * @param {any} page - Página a renderizar.
+ * @returns {JSX.Element} Elemento JSX con layout aplicado.
+ */
 UsuariosListado.layout = (page: any) => (
   <DashboardLayout header={page.props.moduloNombre} children={page} />
 );

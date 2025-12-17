@@ -1,3 +1,16 @@
+/**
+ * Componente PestanaForm.
+ * 
+ * Formulario para crear y editar pestañas del sistema con validación en tiempo real.
+ * Maneja campos nombre, módulo, ruta y permisos extra con validación de formato.
+ * Incluye diálogos de confirmación para operaciones críticas y detección de cambios.
+ * Muestra advertencias al modificar rutas o módulos en pestañas existentes.
+ * Se integra con hooks personalizados para gestión de estado y validaciones.
+ * 
+ * @author Yariangel Aray
+ * @date 2025-12-09
+ */
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,18 +30,30 @@ import { usePestanaForm } from "../hooks/usePestanaForm";
 import { ConfirmDialogPestana } from "./ConfirmDialogPestana";
 import { ModuloDisponibleCombobox } from "./ModuloDisponibleCombobox";
 
+/**
+ * Interfaz para las props del componente PestanaForm.
+ * Define la estructura de datos necesarios para el formulario de pestañas.
+ */
 interface PestanaFormProps {
-  mode: "create" | "edit";
-  initialData?: Partial<PestanaFormData>;
-  disabled?: boolean;
-  modulos: ModuloDisponibleInterface[];
-  onSubmit: (data: PestanaFormData) => Promise<void>;
-  onDelete?: () => Promise<void>;
-  onCancel: () => void;
-  externalErrors?: Record<string, string>;
-  moduloEliminado?: boolean | null;
+  mode: "create" | "edit"; // Modo de operación del formulario.
+  initialData?: Partial<PestanaFormData>; // Datos iniciales para poblar el formulario.
+  disabled?: boolean; // Estado de deshabilitación del formulario.
+  modulos: ModuloDisponibleInterface[]; // Lista de módulos disponibles para asignar.
+  onSubmit: (data: PestanaFormData) => Promise<void>; // Callback para enviar datos del formulario.
+  onDelete?: () => Promise<void>; // Callback opcional para eliminar pestaña.
+  onCancel: () => void; // Callback para cancelar operación.
+  externalErrors?: Record<string, string>; // Errores externos del backend.
+  moduloEliminado?: boolean | null; // Indica si el módulo asociado fue eliminado.
 }
 
+/**
+ * Componente de formulario para crear y editar pestañas.
+ * Implementa validación en tiempo real, detección de cambios y confirmaciones.
+ * Maneja estados de carga y errores con feedback visual al usuario.
+ * 
+ * @param {PestanaFormProps} props - Props del componente.
+ * @returns {JSX.Element} Elemento JSX renderizado.
+ */
 export function PestanaForm({
   mode,
   initialData,
@@ -40,6 +65,7 @@ export function PestanaForm({
   externalErrors = {},
   moduloEliminado = false,
 }: PestanaFormProps) {
+  // Aquí se usa el hook personalizado para manejar estado y lógica del formulario.
   const {
     data,
     errors,
@@ -60,30 +86,47 @@ export function PestanaForm({
     externalErrors,
   });
 
+  // Aquí se obtienen validadores de teclas para campos específicos.
   const { handleRutaKeyDown, handlePermisosExtraKeyDown } = useHandleKeyDown();
 
+  // Aquí se detectan cambios en el formulario comparando con datos iniciales.
   const changes = useFormChanges(initialData || {}, data);
   const { toast } = useToast();
 
+  /**
+   * Genera clases CSS dinámicas para inputs según su estado.
+   * Aplica estilos para cambios detectados y errores de validación.
+   * 
+   * @param {keyof typeof data} field - Campo del formulario a evaluar.
+   * @returns {string} Clases CSS concatenadas.
+   */
   const getInputClass = (field: keyof typeof data) => {
     return (
       (changes[field] && mode === "edit" ? "border-primary/50 " : "") +
       (errors[field] ? "border-destructive" : "")
     );
   };
-
-  const [openModulo, setOpenModulo] = useState(false);
+  
   const [showWarningDialog, setShowWarningDialog] = useState(false);
   const [pendingSubmit, setPendingSubmit] = useState(false);
 
+  // Aquí se busca el módulo seleccionado en la lista de módulos disponibles.
   const moduloSeleccionado = modulos.find((m) => m.id === data.modulo_id);
 
+  // Aquí se determina si hay cambios críticos que requieren confirmación.
   const hasCriticalChanges =
     mode === "edit" && (changes.ruta || changes.modulo_id);
 
+  /**
+   * Maneja el envío del formulario con validación y confirmaciones.
+   * Valida datos con Zod, muestra diálogos de advertencia para cambios críticos.
+   * 
+   * @param {React.FormEvent} e - Evento del formulario.
+   */
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Aquí se valida el formulario usando el schema de Zod.
     const validation = pestanaSchema.safeParse(data);
     if (!validation.success) {
       const zodErrors: Record<string, string> = {};
@@ -102,12 +145,14 @@ export function PestanaForm({
       return;
     }
 
+    // Aquí se muestra diálogo de advertencia si hay cambios críticos en edición.
     if (mode === "edit" && hasCriticalChanges) {
       setShowWarningDialog(true);
       setPendingSubmit(true);
       return;
     }
 
+    // Aquí se muestra diálogo de advertencia al crear nueva pestaña.
     if (mode === "create") {
       setShowWarningDialog(true);
       setPendingSubmit(true);
@@ -117,6 +162,10 @@ export function PestanaForm({
     handleSubmit(e);
   };
 
+  /**
+   * Confirma la operación tras advertencia y procede con el envío.
+   * Crea evento sintético para ejecutar el handleSubmit del hook.
+   */
   const handleWarningConfirm = () => {
     setShowWarningDialog(false);
     if (pendingSubmit) {
@@ -128,6 +177,10 @@ export function PestanaForm({
     }
   };
 
+  /**
+   * Cancela la operación tras diálogo de advertencia.
+   * Resetea estados de confirmación pendiente.
+   */
   const handleWarningCancel = () => {
     setShowWarningDialog(false);
     setPendingSubmit(false);
@@ -145,6 +198,7 @@ export function PestanaForm({
           >
             Nombre de la Pestaña
           </Label>
+          {/* Aquí se renderiza el input de nombre con validación de longitud y caracteres. */}
           <Input
             id="nombre"
             value={data.nombre}
@@ -164,6 +218,7 @@ export function PestanaForm({
         </div>
 
         {/* Módulo */}
+        {/* Aquí se renderiza el combobox para seleccionar módulo disponible. */}
         <ModuloDisponibleCombobox
           modulos={modulos}
           value={data.modulo_id}
@@ -186,6 +241,7 @@ export function PestanaForm({
             Ruta de la Pestaña
           </Label>
 
+          {/* Aquí se muestra InputGroup con prefijo de ruta si hay módulo seleccionado. */}
           {moduloSeleccionado ? (
             <div className="flex items-stretch">
               <InputGroup
@@ -243,6 +299,7 @@ export function PestanaForm({
         {/* Permisos Extra */}
         <div className="space-y-2">
           <Label htmlFor="permisos_extra">Permisos Extra (opcional)</Label>
+          {/* Aquí se renderiza input de permisos con reemplazo de espacios por guiones bajos. */}
           <Input
             id="permisos_extra"
             value={data.permisos_extra}
@@ -266,6 +323,7 @@ export function PestanaForm({
         <div className="flex flex-wrap gap-3 pt-4 border-t">
           {!disabled && (
             <>
+              {/* Aquí se muestra botón de eliminar solo en modo edición con callback definido. */}
               {mode === "edit" && onDelete && (
                 <Button
                   type="button"
@@ -285,6 +343,7 @@ export function PestanaForm({
                 Cancelar
               </Button>
 
+              {/* Aquí se muestra botón de submit con texto dinámico según el modo. */}
               <Button type="submit" disabled={processing || disabled}>
                 {mode === "create" ? (
                   <>
@@ -303,6 +362,7 @@ export function PestanaForm({
         </div>
       </form>
 
+      {/* Aquí se muestra diálogo de confirmación para eliminación de pestaña. */}
       <DeleteDialog
         open={showDeleteDialog}
         onOpenChange={handleDeleteCancel}
@@ -312,6 +372,7 @@ export function PestanaForm({
       />
 
       {/* Diálogo de confirmación de warning */}
+      {/* Aquí se muestra diálogo de advertencia para operaciones críticas. */}
       <ConfirmDialogPestana
         open={showWarningDialog}
         onOpenChange={setShowWarningDialog}

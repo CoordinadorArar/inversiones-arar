@@ -57,13 +57,11 @@ export const moduloSchema = z.object({
     .string()
     .min(1, "El nombre es obligatorio")
     .max(MODULO_LIMITS.nombre, `Máximo ${MODULO_LIMITS.nombre} caracteres`)
-    // CAMBIO: Agregado regex para permitir solo letras y espacios.
     .regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/, "El nombre solo puede contener letras y espacios"),
   icono: z
     .string()
     .min(1, "El ícono es obligatorio")
     .max(MODULO_LIMITS.icono, `Máximo ${MODULO_LIMITS.icono} caracteres`)
-    // CAMBIO: Agregado regex para permitir solo letras, números y guiones (kebab-case).
     .regex(/^[a-zA-Z0-9\-]+$/, "El ícono solo puede contener letras, números y guiones"),
   ruta: z
     .string()
@@ -74,6 +72,5 @@ export const moduloSchema = z.object({
   modulo_padre_id: z.number().nullable(),
   permisos_extra: z
     .string()
-    // CAMBIO: Agregado regex para permitir solo letras minúsculas, guiones bajos y comas (opcional vacío).
     .regex(/^[a-z_,]*$/, "Los permisos extra solo pueden contener letras minúsculas, guiones bajos y comas"),
 });

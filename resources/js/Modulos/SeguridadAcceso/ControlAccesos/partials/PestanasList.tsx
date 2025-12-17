@@ -1,19 +1,43 @@
+/**
+ * Componente PestanasList.
+ * 
+ * Lista jerárquica de pestañas con colapsables anidados: muestra padres con hijos,
+ * hijos con pestañas, permite expandir/colapsar grupos, seleccionar pestañas y ver estado de asignación.
+ * Usa Collapsible para animaciones y badges para estado asignado.
+ * Se integra con control de acceso para gestión de permisos.
+ * 
+ * @author Yariangel Aray
+ * @date 2025-12-16
+ */
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { PestanaAsignacionInterface } from "../types/controlAccesoInterface";
 import { DynamicIcon } from "lucide-react/dynamic";
-import { Folder, Check, ListChevronsDownUp, ListChevronsUpDown, ChevronDown } from "lucide-react";
+import { Check, ListChevronsDownUp, ListChevronsUpDown, ChevronDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/Components/ui/collapsible";
 
+/**
+ * Interfaz para las props del componente PestanasList.
+ * Define la estructura de datos para la lista de pestañas jerárquicas.
+ */
 interface PestanasListProps {
-  pestanas: PestanaAsignacionInterface[];
-  selectedPestanaId: number | null;
-  onPestanaSelect: (pestanaId: number) => void;
+  pestanas: PestanaAsignacionInterface[]; // Lista de pestañas jerárquicas.
+  selectedPestanaId: number | null; // ID de la pestaña seleccionada.
+  onPestanaSelect: (pestanaId: number) => void; // Callback al seleccionar pestaña.
 }
 
+/**
+ * Componente principal para la lista de pestañas jerárquicas.
+ * Maneja estado de grupos abiertos (padres e hijos), renderiza estructura anidada.
+ * Permite selección y muestra badges de asignación.
+ * 
+ * @param {PestanasListProps} props - Props del componente.
+ * @returns {JSX.Element} Elemento JSX renderizado.
+ */
 export function PestanasList({
   pestanas,
   selectedPestanaId,
@@ -22,6 +46,7 @@ export function PestanasList({
   const [openPadres, setOpenPadres] = useState<number[]>([]);
   const [openHijos, setOpenHijos] = useState<number[]>([]);
 
+  // Toggle para abrir/cerrar padres.
   const togglePadre = (padreId: number) => {
     setOpenPadres((prev) =>
       prev.includes(padreId)
@@ -30,6 +55,7 @@ export function PestanasList({
     );
   };
 
+  // Toggle para abrir/cerrar hijos.
   const toggleHijo = (hijoId: number) => {
     setOpenHijos((prev) =>
       prev.includes(hijoId)
@@ -38,6 +64,7 @@ export function PestanasList({
     );
   };
 
+  // Expandir todos los padres e hijos.
   const expandAll = () => {
     const allPadresIds = pestanas.map((p) => p.id);
     const allHijosIds = pestanas.flatMap((p) => p.hijos.map((h) => h.modulo_id));
@@ -45,6 +72,7 @@ export function PestanasList({
     setOpenHijos(allHijosIds);
   };
 
+  // Colapsar todos.
   const collapseAll = () => {
     setOpenPadres([]);
     setOpenHijos([]);
