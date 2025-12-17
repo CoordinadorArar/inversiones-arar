@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\PQRSD;
+namespace App\Http\Controllers\Public;
 
 /**
  * Controlador para el sistema PQRSD (Peticiones, Quejas, Reclamos, Sugerencias y Denuncias)
@@ -12,8 +12,7 @@ namespace App\Http\Controllers\PQRSD;
  */
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\PQRSD\StorePQRSDRequest;
-use App\Http\Requests\PQRSD\UpdatePQRSDRequest;
+use App\Http\Requests\StorePQRSDRequest;
 use App\Mail\PQRSDFormMail;
 use App\Mail\PQRSDConfirmationMail;
 use App\Models\Ciudad;
@@ -292,10 +291,10 @@ class PQRSDController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatePQRSDRequest $request, PQRSD $pQRSD)
-    {
-        //
-    }
+    // public function update(UpdatePQRSDRequest $request, PQRSD $pQRSD)
+    // {
+    //     //
+    // }
 
     /**
      * Remove the specified resource from storage.

@@ -31,7 +31,7 @@ use App\Http\Controllers\Public\ContactController;
 use App\Http\Controllers\Public\CompaniesController;
 use App\Http\Controllers\Public\HomeController;
 use App\Http\Controllers\Public\PortfolioController;
-use App\Http\Controllers\PQRSD\PQRSDController;
+use App\Http\Controllers\Public\PQRSDController;
 use App\Http\Controllers\ProfileController;
 
 use Illuminate\Support\Facades\Route;

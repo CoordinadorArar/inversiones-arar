@@ -1,11 +1,11 @@
 <?php
 
-use App\Http\Controllers\ConfiguracionController;
-use App\Http\Controllers\EmpresaWebController;
+use App\Http\Controllers\AdministracionWeb\ConfiguracionController;
+use App\Http\Controllers\AdministracionWeb\EmpresaWebController;
 use App\Http\Controllers\ModuloRedirectController;
-use App\Http\Controllers\PQRSD\EstadoPqrsController;
-use App\Http\Controllers\PQRSD\TipoPqrsController;
-use App\Http\Controllers\TipoIdentificacionController;
+use App\Http\Controllers\AdministracionWeb\TablasMaestras\EstadoPqrsController;
+use App\Http\Controllers\AdministracionWeb\TablasMaestras\TipoPqrsController;
+use App\Http\Controllers\AdministracionWeb\TablasMaestras\TipoIdentificacionController;
 use Illuminate\Support\Facades\Route;
 
 /**

@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\AdministracionWeb;
 
+use App\Http\Controllers\Controller;
 use App\Models\EmpresaWeb;
 use App\Http\Requests\AdministracionWeb\EmpresaWebRequest;
 use App\Models\GestionModulos\Modulo;

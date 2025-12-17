@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\ControlAccesoController;
+use App\Http\Controllers\SeguridadAcceso\ControlAccesoController;
 use App\Http\Controllers\ModuloRedirectController;
 use App\Http\Controllers\UsuarioController;
 use Illuminate\Support\Facades\Route;
@@ -29,6 +29,13 @@ use Illuminate\Support\Facades\Route;
  * /seguridad-acceso/usuarios/gestion/crear
  * /seguridad-acceso/usuarios/gestion/{id}
  * /seguridad-acceso/usuarios/buscar-documentos
+ * 
+ * // Módulo Hijo: Control de Acceso
+ * /seguridad-acceso/control-accesos
+ * /seguridad-acceso/control-accesos/accesos-modulos
+ * /seguridad-acceso/control-accesos/accesos-modulos/{rolId}
+ * /seguridad-acceso/control-accesos/accesos-pestanas
+ * /seguridad-acceso/control-accesos/accesos-pestanas/{rolId}
  * 
  * @author Yariangel Aray
  * @date 2025-12-05

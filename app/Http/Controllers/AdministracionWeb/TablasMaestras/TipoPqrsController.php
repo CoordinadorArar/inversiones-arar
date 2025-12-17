@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\PQRSD;
+namespace App\Http\Controllers\AdministracionWeb\TablasMaestras;
 
 use App\Http\Controllers\Controller;
 use App\Models\PQRSD\TipoPqrs;
