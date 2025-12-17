@@ -38,7 +38,7 @@ return new class extends Migration
         Schema::create('roles', function (Blueprint $table) {
             $table->id();
             $table->string('nombre')->unique();  // Nombre único del rol.
-            $table->string('abreviatura', 10)->unique();  // Abreviatura opcional y única.
+            $table->string('abreviatura', 10)->unique();  // Abreviatura única.
             
             $table->dateTime('fecha_creacion')->useCurrent();  // Timestamp de creación automático.
             $table->dateTime('fecha_modificacion')->useCurrent()->useCurrentOnUpdate();  // Timestamp de modificación automático.

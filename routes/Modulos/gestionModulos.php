@@ -87,7 +87,7 @@ Route::middleware('auth')->group(function () {
             // CRUD
             Route::prefix('gestion')->group(function () {
                 Route::post('/', [ModuloController::class, 'store'])->name('modulo.store');
-                Route::post('/{id}', [ModuloController::class, 'update'])->name('modulo.update');
+                Route::put('/{id}', [ModuloController::class, 'update'])->name('modulo.update');
                 Route::delete('/{id}', [ModuloController::class, 'destroy'])->name('modulo.destroy');
             });
         });
@@ -123,7 +123,7 @@ Route::middleware('auth')->group(function () {
             // CRUD
             Route::prefix('gestion')->group(function () {
                 Route::post('/', [PestanaController::class, 'store'])->name('pestana.store');
-                Route::post('/{id}', [PestanaController::class, 'update'])->name('pestana.update');
+                Route::put('/{id}', [PestanaController::class, 'update'])->name('pestana.update');
                 Route::delete('/{id}', [PestanaController::class, 'destroy'])->name('pestana.destroy');
             });
         });

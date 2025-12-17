@@ -14,8 +14,9 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { UsuarioInterface, RolInterface } from "../types/usuarioInterface";
+import { UsuarioInterface } from "../types/usuarioInterface";
 import { UsuarioFormData } from "../types/usuarioForm.types";
+import { RolInterface } from "../../Roles/types/rolInterface";
 
 interface UseUsuarioGestionProps {
   usuariosIniciales: UsuarioInterface[];
@@ -168,8 +169,13 @@ export function useUsuarioGestion({
           ? route("usuario.store")
           : route("usuario.update", selectedUsuarioId);
 
+      const method =
+        mode === "create"
+          ? "POST"
+          : "PUT";
+
       const response = await fetch(url, {
-        method: "POST",
+        method: method,
         headers: {
           "Content-Type": "application/json",
           "X-CSRF-TOKEN":

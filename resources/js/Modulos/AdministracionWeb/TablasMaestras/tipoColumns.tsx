@@ -17,7 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/Components/ui/dropdown-menu";
 import { MoreVertical, Pencil, Trash2 } from "lucide-react";
-import { TipoInterface } from "../types/tipoInterface";
+import { TipoInterface } from "./types/tipoInterface";
 
 /**
  * Interfaz para el contexto de las columnas de tipos.

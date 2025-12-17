@@ -15,8 +15,9 @@ import { DashboardLayout } from "@/Layouts/DashboardLayout";
 import { DataTable } from "@/Components/ui/data-table";
 import { UsuarioColumns, UsuarioInactiveColumns } from "../usuarioColumns";
 import { TabInterface } from "@/Types/tabInterface";
-import { RolInterface, UsuarioInterface } from "../types/usuarioInterface";
+import { UsuarioInterface } from "../types/usuarioInterface";
 import HelpManualButton from "@/Components/HelpManualButton";
+import { RolInterface } from "../../Roles/types/rolInterface";
 
 /**
  * Interfaz para las props del componente UsuariosListado.

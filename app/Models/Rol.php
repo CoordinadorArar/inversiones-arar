@@ -82,6 +82,11 @@ class Rol extends Model
             ->withTimestamps();
     }
 
+    public function usuarios()
+    {
+        return $this->hasMany(User::class, 'rol_id');
+    }
+
     /**
      * Helper: Verificar si el rol tiene un permiso específico en un módulo.
      * 

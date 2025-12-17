@@ -18,9 +18,3 @@ export interface UsuarioInterface {
   };
   bloqueado_at: string | null;
 }
-
-export interface RolInterface {
-  id: number;
-  nombre: string;
-  abreviatura?: string;
-}

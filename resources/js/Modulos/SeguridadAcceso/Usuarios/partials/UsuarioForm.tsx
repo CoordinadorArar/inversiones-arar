@@ -19,10 +19,10 @@ import { Save, X, Plus, Lock, Unlock, KeyRound, } from "lucide-react";
 import { UsuarioFormData, USUARIO_LIMITS } from "../types/usuarioForm.types";
 import { useUsuarioForm } from "../hooks/useUsuarioForm";
 import { handleEmailKeyDown } from "@/lib/keydownValidations";
-import { RolInterface } from "../types/usuarioInterface";
 import { useFormChanges } from "@/hooks/use-form-changes";
 import { DocumentoCombobox } from "./DocumentoCombobox";
 import { RolCombobox } from "./RolCombobox";
+import { RolInterface } from "../../Roles/types/rolInterface";
 
 /**
  * Interfaz para las props del componente UsuarioForm.

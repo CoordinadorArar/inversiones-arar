@@ -19,12 +19,20 @@ class ModuloRolSeeder extends Seeder
             ['modulo_id' => 7, 'rol_id' => 1],
             ['modulo_id' => 8, 'rol_id' => 1],
             ['modulo_id' => 9, 'rol_id' => 1],
-            ['modulo_id' => 10, 'rol_id' => 1],
+            [
+                'modulo_id' => 10,
+                'rol_id' => 1,
+                'permisos' => json_encode([
+                    "crear",
+                    "editar",
+                    "eliminar",
+                ])
+            ],
             ['modulo_id' => 11, 'rol_id' => 1],
             ['modulo_id' => 12, 'rol_id' => 1],
             ['modulo_id' => 13, 'rol_id' => 1],
-            ['modulo_id' => 14, 'rol_id' => 1],            
-            ['modulo_id' => 15, 'rol_id' => 1],            
+            ['modulo_id' => 14, 'rol_id' => 1],
+            ['modulo_id' => 15, 'rol_id' => 1],
         ];
 
         foreach ($accesos as $acceso) {
@@ -34,7 +42,7 @@ class ModuloRolSeeder extends Seeder
                     'modulo_id' => $acceso['modulo_id'],
                 ],
                 [
-                    'permisos' =>  null,
+                    'permisos' =>  $acceso['permisos'] ?? null,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]

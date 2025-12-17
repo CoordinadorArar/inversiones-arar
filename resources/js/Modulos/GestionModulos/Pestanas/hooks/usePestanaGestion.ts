@@ -181,6 +181,11 @@ export function usePestanaGestion({
                 mode === "create"
                     ? route("pestana.store")
                     : route("pestana.update", selectedPestanaId);
+            
+            const method =
+                mode === "create"
+                    ? "POST"
+                    : "PUT";
 
             // Aquí se prepara el payload, convirtiendo permisos_extra a array o null.
             const permisosArray = data.permisos_extra
@@ -195,7 +200,7 @@ export function usePestanaGestion({
 
             // Aquí se hace la llamada a API con fetch.
             const response = await fetch(url, {
-                method: "POST",
+                method: method,
                 headers: {
                     "Accept": "application/json",
                     "Content-Type": "application/json",

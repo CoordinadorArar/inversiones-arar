@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\SeguridadAcceso\ControlAccesoController;
 use App\Http\Controllers\ModuloRedirectController;
+use App\Http\Controllers\RolController;
 use App\Http\Controllers\UsuarioController;
 use Illuminate\Support\Facades\Route;
 
@@ -92,7 +93,7 @@ Route::middleware('auth')->group(function () {
             // CRUD y acciones especiales.
             Route::prefix('gestion')->group(function () {
                 Route::post('/', [UsuarioController::class, 'store'])->name('usuario.store');
-                Route::post('/{id}', [UsuarioController::class, 'update'])->name('usuario.update');
+                Route::put('/{id}', [UsuarioController::class, 'update'])->name('usuario.update');
                 Route::delete('/{id}', [UsuarioController::class, 'destroy'])->name('usuario.destroy');
 
                 // Acciones: Bloquear, desbloquear y restaurar contraseña.
@@ -102,7 +103,16 @@ Route::middleware('auth')->group(function () {
             });
         });
 
-        // ---
+        // Módulo hijo: Roles -  Middleware 'modulo.access:10' (ID del módulo en DB) para validar acceso directo.
+        Route::get('/' . $modulosHijos[1], [RolController::class, 'index'])->middleware('modulo.access:10');
+
+        // CRUD para Roles.
+        Route::prefix($modulosHijos[1])->group(function () {
+
+            Route::post('/', [RolController::class, 'store'])->name('rol.store');
+            Route::put('/{id}', [RolController::class, 'update'])->name('rol.update');
+            Route::delete('/{id}', [RolController::class, 'destroy'])->name('rol.destroy');
+        });
 
         // Módulo hijo: Control de Acceso - Usa ModuloRedirectController para redirigir a primera pestaña accesible.
         Route::get('/' . $modulosHijos[2], function () use ($modulosHijos) {

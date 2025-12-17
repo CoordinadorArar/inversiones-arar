@@ -143,7 +143,7 @@ export function ModulosList({
                               : "border-border hover:border-primary/50 hover:bg-muted/40"
                           )}
                         >
-                          <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-3 h-8">
                             <DynamicIcon name={hijo.icono} className="h-5 w-5 text-primary" />
                             <div className="flex-1 min-w-0">
                               <p className="font-medium text-sm">{hijo.nombre}</p>

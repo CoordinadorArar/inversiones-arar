@@ -16,7 +16,7 @@ import { DataTable } from "@/Components/ui/data-table";
 import { DeleteDialog } from "@/Components/DeleteDialog";
 import HelpManualButton from "@/Components/HelpManualButton";
 import { TipoInterface } from "../types/tipoInterface";
-import { createTipoColumns } from "../columns/tipoColumns";
+import { createTipoColumns } from "../tipoColumns";
 import { TipoForm } from "../partials/TipoForm";
 import { useTipoPQRSGestion } from "../hooks/useTipoPQRSGestion";
 import { useMemo } from "react";

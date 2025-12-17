@@ -138,7 +138,7 @@ class ControlAccesoController extends Controller
 
     /**
      * Asigna o actualiza un módulo a un rol con permisos específicos.
-     * Usa syncWithoutDetaching para evitar duplicados: Si NO existe la relación → la crea, Si YA existe → la actualiza (permisos), Nunca duplica registros.
+     * Usa attach para evitar duplicados: Si NO existe la relación → la crea, Si YA existe → la actualiza (permisos), Nunca duplica registros.
      * Si el módulo tiene padre, lo asigna automáticamente sin permisos.
      *
      * @param AsignarModuloRequest $request Solicitud con datos validados.
@@ -148,12 +148,11 @@ class ControlAccesoController extends Controller
     {
         $permisos = $this->rol->getPermisosPestana(10);
 
-        // Validar permisos: necesita "crear" para asignar nuevos o "editar" para modificar existentes.
         $asignacionExistente = DB::table('modulo_rol')
-            ->where('rol_id', $request->rol_id)
-            ->where('modulo_id', $request->modulo_id)
-            ->first();
-
+        ->where('rol_id', $request->rol_id)
+        ->where('modulo_id', $request->modulo_id)
+        ->first();
+                
         $permisoRequerido = $asignacionExistente ? 'editar' : 'crear';
 
         if (!in_array($permisoRequerido, $permisos)) {
@@ -168,6 +167,7 @@ class ControlAccesoController extends Controller
 
         // Preparar permisos: si está vacío, usar null.
         $permisosParaGuardar = !empty($validated['permisos']) ? json_encode($validated['permisos']) : null;
+
         try {
             DB::beginTransaction();
 
@@ -176,16 +176,11 @@ class ControlAccesoController extends Controller
 
             // Si tiene padre, asignar también al padre (sin permisos) y registrar auditoría.
             if ($modulo->modulo_padre_id) {
-                $asignacionPadreExistente = DB::table('modulo_rol')
-                    ->where('rol_id', $validated['rol_id'])
-                    ->where('modulo_id', $modulo->modulo_padre_id)
-                    ->first();
-
-                // syncWithoutDetaching: Si NO existe la relación → la crea, Si YA existe → la actualiza (permisos), Nunca duplica registros.
-                $rol->modulos()->syncWithoutDetaching($modulo->modulo_padre_id, ['permisos' => null]);
-
-                // Registrar auditoría para el padre (si no existía).
-                if (!$asignacionPadreExistente) {
+                // Verificar si la relación ya existe
+                $padreYaAsignado = $rol->modulos()->where('modulo_id', $modulo->modulo_padre_id)->exists();
+                if (!$padreYaAsignado) {
+                    $rol->modulos()->attach($modulo->modulo_padre_id, ['permisos' => null]);
+                    // Registrar auditoría solo si se creó
                     Auditoria::registrarSinModelo(
                         'modulo_rol',
                         "{$validated['rol_id']}-{$modulo->modulo_padre_id}",
@@ -193,15 +188,21 @@ class ControlAccesoController extends Controller
                         null
                     );
                 }
+                // Si ya existe, no hacer nada
             }
 
-            // syncWithoutDetaching: Si NO existe la relación → la crea, Si YA existe → la actualiza (permisos), Nunca duplica registros.
-            $rol->modulos()->syncWithoutDetaching($validated['modulo_id'], ['permisos' => $permisosParaGuardar]);
+            // Asignar o actualizar el módulo con permisos.
+            if ($rol->modulos()->where('modulo_id', $validated['modulo_id'])->exists()) {
+                $rol->modulos()->updateExistingPivot($validated['modulo_id'], ['permisos' => $permisosParaGuardar]);
+            } else {
+                $rol->modulos()->attach($validated['modulo_id'], ['permisos' => $permisosParaGuardar]);
+            }
 
             DB::commit();
 
             // Registrar auditoría.
             $esNuevaAsignacion = !$asignacionExistente;
+            
             Auditoria::registrarSinModelo(
                 'modulo_rol',
                 "{$validated['rol_id']}-{$validated['modulo_id']}",
@@ -229,7 +230,7 @@ class ControlAccesoController extends Controller
 
     /**
      * Asigna o actualiza una pestaña a un rol con permisos específicos.
-     * Usa syncWithoutDetaching para evitar duplicados: Si NO existe la relación → la crea, Si YA existe → la actualiza (permisos), Nunca duplica registros.
+     * Usa attach para evitar duplicados: Si NO existe la relación → la crea, Si YA existe → la actualiza (permisos), Nunca duplica registros.
      *
      * @param AsignarPestanaRequest $request Solicitud con datos validados.
      * @return \Illuminate\Http\JsonResponse Respuesta JSON con mensaje de éxito o error.
@@ -263,8 +264,8 @@ class ControlAccesoController extends Controller
 
             $rol = Rol::find($validated['rol_id']);
 
-            // syncWithoutDetaching: Si NO existe la relación → la crea, Si YA existe → la actualiza (permisos), Nunca duplica registros.
-            $rol->pestanas()->syncWithoutDetaching([$validated['pestana_id'] => ['permisos' => $permisosParaGuardar]]);
+            // attach: Crea si no existe, actualiza permisos si existe
+            $rol->pestanas()->attach([$validated['pestana_id'] => ['permisos' => $permisosParaGuardar]]);
 
             DB::commit();
 

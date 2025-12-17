@@ -22,8 +22,9 @@ import { useEffect, useMemo, useState } from "react";
 import { USUARIO_INITIAL_DATA } from "../types/usuarioForm.types";
 import { UsuarioForm } from "../partials/UsuarioForm";
 import { TabInterface } from "@/Types/tabInterface";
-import { RolInterface, UsuarioInterface } from "../types/usuarioInterface";
+import { UsuarioInterface } from "../types/usuarioInterface";
 import HelpManualButton from "@/Components/HelpManualButton";
+import { RolInterface } from "../../Roles/types/rolInterface";
 
 /**
  * Interfaz para las props del componente UsuariosGestion.

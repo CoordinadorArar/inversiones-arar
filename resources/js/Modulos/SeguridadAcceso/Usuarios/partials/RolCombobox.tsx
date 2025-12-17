@@ -29,8 +29,8 @@ import {
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
-import { RolInterface } from "../types/usuarioInterface";
 import { UsuarioFormData } from "../types/usuarioForm.types";
+import { RolInterface } from "../../Roles/types/rolInterface";
 
 /**
  * Interfaz para las props del componente RolCombobox.
