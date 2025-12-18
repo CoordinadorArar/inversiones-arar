@@ -69,19 +69,19 @@ export function ModulosList({
   return (
     <Card className="py-4 shadow border-none flex flex-col min-h-0">
       <CardHeader>
-        <div className="flex max-md:flex-col items-center justify-between">
+        <div className="flex max-md:flex-col max-md:items-start items-center justify-between gap-3 w-full">
           <CardTitle className="text-base">
             Módulos disponibles
           </CardTitle>
           {/* Botones para expandir/colapsar todo */}
-          <div className="flex gap-2">
+          <div className="flex gap-2 max-md:w-full max-md:flex-col">
             <Button
               variant="outline"
               size="sm"
               onClick={expandAll}
               className="text-xs"
             >
-              <ListChevronsUpDown className="h-3 w-3 mr-1" />
+              <ListChevronsUpDown className="h-3 w-3" />
               Expandir Todo
             </Button>
             <Button
@@ -90,7 +90,7 @@ export function ModulosList({
               onClick={collapseAll}
               className="text-xs"
             >
-              <ListChevronsDownUp className="h-3 w-3 mr-1" />
+              <ListChevronsDownUp className="h-3 w-3" />
               Colapsar Todo
             </Button>
           </div>

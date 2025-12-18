@@ -105,14 +105,14 @@ export function ImageUpload({
 
   return (
     <div className="space-y-2">
-      <Label className="flex items-center gap-2">
+      <Label className="flex items-center gap-2 text-sm sm:text-base">
         <ImageIcon className="h-4 w-4 text-primary" />
         {label}
       </Label>
 
       <div className="flex flex-col gap-4">
         {preview ? (
-          <div className="relative w-full max-w-xs">
+          <div className="relative w-full max-w-xs mx-auto sm:mx-0">
             <div className="aspect-video w-full rounded-lg border-2 border-dashed border-primary/30 bg-muted/30 p-4 flex items-center justify-center overflow-hidden">
               <img
                 src={preview.startsWith("data:") || preview.startsWith("blob:") ? preview : `/storage/${preview}`}
@@ -133,29 +133,29 @@ export function ImageUpload({
           </div>
         ) : (
           <div
-            className={`w-full max-w-xs border-2 border-dashed rounded-lg p-6 pb-4 text-center transition-all ${disabled
-                ? "bg-muted/20 cursor-not-allowed"
-                : isDragging
-                  ? "border-primary bg-primary/10"
-                  : "border-primary/30 bg-muted/30 hover:border-primary/50 hover:bg-muted/50 cursor-pointer"
+            className={`w-full max-w-xs mx-auto sm:mx-0 border-2 border-dashed rounded-lg p-4 sm:p-6 pb-3 sm:pb-4 text-center transition-all ${disabled
+              ? "bg-muted/20 cursor-not-allowed"
+              : isDragging
+                ? "border-primary bg-primary/10"
+                : "border-primary/30 bg-muted/30 hover:border-primary/50 hover:bg-muted/50 cursor-pointer"
               }`}
             onClick={() => !disabled && fileInputRef.current?.click()}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
           >
-            <div className="flex flex-col items-center gap-3">
+            <div className="flex flex-col items-center gap-2 sm:gap-3">
               <div
-                className={`h-12 w-12 rounded-full flex items-center justify-center transition-colors ${isDragging ? "bg-primary/20" : "bg-primary/10"
+                className={`h-10 w-10 sm:h-12 sm:w-12 rounded-full flex items-center justify-center transition-colors ${isDragging ? "bg-primary/20" : "bg-primary/10"
                   }`}
               >
                 <Upload
-                  className={`h-6 w-6 transition-colors ${isDragging ? "text-primary" : "text-primary"
+                  className={`h-5 w-5 sm:h-6 sm:w-6 transition-colors ${isDragging ? "text-primary" : "text-primary"
                     }`}
                 />
               </div>
               <div>
-                <p className="text-sm font-medium text-foreground mb-1">
+                <p className="text-xs sm:text-sm font-medium text-foreground mb-1">
                   {isDragging ? "Suelta la imagen aquí" : "Subir imagen"}
                 </p>
                 <p className="text-xs text-muted-foreground">
@@ -172,6 +172,7 @@ export function ImageUpload({
                   e.stopPropagation();
                   fileInputRef.current?.click();
                 }}
+                className="text-xs sm:text-sm"
               >
                 Seleccionar archivo
               </Button>

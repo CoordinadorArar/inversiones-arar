@@ -75,7 +75,7 @@ export function RolCombobox({
         <div className="space-y-2">
             <Label
                 htmlFor="rol_id"
-                className={`flex items-center gap-2  after:text-red-500 after:content-['*'] ${hasChanges ? "text-primary" : ""
+                className={`flex items-center text-sm sm:text-base gap-2  after:text-red-500 after:content-['*'] ${hasChanges ? "text-primary" : ""
                     }`}
             >
                 Rol

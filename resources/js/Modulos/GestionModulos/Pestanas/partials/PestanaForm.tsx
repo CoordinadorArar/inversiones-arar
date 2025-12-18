@@ -106,7 +106,7 @@ export function PestanaForm({
       (errors[field] ? "border-destructive" : "")
     );
   };
-  
+
   const [showWarningDialog, setShowWarningDialog] = useState(false);
   const [pendingSubmit, setPendingSubmit] = useState(false);
 
@@ -188,12 +188,12 @@ export function PestanaForm({
 
   return (
     <>
-      <form onSubmit={handleFormSubmit} className="space-y-6">
+      <form onSubmit={handleFormSubmit} className="space-y-4 sm:space-y-6">
         {/* Nombre */}
         <div className="space-y-2">
           <Label
             htmlFor="nombre"
-            className={`flex items-center gap-2  after:text-red-500 after:content-['*'] ${changes.nombre && mode === "edit" ? "text-primary" : ""
+            className={`flex items-center gap-2 text-sm sm:text-base after:text-red-500 after:content-['*'] ${changes.nombre && mode === "edit" ? "text-primary" : ""
               }`}
           >
             Nombre de la Pestaña
@@ -235,7 +235,7 @@ export function PestanaForm({
         <div className="space-y-2">
           <Label
             htmlFor="ruta"
-            className={`flex items-center gap-2  after:text-red-500 after:content-['*'] ${(changes.ruta || changes.modulo_id) && mode === "edit" ? "text-primary" : ""
+            className={`flex items-center gap-2 text-sm sm:text-base after:text-red-500 after:content-['*'] ${(changes.ruta || changes.modulo_id) && mode === "edit" ? "text-primary" : ""
               }`}
           >
             Ruta de la Pestaña
@@ -298,7 +298,7 @@ export function PestanaForm({
 
         {/* Permisos Extra */}
         <div className="space-y-2">
-          <Label htmlFor="permisos_extra">Permisos Extra (opcional)</Label>
+          <Label htmlFor="permisos_extra" className="text-sm sm:text-base">Permisos Extra (opcional)</Label>
           {/* Aquí se renderiza input de permisos con reemplazo de espacios por guiones bajos. */}
           <Input
             id="permisos_extra"
@@ -320,7 +320,7 @@ export function PestanaForm({
         </div>
 
         {/* Botones */}
-        <div className="flex flex-wrap gap-3 pt-4 border-t">
+        <div className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3 pt-4 border-t">
           {!disabled && (
             <>
               {/* Aquí se muestra botón de eliminar solo en modo edición con callback definido. */}
@@ -330,21 +330,22 @@ export function PestanaForm({
                   variant="destructive"
                   onClick={handleDeleteClick}
                   disabled={processing}
+                  className="w-full sm:w-auto text-sm sm:text-base"
                 >
                   <Trash2 className="h-4 w-4" />
                   Eliminar
                 </Button>
               )}
 
-              <div className="flex-1" />
+              <div className="hidden sm:block sm:flex-1" />
 
-              <Button type="button" variant="outline" onClick={onCancel} disabled={processing}>
+              <Button type="button" variant="outline" onClick={onCancel} disabled={processing} className="w-full sm:w-auto text-sm sm:text-base order-last sm:order-none">
                 <X className="h-4 w-4" />
                 Cancelar
               </Button>
 
               {/* Aquí se muestra botón de submit con texto dinámico según el modo. */}
-              <Button type="submit" disabled={processing || disabled}>
+              <Button type="submit" disabled={processing || disabled} className="w-full sm:w-auto text-sm sm:text-base">
                 {mode === "create" ? (
                   <>
                     <Plus className="h-4 w-4" />
@@ -384,4 +385,5 @@ export function PestanaForm({
       />
     </>
   );
+
 }

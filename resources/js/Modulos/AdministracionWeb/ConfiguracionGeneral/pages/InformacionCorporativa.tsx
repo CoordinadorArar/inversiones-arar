@@ -98,8 +98,8 @@ export default function InformacionCorporativa({
       tabs={tabs}
       activeTab={window.location.pathname}
     >
-      <Card className="py-6 h-full flex flex-col shadow border-none">
-        <CardHeader>
+      <Card className="py-4 sm:py-6 h-full flex flex-col shadow border-none gap-3 sm:gap-4">
+        <CardHeader className="px-4 sm:px-6">
           <CardTitle className="flex items-center gap-5">
             Información Corporativa
             {/* Aquí se incluye HelpManualButton para acceder al manual.*/}
@@ -119,13 +119,13 @@ export default function InformacionCorporativa({
               </p>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-8" noValidate>
+            <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8" noValidate>
               {/* ================================================ */}
               {/* SECCIÓN DE CONTACTO */}
               {/* ================================================ */}
               <div className="space-y-4">
                 {/* Header de sección con fondo */}
-                <div className="flex items-center gap-3 pb-2 border-b border-primary/50">
+                <div className="flex items-center gap-3 pb-2 border-b border-primary/50 mt-4 md:mt-0">
                   <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary/10">
                     <Mail className="h-5 w-5 text-primary" />
                   </div>
@@ -320,7 +320,7 @@ export default function InformacionCorporativa({
 
               {/* Botón de guardar */}
               <div className="flex justify-end pt-6 border-t">
-                <Button type="submit" disabled={isSubmitting}>
+                <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto text-sm sm:text-base">
                   <Save className="h-4 w-4" />
                   {isSubmitting ? "Guardando..." : "Guardar Cambios"}
                 </Button>

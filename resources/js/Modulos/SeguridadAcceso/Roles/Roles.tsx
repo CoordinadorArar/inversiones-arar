@@ -105,7 +105,7 @@ export default function Roles({
             <Head title={moduloNombre} />
 
             <div className={`h-full grid gap-4 animate-fade ${shouldShowForm ? 'lg:grid-cols-[1fr_320px]' : ''}`}>
-                <Card className="py-6 flex flex-col shadow border-none gap-4 overflow-hidden">
+                <Card className="py-4 sm:py-6 flex flex-col shadow border-none gap-3 sm:gap-4 overflow-hidden">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-5">
                             Listado de Roles

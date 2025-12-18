@@ -53,10 +53,10 @@ export function EmpresaSwitches({
   ] as const;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       {/* Header de sección con título y tooltip informativo. */}
       <div className="flex items-center gap-2 mb-2">
-        <h3 className="text-sm font-semibold">Configuración de Visibilidad</h3>
+        <h3 className="text-sm sm:text-base font-semibold">Configuración de Visibilidad</h3>
         {/* Aquí se usa TooltipProvider y Tooltip para mostrar información sobre los ajustes. */}
         <TooltipProvider>
           <Tooltip>
@@ -74,7 +74,7 @@ export function EmpresaSwitches({
       </div>
 
       {/* Grid de switches: Renderiza cada switch en una card con descripción y estado. */}
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-3 sm:gap-4 md:grid-cols-2">
         {switches.map((switchKey) => {
           const config = SWITCH_DESCRIPTIONS[switchKey];
           const isActive = data[switchKey];
@@ -82,18 +82,18 @@ export function EmpresaSwitches({
           return (
             <div
               key={switchKey}
-              className={`p-4 rounded-lg border-2 transition-all ${isActive
-                  ? "border-primary bg-primary/5"
-                  : "border-border bg-card"
+              className={`p-3 sm:p-4 rounded-lg border-2 transition-all ${isActive
+                ? "border-primary bg-primary/5"
+                : "border-border bg-card"
                 }`}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 space-y-2">
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     {/* Aquí se usa Label para el título del switch. */}
                     <Label
                       htmlFor={switchKey}
-                      className="cursor-pointer m-0"
+                      className="cursor-pointer m-0 text-sm sm:text-base"
                     >
                       {config.label}
                     </Label>
@@ -105,7 +105,7 @@ export function EmpresaSwitches({
                     )}
                   </div>
 
-                  <p className="text-xs text-muted-foreground leading-relaxed">
+                  <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
                     {config.description}
                   </p>
 
@@ -139,6 +139,7 @@ export function EmpresaSwitches({
                   checked={isActive}
                   onCheckedChange={(checked) => onChange(switchKey, checked)}
                   disabled={disabled}
+                  className="flex-shrink-0"
                 />
               </div>
             </div>

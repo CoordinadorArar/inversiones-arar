@@ -49,7 +49,7 @@ export default function ModulosListado({
       tabs={tabs}
       activeTab={window.location.pathname}
     >
-      <Card className="py-6 h-full flex flex-col shadow border-none gap-4">
+      <Card className="py-4 sm:py-6 h-full flex flex-col shadow border-none gap-3 sm:gap-4">
         <CardHeader>
           <CardTitle className="flex items-center gap-5">
             Listado de Módulos

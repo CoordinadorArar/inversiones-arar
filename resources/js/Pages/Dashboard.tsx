@@ -10,10 +10,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DashboardLayout } from "@/Layouts/DashboardLayout";
 import { formatToSpanishDate } from "@/lib/formatUtils";
 import { Head } from "@inertiajs/react";
-import {  DollarSign, ChevronUp, ChevronDown, FileText, CalendarIcon, Cake } from "lucide-react";
+import { DollarSign, ChevronUp, ChevronDown, FileText, CalendarIcon, Cake } from "lucide-react";
 import { useState } from "react";
 
-export default function Dashboard({auth: { user: { info_corta }}, documentos}) {
+export default function Dashboard({ auth: { user: { info_corta } }, documentos }) {
 
   const [showAllDocs, setShowAllDocs] = useState(false);
 
@@ -137,9 +137,15 @@ export default function Dashboard({auth: { user: { info_corta }}, documentos}) {
                           <p className="text-xs text-muted-foreground">{formatToSpanishDate(doc.fecha_creacion)}</p>
                         </div>
                       </div>
-                      <Button variant="ghost" size="sm">
-                        Ver
-                      </Button>
+                      <a
+                        href={"/storage/" + doc.ruta}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <Button variant="ghost" size="sm">
+                          Ver
+                        </Button>
+                      </a>
                     </div>
                   ))}
                 </div>

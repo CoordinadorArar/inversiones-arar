@@ -48,7 +48,7 @@ export default function PestanasListado({
       tabs={tabs}
       activeTab={window.location.pathname}
     >
-      <Card className="py-6 h-full flex flex-col shadow border-none gap-4">
+      <Card className="py-4 sm:py-6 h-full flex flex-col shadow border-none gap-3 sm:gap-4">
         <CardHeader>
           <CardTitle>Listado de Pestañas</CardTitle>
         </CardHeader>

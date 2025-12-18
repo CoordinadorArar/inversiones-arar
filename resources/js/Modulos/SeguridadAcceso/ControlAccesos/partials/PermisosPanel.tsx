@@ -231,7 +231,7 @@ export function PermisosPanel({
   const esModuloConPestanas = tipo === "modulo" && (item as ModuloAsignacionInterface)?.tiene_pestanas;
 
   return (
-    <Card className="shadow border-none flex flex-col py-4 h-min md:sticky md:top-16">
+    <Card className="shadow border-none flex flex-col py-4 h-min sticky top-16" id="permiso-panel-form">
       {!item ? (
         <CardHeader>
           <CardTitle className="text-base">Permisos de{tipo === "modulo" ? "l Módulo" : " la Pestaña"}</CardTitle>

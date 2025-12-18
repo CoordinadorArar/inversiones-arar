@@ -97,7 +97,7 @@ export default function EstadosPQRS({ estados: estadosIniciales, tabs, moduloNom
       >
         <div className={`h-full grid gap-4 ${shouldShowForm ? 'lg:grid-cols-[1fr_320px]' : ''}`}>
           {/* Sección de la tabla: Usa Card para contener el listado de estados. */}
-          <Card className="py-6 flex flex-col shadow border-none gap-4 overflow-hidden">
+          <Card className="py-4 sm:py-6 flex flex-col shadow border-none gap-3 sm:gap-4 overflow-hidden">
             <CardHeader>
               <CardTitle className="flex items-center gap-5">
                 Listado de Estados de PQRS

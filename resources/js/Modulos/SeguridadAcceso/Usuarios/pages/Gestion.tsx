@@ -129,7 +129,7 @@ export default function UsuariosGestion({
       tabs={tabs}
       activeTab={window.location.pathname}
     >
-      <Card className="py-6 h-full flex flex-col shadow border-none gap-4">
+      <Card className="py-4 sm:py-6 flex flex-col shadow border-none gap-3 sm:gap-4">
         <CardHeader>
           <CardTitle className="flex items-center gap-5">Gestión de Usuarios
             {/* Aquí se incluye HelpManualButton para acceder al manual. */}
@@ -200,12 +200,12 @@ export default function UsuariosGestion({
                   <p className="text-sm font-medium text-primary">
                     {mode === "create" ? (
                       <span className="flex gap-2 items-center">
-                        <FilePlus className="h-4 w-4" />
+                        <FilePlus className="h-4 min-w-4" />
                         Modo: Crear nuevo usuario
                       </span>
                     ) : (
                       <span className="flex gap-2 items-center">
-                        <Pencil className="h-4 w-4" />
+                        <Pencil className="h-4 min-w-4" />
                         Modo: Editando {formInitialData?.nombre_completo}
                       </span>
                     )}

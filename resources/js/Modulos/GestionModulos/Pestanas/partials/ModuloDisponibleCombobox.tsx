@@ -63,7 +63,7 @@ export function ModuloDisponibleCombobox({
 
     return (
         <div className="space-y-2">
-            <Label htmlFor="modulo_id" className={hasChanges ? "text-primary" : ""}>
+            <Label htmlFor="modulo_id" className={"text-sm sm:text-base " + (hasChanges ? "text-primary" : "")}>
                 Módulo al que pertenece
                 <span className="text-red-500 ml-0.5">*</span>
             </Label>

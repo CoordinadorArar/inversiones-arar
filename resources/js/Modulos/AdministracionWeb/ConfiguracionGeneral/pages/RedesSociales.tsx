@@ -100,8 +100,8 @@ export default function RedesSociales({
             tabs={tabs}
             activeTab={window.location.pathname}
         >
-            <Card className="py-6 h-full flex flex-col shadow border-none">
-                <CardHeader>
+            <Card className="py-4 sm:py-6 h-full flex flex-col shadow border-none gap-3 sm:gap-4">
+                <CardHeader className="px-4 sm:px-6">
                     <CardTitle className="flex items-center gap-5">
                         Enlaces de Redes Sociales
                         {/* Aquí se incluye HelpManualButton para acceder al manual. */}
@@ -124,7 +124,7 @@ export default function RedesSociales({
                             </p>
                         </div>
                     ) : (
-                        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+                        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6" noValidate>
                             {/* Grid de redes sociales con cards: Renderiza una card por cada red social. */}
                             <div className="grid gap-4 sm:grid-cols-2 pt-2">
                                 {socialNetworks.map((network) => {
@@ -217,7 +217,7 @@ export default function RedesSociales({
 
                             {/* Botón de guardar */}
                             <div className="flex justify-end pt-6 border-t">
-                                <Button type="submit" disabled={isSubmitting}>
+                                <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto text-sm sm:text-base">
                                     <Save className="h-4 w-4" />
                                     {isSubmitting ? "Guardando..." : "Guardar Cambios"}
                                 </Button>
@@ -228,6 +228,7 @@ export default function RedesSociales({
             </Card>
         </TabsLayout>
     );
+
 }
 
 /**

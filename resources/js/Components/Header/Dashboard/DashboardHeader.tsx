@@ -33,7 +33,7 @@ export function DashboardHeader({ title, user }: DashboardHeaderProps) {
           
           <div className="flex items-center gap-4">
             <div className="hidden sm:block h-6 w-px bg-border" />
-            <h2 className="text-lg font-bold text-primary">{title}</h2>
+            <h2 className="md:text-lg font-bold text-primary">{title}</h2>
           </div>
         </div>
 

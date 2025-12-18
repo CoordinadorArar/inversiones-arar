@@ -76,6 +76,15 @@ export default function ControlAccesoModulos({
 
     const handleModuloSelect = (moduloId: number) => {
         setSelectedModuloId(moduloId);
+        setTimeout(() => {
+            const formElement = document.getElementById('permiso-panel-form');
+            if (formElement) {
+                formElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }, 100); // Pequeño delay para asegurar que el DOM se actualizó
     };
 
     return (
@@ -87,7 +96,7 @@ export default function ControlAccesoModulos({
         >
             <div className="h-full flex flex-col gap-4">
                 {/* Header con selector de rol */}
-                <Card className="py-6 shadow border-none gap-4">
+                <Card className="py-4 sm:py-6 shadow border-none gap-3 sm:gap-4">
                     <CardHeader>
                         <CardTitle>Asignación de Módulos a Roles</CardTitle>
                     </CardHeader>

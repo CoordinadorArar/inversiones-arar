@@ -32,7 +32,7 @@ import { TabInterface } from "@/Types/tabInterface";
 interface TabsLayoutProps {
     children: ReactNode;     // Contenido a renderizar (flex-1).
     moduloNombre: string;    // Nombre del módulo para título de página.
-    tabs: TabInterface[];             // Array de pestañas disponibles.
+    tabs: TabInterface[];    // Array de pestañas disponibles.
     activeTab?: string;      // Ruta de la pestaña activa (opcional).
 }
 
@@ -86,7 +86,7 @@ export function TabsLayout({
             */}
             <Tabs value={getActiveTabValue()} className="w-full h-full flex flex-col over">
                 {/* Contenedor de TabsList con scroll horizontal en mobile. */}
-                <div className="overflow-x-auto pb-2 -mx-3 sm:mx-0">
+                <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent pb-2 -mx-3 px-3 sm:mx-0 sm:px-0">
                     {/* TabsList: w-max en mobile (scroll), w-full en desktop, gap entre triggers. */}
                     <TabsList className="w-max sm:w-full justify-start p-0 gap-2 mx-3 sm:mx-0">
                         {/* Mapea tabs a TabsTrigger envueltos en Link. */}
@@ -95,7 +95,7 @@ export function TabsLayout({
                                 <TabsTrigger
                                     value={tab.ruta}  // Valor para resaltar activo.
                                     className={cn(
-                                        "relative px-4 py-2 transition-all duration-200",
+                                        "relative px-3 sm:px-4 py-2 text-sm sm:text-base transition-all duration-200 whitespace-nowrap",
                                         "data-[state=active]:text-primary data-[state=active]:font-bold",
                                         "hover:bg-gray-400/5 hover:text-foreground",
                                     )}

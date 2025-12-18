@@ -68,7 +68,7 @@ export default function ControlAccesoPestanas({
         value: rol.id.toString(),
         label: rol.nombre,
     }));
-    
+
     // Aquí se encuentra la pestaña seleccionada en la estructura jerárquica.
     const selectedPestana = pestanas
         .flatMap((padre) => padre.hijos.flatMap((hijo) => hijo.pestanas || []))
@@ -76,6 +76,15 @@ export default function ControlAccesoPestanas({
 
     const handlePestanaSelect = (pestanaId: number) => {
         setSelectedPestanaId(pestanaId);
+        setTimeout(() => {
+            const formElement = document.getElementById('permiso-panel-form');
+            if (formElement) {
+                formElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }, 100); // Pequeño delay para asegurar que el DOM se actualizó
     };
 
     return (
@@ -87,7 +96,7 @@ export default function ControlAccesoPestanas({
         >
             <div className="h-full flex flex-col gap-4">
                 {/* Header con selector de rol */}
-                <Card className="py-6 shadow border-none gap-4">
+                <Card className="py-4 sm:py-6 shadow border-none gap-3 sm:gap-4">
                     <CardHeader>
                         <CardTitle>Asignación de Pestañas a Roles</CardTitle>
                     </CardHeader>

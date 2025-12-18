@@ -95,13 +95,13 @@ export function EmpresaForm({
 
     return (
         <>
-            <form onSubmit={handleSubmit} className="space-y-6">
-                {/* ID Siesa y Razón Social: Grid con dos inputs principales. */}
-                <div className="grid md:grid-cols-2 gap-4">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+                {/* ID Siesa y Razón Social */}
+                <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
                     <div className="space-y-2">
                         <Label
                             htmlFor="id_siesa"
-                            className={`flex items-center gap-2  after:text-red-500 after:content-['*'] after:hidden data-[required=true]:after:block ${changes.id_siesa && mode == "edit" ? "text-primary" : ""}`}
+                            className={`flex items-center gap-2 text-sm sm:text-base after:text-red-500 after:content-['*'] after:hidden data-[required=true]:after:block ${changes.id_siesa && mode == "edit" ? "text-primary" : ""}`}
                             data-required={data.mostrar_en_header || data.mostrar_en_empresas}
                         >
                             ID Siesa
@@ -129,7 +129,7 @@ export function EmpresaForm({
                     <div className="space-y-2">
                         <Label
                             htmlFor="razon_social"
-                            className={`flex items-center gap-2  after:text-red-500 after:content-['*'] ${changes.razon_social && mode == "edit" ? "text-primary" : ""}`}
+                            className={`flex items-center gap-2 text-sm sm:text-base after:text-red-500 after:content-['*'] ${changes.razon_social && mode == "edit" ? "text-primary" : ""}`}
                         >
                             Razón Social
                         </Label>
@@ -153,21 +153,20 @@ export function EmpresaForm({
                     </div>
                 </div>
 
-                {/* Siglas y Tipo Empresa: Grid con inputs opcionales y requeridos. */}
-                <div className="grid md:grid-cols-2 gap-4">
+                {/* Siglas y Tipo Empresa */}
+                <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
                     <div className="space-y-2">
                         <Label
                             htmlFor="siglas"
-                            className={`${changes.siglas && mode == "edit" ? "text-primary" : ""}`}
+                            className={`text-sm sm:text-base ${changes.siglas && mode == "edit" ? "text-primary" : ""}`}
                         >
-                            Siglas (Opcional)</Label>
+                            Siglas (Opcional)
+                        </Label>
                         {/* Aquí se usa Input para siglas con transformación a mayúsculas y validaciones. */}
                         <Input
                             id="siglas"
                             value={data.siglas}
-                            onChange={(e) =>
-                                handleChange("siglas", e.target.value.toUpperCase())
-                            }
+                            onChange={(e) => handleChange("siglas", e.target.value.toUpperCase())}
                             onKeyDown={(e) => {
                                 const allowed = /^[a-zA-Z0-9]$/;
                                 if (!allowed.test(e.key) &&
@@ -192,7 +191,7 @@ export function EmpresaForm({
                     <div className="space-y-2">
                         <Label
                             htmlFor="tipo_empresa"
-                            className={`flex items-center gap-2  after:text-red-500 after:content-['*'] after:hidden data-[required=true]:after:block ${changes.tipo_empresa && mode == "edit" ? "text-primary" : ""}`}
+                            className={`flex items-center gap-2 text-sm sm:text-base after:text-red-500 after:content-['*'] after:hidden data-[required=true]:after:block ${changes.tipo_empresa && mode == "edit" ? "text-primary" : ""}`}
                             data-required={data.mostrar_en_empresas}
                         >
                             Tipo de Empresa
@@ -221,7 +220,7 @@ export function EmpresaForm({
                 <div className="space-y-2">
                     <Label
                         htmlFor="descripcion"
-                        className={`flex items-center gap-2  after:text-red-500 after:content-['*'] after:hidden data-[required=true]:after:block ${changes.descripcion && mode == "edit" ? "text-primary" : ""}`}
+                        className={`flex items-center gap-2 text-sm sm:text-base after:text-red-500 after:content-['*'] after:hidden data-[required=true]:after:block ${changes.descripcion && mode == "edit" ? "text-primary" : ""}`}
                         data-required={data.mostrar_en_empresas}
                     >
                         Descripción
@@ -247,16 +246,15 @@ export function EmpresaForm({
                 </div>
 
                 {/* Sitio Web y Dominio: Grid con inputs para URLs. */}
-                <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
                     <div className="space-y-2">
                         <Label
                             htmlFor="sitio_web"
-                            className={`flex items-center gap-2  after:text-red-500 after:content-['*'] after:hidden data-[required=true]:after:block ${changes.sitio_web && mode == "edit" ? "text-primary" : ""}`}
+                            className={`flex items-center gap-2 text-sm sm:text-base after:text-red-500 after:content-['*'] after:hidden data-[required=true]:after:block ${changes.sitio_web && mode == "edit" ? "text-primary" : ""}`}
                             data-required={data.mostrar_en_empresas}
                         >
                             Sitio Web
                         </Label>
-                        {/* Aquí se usa Input para sitio web con validaciones de URL. */}
                         <Input
                             id="sitio_web"
                             type="url"
@@ -279,13 +277,14 @@ export function EmpresaForm({
                     <div className="space-y-2">
                         <Label
                             htmlFor="dominio"
-                            className={`${changes.dominio && mode == "edit" ? "text-primary" : ""}`}
+                            className={`text-sm sm:text-base ${changes.dominio && mode == "edit" ? "text-primary" : ""}`}
                         >
-                            Dominio de Correo (Opcional)</Label>
+                            Dominio de Correo (Opcional)
+                        </Label>
                         {/* Aquí se usa InputGroup para dominio con prefijo "correo@". */}
                         <InputGroup className={`${changes.dominio && mode == "edit" ? "has-[[data-slot=input-group-control]]:border-primary/50" : ""}`}>
                             <InputGroupAddon>
-                                <InputGroupText>correo@</InputGroupText>
+                                <InputGroupText className="text-xs sm:text-sm">correo@</InputGroupText>
                             </InputGroupAddon>
                             <InputGroupInput
                                 id="dominio"
@@ -317,7 +316,7 @@ export function EmpresaForm({
                     label="Logo de la Empresa (Opcional)"
                 />
 
-                {/* Switches: Componente para opciones booleanas como mostrar en header, etc. */}
+                {/* Switches */}
                 <EmpresaSwitches
                     data={data}
                     onChange={handleChange}
@@ -325,7 +324,7 @@ export function EmpresaForm({
                 />
 
                 {/* Botones de acción: Eliminar, Cancelar y Guardar/Crear. */}
-                <div className="flex flex-wrap gap-3 pt-4 border-t">
+                <div className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3 pt-4 border-t">
                     {!disabled && (
                         <>
                             {mode === "edit" && onDelete && (
@@ -334,25 +333,31 @@ export function EmpresaForm({
                                     variant="destructive"
                                     onClick={handleDeleteClick}
                                     disabled={processing || disabled}
+                                    className="w-full sm:w-auto text-sm sm:text-base"
                                 >
                                     <Trash2 className="h-4 w-4" />
                                     Eliminar
                                 </Button>
                             )}
 
-                            <div className="flex-1" />
+                            <div className="hidden sm:block sm:flex-1" />
 
                             <Button
                                 type="button"
                                 variant="outline"
                                 onClick={onCancel}
                                 disabled={processing}
+                                className="w-full sm:w-auto text-sm sm:text-base order-last sm:order-none"
                             >
                                 <X className="h-4 w-4" />
                                 Cancelar
                             </Button>
 
-                            <Button type="submit" disabled={processing || disabled}>
+                            <Button
+                                type="submit"
+                                disabled={processing || disabled}
+                                className="w-full sm:w-auto text-sm sm:text-base"
+                            >
                                 {mode === "create" ? (
                                     <>
                                         <Plus className="h-4 w-4" />

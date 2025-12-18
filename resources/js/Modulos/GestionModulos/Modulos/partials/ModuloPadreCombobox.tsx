@@ -63,7 +63,7 @@ export function ModuloPadreCombobox({
 
     return (
         <div className="space-y-2">
-            <Label htmlFor="modulo_padre_id" className={hasChanges ? "text-primary" : ""}>
+            <Label htmlFor="modulo_padre_id" className={ "text-sm sm:text-base " + (hasChanges ? "text-primary" : "")}>
                 Módulo Padre (opcional)
             </Label>
             {/* Aviso si es huérfano */}

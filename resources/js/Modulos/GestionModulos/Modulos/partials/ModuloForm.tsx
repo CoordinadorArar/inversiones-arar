@@ -184,14 +184,13 @@ export function ModuloForm({
 
     return (
         <>
-            <form onSubmit={handleFormSubmit} className="space-y-6">
+            <form onSubmit={handleFormSubmit} className="space-y-4 sm:space-y-6">
                 {/* Nombre e Ícono */}
-                <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
                     <div className="space-y-2">
                         <Label
                             htmlFor="nombre"
-                            className={`flex items-center gap-2  after:text-red-500 after:content-['*'] ${changes.nombre && mode === "edit" ? "text-primary" : ""
-                                }`}
+                            className={`flex items-center gap-2 text-sm sm:text-base after:text-red-500 after:content-['*'] ${changes.nombre && mode === "edit" ? "text-primary" : ""}`}
                         >
                             Nombre del Módulo
                         </Label>
@@ -216,8 +215,7 @@ export function ModuloForm({
                     <div className="space-y-2">
                         <Label
                             htmlFor="icono"
-                            className={`flex items-center gap-2  after:text-red-500 after:content-['*'] ${changes.icono && mode === "edit" ? "text-primary" : ""
-                                }`}
+                            className={`flex items-center gap-2 text-sm sm:text-base after:text-red-500 after:content-['*'] ${changes.icono && mode === "edit" ? "text-primary" : ""}`}
                         >
                             Ícono
                         </Label>
@@ -244,7 +242,7 @@ export function ModuloForm({
                     <div>
                         <Label
                             htmlFor="es_padre"
-                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer flex items-center gap-2 p-0 m-0">
+                            className="text-sm sm:text-base font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer flex items-center gap-2 p-0 m-0">
                             <FolderTree className="h-4 w-4 text-primary" />
                             Módulo padre
                         </Label>
@@ -273,8 +271,7 @@ export function ModuloForm({
                 <div className="space-y-2">
                     <Label
                         htmlFor="ruta"
-                        className={`flex items-center gap-2  after:text-red-500 after:content-['*'] ${(changes.ruta || changes.modulo_padre_id) && mode === "edit" ? "text-primary" : ""
-                            }`}
+                        className={`flex items-center gap-2 text-sm sm:text-base after:text-red-500 after:content-['*'] ${(changes.ruta || changes.modulo_padre_id) && mode === "edit" ? "text-primary" : ""}`}
                     >
                         Ruta del Módulo
                     </Label>
@@ -333,7 +330,7 @@ export function ModuloForm({
                 {/* Permisos Extra (solo si NO es padre) */}
                 {!data.es_padre && (
                     <div className="space-y-2">
-                        <Label htmlFor="permisos_extra">Permisos Extra (opcional)</Label>
+                        <Label htmlFor="permisos_extra" className="text-sm sm:text-base">Permisos Extra (opcional)</Label>
                         <Input
                             id="permisos_extra"
                             value={data.permisos_extra}
@@ -356,7 +353,7 @@ export function ModuloForm({
                 )}
 
                 {/* Botones */}
-                <div className="flex flex-wrap gap-3 pt-4 border-t">
+                <div className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3 pt-4 border-t">
                     {!disabled && (
                         <>
                             {mode === "edit" && onDelete && (
@@ -365,24 +362,26 @@ export function ModuloForm({
                                     variant="destructive"
                                     onClick={handleDeleteClick}
                                     disabled={processing}
+                                    className="w-full sm:w-auto text-sm sm:text-base"
                                 >
                                     <Trash2 className="h-4 w-4" />
                                     Eliminar
                                 </Button>
                             )}
-                            <div className="flex-1" />
+                            <div className="hidden sm:block sm:flex-1" />
 
                             <Button
                                 type="button"
                                 variant="outline"
                                 onClick={onCancel}
                                 disabled={processing}
+                                className="w-full sm:w-auto text-sm sm:text-base order-last sm:order-none"
                             >
                                 <X className="h-4 w-4" />
                                 Cancelar
                             </Button>
 
-                            <Button type="submit" disabled={processing || disabled}>
+                            <Button type="submit" disabled={processing || disabled} className="w-full sm:w-auto text-sm sm:text-base">
                                 {mode === "create" ? (
                                     <>
                                         <Plus className="h-4 w-4" />

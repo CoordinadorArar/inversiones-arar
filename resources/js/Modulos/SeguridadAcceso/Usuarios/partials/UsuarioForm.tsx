@@ -100,9 +100,9 @@ export function UsuarioForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
       {/* Documento y Email: Grid con dos inputs principales. */}
-      <div className="grid md:grid-cols-2 gap-4">
+      <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
 
         {/* Número de Documento con Combobox: Usa DocumentoCombobox para búsqueda dinámica. */}
         <DocumentoCombobox
@@ -118,8 +118,7 @@ export function UsuarioForm({
         <div className="space-y-2">
           <Label
             htmlFor="email"
-            className={`flex items-center gap-2  after:text-red-500 after:content-['*'] ${changes.email && mode === "edit" ? "text-primary" : ""
-              }`}
+            className={`flex items-center gap-2 text-sm sm:text-base after:text-red-500 after:content-['*'] ${changes.email && mode === "edit" ? "text-primary" : ""}`}
           >
             Correo Electrónico Empresarial
           </Label>
@@ -146,7 +145,7 @@ export function UsuarioForm({
 
       {/* Nombre Completo (autocompletado): Input readonly que se llena al seleccionar documento. */}
       <div className="space-y-2">
-        <Label htmlFor="nombre_completo">Nombre Completo</Label>
+        <Label htmlFor="nombre_completo" className="text-sm sm:text-base">Nombre Completo</Label>
         {/* Aquí se usa Input readonly para mostrar el nombre autocompletado. */}
         <Input
           id="nombre_completo"
@@ -176,13 +175,13 @@ export function UsuarioForm({
       />
 
       {/* Botones de acción: Guardar, Cancelar y botones especiales condicionales. */}
-      <div className="flex flex-wrap gap-3 pt-4 border-t">
+      <div className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3 pt-4 border-t">
         {!disabled && (
           <>
             {/* Botones especiales (solo en modo edit): Bloquear/Desbloquear y Restaurar contraseña. */}
             {mode === "edit" && (
 
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                 {/* Bloquear/Desbloquear: Muestra botón según estado del usuario. */}
                 {permisos.puedeBloquear ? (isUsuarioBloqueado ? (
                   <Button
@@ -190,6 +189,7 @@ export function UsuarioForm({
                     variant="outline"
                     onClick={onDesbloquear}
                     disabled={processing || isSubmitting}
+                    className="w-full sm:w-auto text-sm sm:text-base"
                   >
                     <Unlock className="h-4 w-4" />
                     Desbloquear
@@ -200,6 +200,7 @@ export function UsuarioForm({
                     variant="destructive"
                     onClick={onBloquear}
                     disabled={processing || isSubmitting}
+                    className="w-full sm:w-auto text-sm sm:text-base"
                   >
                     <Lock className="h-4 w-4" />
                     Bloquear
@@ -213,6 +214,7 @@ export function UsuarioForm({
                     variant="secondary"
                     onClick={onRestaurarPassword}
                     disabled={processing || isSubmitting}
+                    className="w-full sm:w-auto text-sm sm:text-base"
                   >
                     <KeyRound className="h-4 w-4" />
                     Restaurar Contraseña
@@ -229,6 +231,7 @@ export function UsuarioForm({
               variant="outline"
               onClick={onCancel}
               disabled={processing || isSubmitting}
+              className="w-full sm:w-auto text-sm sm:text-base order-last sm:order-none"
             >
               <X className="h-4 w-4" />
               Cancelar
@@ -243,6 +246,7 @@ export function UsuarioForm({
                 isSubmitting ||
                 (usuarioYaRegistrado && mode === "create")
               }
+              className="w-full sm:w-auto text-sm sm:text-base"
             >
               {mode === "create" ? (
                 <>

@@ -35,7 +35,7 @@ export default function AuditoriasListado({ auditorias, moduloNombre }: Auditori
     return (
         <>
             <Head title={moduloNombre} />
-            <Card className="py-6 h-full flex flex-col shadow border-none gap-4 animate-fade">
+            <Card className="py-4 sm:py-6 h-full flex flex-col shadow border-none gap-3 sm:gap-4">
                 {/* Header del card con título. */}
                 <CardHeader>
                     <CardTitle>Registro de Auditorias</CardTitle>

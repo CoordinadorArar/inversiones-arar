@@ -128,11 +128,10 @@ export default function EmpresaGestion({
       tabs={tabs}
       activeTab={window.location.pathname}
     >
-      <Card className="py-6 h-full flex flex-col shadow border-none gap-4">
-        <CardHeader>
+      <Card className="py-4 sm:py-6 h-full flex flex-col shadow border-none gap-3 sm:gap-4">
+        <CardHeader className="px-4 sm:px-6">
           <CardTitle className="flex items-center gap-5">
-            Gestión de Empresas
-            {/* Aquí se incluye HelpManualButton para acceder al manual. */}
+            <span>Gestión de Empresas</span>
             <HelpManualButton
               url="/docs/Manual-Empresas-Gestion.pdf"
               variant="muted"
@@ -140,13 +139,13 @@ export default function EmpresaGestion({
           </CardTitle>
         </CardHeader>
 
-        <CardContent className="flex-1 flex flex-col space-y-6">
+        <CardContent className="flex-1 flex flex-col space-y-4 sm:space-y-6 px-4 sm:px-6">
           {/* Sección de selección: Contiene select para elegir empresa y botón para crear nueva. */}
           <div>
             <div className={`grid gap-4 items-end${puedeCrear ? ' md:grid-cols-[1fr_auto]' : ''}`}>
               {/* Select de empresas */}
               <div>
-                <Label>Seleccionar empresa para editar</Label>
+                <Label className="text-sm sm:text-base">Seleccionar empresa para editar</Label>
                 {puedeEditar ? (
                   <>
                     {/* Aquí se usa SearchableSelect para buscar y seleccionar empresa a editar. */}
@@ -183,9 +182,9 @@ export default function EmpresaGestion({
 
             {/* Muestra error si existe */}
             {errorMessage && (
-              <div className="p-3 rounded-lg border text-destructive border-destructive/50 bg-destructive/10 w-full mt-4 flex gap-2 items-center">
-                <AlertCircle className="h-4 w-4" />
-                <p className="text-sm">
+              <div className="p-3 rounded-lg border text-destructive border-destructive/50 bg-destructive/10 w-full mt-3 sm:mt-4 flex gap-2 items-start">
+                <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                <p className="text-xs sm:text-sm break-words">
                   {errorMessage}
                 </p>
               </div>
@@ -193,17 +192,17 @@ export default function EmpresaGestion({
 
             {/* Indicador de modo: Muestra si está en crear o editando una empresa específica. */}
             {mode !== "idle" && (
-              <div className="mt-4 p-3 rounded-lg bg-primary/10 border border-primary/20">
-                <p className="text-sm font-medium text-primary">
+              <div className="mt-3 sm:mt-4 p-3 rounded-lg bg-primary/10 border border-primary/20">
+                <p className="text-xs sm:text-sm font-medium text-primary">
                   {mode === "create" ? (
                     <span className="flex gap-2 items-center">
-                      <FilePlus className="h-4 w-4" />
-                      Modo: Crear nueva empresa
+                      <FilePlus className="h-4 w-4 flex-shrink-0" />
+                      <span className="break-words">Modo: Crear nueva empresa</span>
                     </span>
                   ) : (
                     <span className="flex gap-2 items-center">
-                      <Pencil className="h-4 w-4" />
-                      Modo: Editando {selectedEmpresa?.razon_social}
+                      <Pencil className="h-4 w-4 flex-shrink-0" />
+                      <span className="break-words">Modo: Editando {selectedEmpresa?.razon_social}</span>
                     </span>
                   )}
                 </p>
@@ -235,17 +234,17 @@ export default function EmpresaGestion({
 
             {/* Mensaje cuando está bloqueado: Muestra instrucciones o mensaje de permisos. */}
             {isFormDisabled && (
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 flex items-center justify-center pointer-events-none">
-                <div className="bg-background/90 p-6 rounded-lg border-2 border-dashed border-muted-foreground/20 text-center sm:max-w-sm">
+              <div className="absolute inset-0 flex items-start sm:items-center justify-center pointer-events-none p-4">
+                <div className="bg-background/90 p-4 sm:p-6 rounded-lg border-2 border-dashed border-muted-foreground/20 text-center max-w-xs sm:max-w-sm">
                   {!puedeCrear && !puedeEditar ? (
                     <div className="space-y-2">
-                      <p className="text-destructive font-medium">Sin permisos</p>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-destructive font-medium text-sm sm:text-base">Sin permisos</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground">
                         No tienes permisos para crear ni editar empresas
                       </p>
                     </div>
                   ) : (
-                    <p className="text-muted-foreground">
+                    <p className="text-muted-foreground text-xs sm:text-sm">
                       {puedeEditar ? "Selecciona una empresa para editar" : ""}
                       {puedeEditar && puedeCrear ? " o c" : "C"}
                       {puedeCrear ? "rea una nueva para comenzar" : ""}

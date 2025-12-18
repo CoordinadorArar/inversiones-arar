@@ -77,7 +77,7 @@ export function DocumentoCombobox({
   if (mode === "edit") {
     return (
       <div className="space-y-2">
-        <Label htmlFor="numero_documento">Número de Documento</Label>
+        <Label htmlFor="numero_documento" className="text-sm sm:text-base">Número de Documento</Label>
         {/* Aquí se usa Input readonly para mostrar el documento en modo edit. */}
         <Input
           id="numero_documento"
@@ -94,7 +94,7 @@ export function DocumentoCombobox({
     <div className="space-y-2">
       <Label
         htmlFor="numero_documento"
-        className={`flex items-center gap-2  after:text-red-500 after:content-['*'] ${hasChanges ? "text-primary" : ""
+        className={`flex items-center gap-2 text-sm sm:text-base after:text-red-500 after:content-['*'] ${hasChanges ? "text-primary" : ""
           }`}
       >
         Número de Documento

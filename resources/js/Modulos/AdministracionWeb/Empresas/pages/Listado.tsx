@@ -43,11 +43,10 @@ export default function EmpresasListado({ empresas, tabs, moduloNombre }: Empres
       activeTab={window.location.pathname}  // Tab activa basada en URL.
     >
       {/* Card contenedor con padding, flex col, shadow. */}
-      <Card className="py-6 h-full flex flex-col shadow border-none gap-4">
-        {/* Header del card con título. */}
-        <CardHeader>
+      <Card className="py-4 sm:py-6 h-full flex flex-col shadow border-none gap-3 sm:gap-4">
+        <CardHeader className="px-4 sm:px-6">
           <CardTitle className="flex items-center gap-5">
-            Listado de Empresas
+            <span>Listado de Empresas</span>
             <HelpManualButton
               url="/docs/Manual-Empresas-Listado.pdf"
               variant="muted"
@@ -57,7 +56,7 @@ export default function EmpresasListado({ empresas, tabs, moduloNombre }: Empres
 
 
         {/* Contenido: DataTable con columnas y datos. */}
-        <CardContent className="flex-1">
+        <CardContent className="flex-1 px-4 sm:px-6">
           <DataTable
             columns={EmpresaColumns}  // Columnas definidas en empresaColumns.
             data={empresas}  // Datos de empresas.
