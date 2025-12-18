@@ -107,7 +107,7 @@ export default function ControlAccesoModulos({
 
                 {/* Contenido principal: Lista de módulos + Panel de permisos */}
                 {selectedRolId && (
-                    <div className={"flex-1 grid md:grid-cols-[1fr_400px] gap-4 min-h-0 relative " + (loadingItems ? "opacity-60 pointer-events-none" : "")}>
+                    <div className={"flex-1 grid md:grid-cols-[1fr_250px] xl:grid-cols-[1fr_400px] gap-4 min-h-0 relative " + (loadingItems ? "opacity-60 pointer-events-none" : "")}>
                         {/* Lista de módulos */}
                         <ModulosList
                             modulos={modulos}

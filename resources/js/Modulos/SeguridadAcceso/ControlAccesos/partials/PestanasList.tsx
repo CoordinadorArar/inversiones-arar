@@ -13,7 +13,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { PestanaAsignacionInterface } from "../types/controlAccesoInterface";
 import { DynamicIcon } from "lucide-react/dynamic";
-import { Check, ListChevronsDownUp, ListChevronsUpDown, ChevronDown } from "lucide-react";
+import { Check, ListChevronsDownUp, ListChevronsUpDown, ChevronDown, FolderX } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -77,6 +77,34 @@ export function PestanasList({
     setOpenPadres([]);
     setOpenHijos([]);
   };
+
+  // Si no hay pestañas, mostrar mensaje informativo
+  if (pestanas.length === 0) {
+    return (
+      <Card className="py-4 shadow border-none flex flex-col min-h-0">
+        <CardHeader>
+          <CardTitle className="text-base">
+            Pestañas disponibles
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="flex-1 flex items-center justify-center">
+          <div className="text-center text-muted-foreground space-y-3 max-w-md">
+            <div className="mx-auto w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center">
+              <FolderX className="h-8 w-8 text-muted-foreground/60" />
+
+            </div>
+            <p className="text-sm font-medium">
+              No hay módulos asignados con pestañas
+            </p>
+            <p className="text-xs">
+              Este rol no tiene módulos asignados que contengan pestañas.
+              Para asignar permisos de pestañas, primero asigna módulos que tengan pestañas en la sección <span className="font-semibold">Accesos a Módulos</span>.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="py-4 shadow border-none flex flex-col min-h-0">
@@ -184,7 +212,7 @@ export function PestanasList({
                               : "border-border hover:border-primary/50 hover:bg-muted/40"
                           )}
                         >
-                          <div className="flex items-center gap-3">                            
+                          <div className="flex items-center gap-3">
                             <div className="flex-1 min-w-0">
                               <p className="font-medium text-sm">{pestana.nombre}</p>
                             </div>

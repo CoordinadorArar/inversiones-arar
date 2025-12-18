@@ -250,7 +250,7 @@ export function PermisosPanel({
           <div className="text-center text-muted-foreground space-y-2">
             <Info className="h-12 w-12 mx-auto opacity-50" />
             <p className="text-sm">
-              Selecciona {tipo === "modulo" ? "un módulo" : "una pestaña"} de la lista <br /> para configurar sus permisos
+              Selecciona {tipo === "modulo" ? "un módulo" : "una pestaña"} de la lista para configurar sus permisos
             </p>
           </div>
         </CardContent>

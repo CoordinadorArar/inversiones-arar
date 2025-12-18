@@ -21,6 +21,7 @@
         @inertiaHead
     </head>
     <body class="font-sans antialiased">
+        <!-- <pre>{{ session()->token() }}</pre> -->
         @inertia
     </body>
 </html>
