@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\SeguridadAcceso;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\SeguridadAcceso\UsuarioRequest;
 use App\Mail\PasswordGeneradaMail;
 use App\Models\ContratoPropietario;

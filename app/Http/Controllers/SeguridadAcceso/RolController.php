@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\SeguridadAcceso;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\SeguridadAcceso\RolRequest;
 use App\Models\Rol;
 use Illuminate\Support\Facades\Auth;

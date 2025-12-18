@@ -539,9 +539,6 @@ class ControlAccesoController extends Controller
             ->unique()
             ->toArray();
 
-        // Combinar IDs de padres e hijos asignados
-        $todosModulosIds = array_merge($modulosAsignadosIds, $modulosPadresIds);
-
         // Obtener módulos padres con hijos y pestañas, filtrados por asignados
         $modulosPadres = Modulo::with(['modulosHijos' => function ($query) use ($modulosAsignadosIds) {
             $query->whereIn('id', $modulosAsignadosIds)->with('pestanas'); // Solo hijos asignados

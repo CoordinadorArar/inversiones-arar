@@ -2,8 +2,8 @@
 
 use App\Http\Controllers\SeguridadAcceso\ControlAccesoController;
 use App\Http\Controllers\ModuloRedirectController;
-use App\Http\Controllers\RolController;
-use App\Http\Controllers\UsuarioController;
+use App\Http\Controllers\SeguridadAcceso\RolController;
+use App\Http\Controllers\SeguridadAcceso\UsuarioController;
 use Illuminate\Support\Facades\Route;
 
 /**
