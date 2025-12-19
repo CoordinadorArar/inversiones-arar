@@ -1,69 +1,61 @@
 /**
- * Componente React para la página de compañias (companies).
+ * Componente React para la página de compañías (companies).
  * Se monta vía Inertia desde CompaniesController@index. Usa PublicLayout para estructura común.
- * Muestra las empresas y sus enlaces a sus páginas principales
+ * Muestra las empresas y sus enlaces a sus páginas principales.
+ * 
+ * REFACTORIZACIÓN v2.0:
+ * - HeroSection modularizado y reutilizable
+ * - CarouselSection genérico para grid/carrusel
+ * - CompanyCard extraído a componente separado
+ * - Mejor separación de responsabilidades
  * 
  * @author Yariangel Aray - Documentado para facilitar el mantenimiento.
- 
  * @date 2025-11-14
+ * @updated 2025-12-18 - Refactorización modular
  */
 
 import PublicLayout from '@/Layouts/PublicLayout';
 import { Head } from '@inertiajs/react';
-import { Card, CardContent } from "@/components/ui/card";
-import { Briefcase, Globe, ExternalLink, Users } from "lucide-react";
-import { Button } from '@/components/ui/button';
+import HeroSection from './partials/HeroSection';
+import CarouselSection from './partials/CarouselSection';
+import CompanyCard from './partials/CompanyCard';
 
-export default function Companies({ empresas }) {
+// Interface para la estructura de empresa
+interface Empresa {
+    id: number;
+    razon_social: string;
+    logo_url?: string;
+    tipo_empresa: string;
+    descripcion: string;
+    sitio_web: string;
+}
 
+interface CompaniesProps {
+    empresas: Empresa[];
+}
+
+export default function Companies({ empresas }: CompaniesProps) {
     return (
         <>
             <Head title="Compañías" />
             <main>
-                {/* Hero Section */}
-                <section className="relative pb-10 pt-28 bg-gradient-to-br from-primary/30 via-accent/20 to-background overflow-hidden">
-                    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="max-w-3xl">
-                            <h1 className="text-3xl md:text-4xl lg:text-5xl text-primary font-bold mb-4">
-                                Nuestras Empresas
-                            </h1>
-                            <p className="text-base md:text-lg text-muted-foreground">
-                                Un portafolio diversificado de empresas líderes en sus respectivos sectores,
-                                trabajando juntas por un futuro sostenible y próspero.
-                            </p>
-                        </div>
-                    </div>
-                </section>
+                {/* Hero Section: Título y descripción de la página */}
+                <HeroSection
+                    title="Nuestras Empresas"
+                    description="Un portafolio diversificado de empresas líderes en sus respectivos sectores, trabajando juntas por un futuro sostenible y próspero."
+                    variant="with-overflow"
+                />
 
-                {/* Empresas Grid/Carousel */}
+                {/* Sección de empresas: Grid desktop / Carrusel mobile */}
                 <section className="py-10 bg-secondary/30 border-t">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                        {/* Desktop: Grid centrado - Mobile: Scroll horizontal */}
-                        <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-6 place-items-center">
-                            {empresas.map((empresa, index) => (
-                                <CompanyCard key={index} empresa={empresa} />
-                            ))}
-                        </div>
-
-                        {/* Mobile: Horizontal scroll con snap */}
-                        <div className="md:hidden">
-                            <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-hide -mx-4 px-4">
-                                {empresas.map((empresa, index) => (
-                                    <div key={index} className="snap-center shrink-0 w-[85vw] max-w-sm">
-                                        <CompanyCard empresa={empresa} />
-                                    </div>
-                                ))}
-                            </div>
-                            {/* Indicador de scroll */}
-                            <div className="flex justify-center gap-2 mt-4">
-                                {empresas.map((_, index) => (
-                                    <div
-                                        key={index}
-                                        className="h-1.5 w-8 rounded-full bg-primary/20"
-                                    />
-                                ))}
-                            </div>
-                        </div>
+                        <CarouselSection
+                            items={empresas}
+                            renderItem={(empresa) => <CompanyCard empresa={empresa} />}
+                            gridCols="md:grid-cols-2 lg:grid-cols-3"
+                            showDots={true}
+                            itemsPerSlide={1}
+                        />
                     </div>
                 </section>
 
@@ -79,86 +71,11 @@ export default function Companies({ empresas }) {
                     </div>
                 </section>
             </main>
-
-            <style>{`
-                .scrollbar-hide::-webkit-scrollbar {
-                    display: none;
-                }
-                .scrollbar-hide {
-                    -ms-overflow-style: none;
-                    scrollbar-width: none;
-                }
-            `}</style>
         </>
     );
 }
 
-// Componente de tarjeta de empresa
-function CompanyCard({ empresa }) {
-    return (
-        <Card className="group w-full h-full overflow-hidden border border-primary/20 shadow-sm hover:shadow-xl hover:border-primary/40 transition-all duration-300 rounded-2xl bg-card">
-            <CardContent className="p-6 flex flex-col h-full">
-                {/* Header con logo y razon social */}
-                <div className="flex items-center gap-4 mb-6">
-                    <div className="relative h-28 w-28 flex-shrink-0 rounded-xl bg-gradient-to-br from-primary/5 to-accent/5 p-2 flex items-center justify-center transition-all group-hover:scale-105 group-hover:shadow-md">
-                        {empresa.logo_url ? (
-                            <img
-                                src={"/storage/" + empresa.logo_url}
-                                alt={`Logo de ${empresa.razon_social}`}
-                                className="w-full h-full object-contain"
-                            />
-                        ) : (
-                            <span className="text-lg md:text-3xl font-bold text-primary capitalize">
-                                {empresa.razon_social.charAt(0)}
-                            </span>
-                        )}
-                    </div>
-                    <div className="flex-1">
-                        <h3 className="capitalize text-xl font-bold mb-1 group-hover:text-primary transition-colors leading-tight">
-                            {empresa.razon_social.toLowerCase()}
-                        </h3>
-                        <span className="inline-block  text-xs bg-primary/10 text-primary text-center font-medium px-2.5 py-1 rounded-md capitalize tracking-wide">
-                            {empresa.tipo_empresa.toLowerCase()}
-                        </span>
-                    </div>
-                </div>
-
-                {/* Descripción */}
-                <p className="text-sm text-muted-foreground mb-6 leading-relaxed flex-grow">
-                    {empresa.descripcion}
-                </p>
-
-                {/* Botones - Stack vertical en todas las pantallas */}
-                <div className="flex flex-col gap-2.5 w-full">
-                    <a href={empresa.sitio_web} target='_blank' rel="noopener noreferrer" className="w-full">
-                        <Button
-                            variant="default"
-                            className="w-full flex items-center justify-center gap-2 shadow-sm hover:shadow-md transition-all group/btn"
-                        >
-                            <Globe className="h-4 w-4 group-hover/btn:rotate-12 transition-transform" />
-                            Sitio Web
-                        </Button>
-                    </a>
-                    <a
-                        href={`http://gh.inversionesarar.com:8900/AuthHv/LoginFormHVById?IdCia=${empresa.id}&NroConexion=1`}
-                        target='_blank'
-                        rel="noopener noreferrer"
-                        className="w-full"
-                    >
-                        <Button
-                            variant="outline"
-                            className="w-full flex items-center justify-center gap-2 hover:bg-primary/5 border-primary/20 hover:border-primary/40 transition-all group/btn"
-                        >
-                            <Briefcase className="h-4 w-4 group-hover/btn:scale-110 transition-transform" />
-                            Consultar Vacantes
-                        </Button>
-                    </a>
-                </div>
-            </CardContent>
-        </Card>
-    );
-}
-
+// Layout para Inertia: Envuelve en PublicLayout
 Companies.layout = (page) => (
     <PublicLayout children={page} />
-)
+);

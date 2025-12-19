@@ -95,7 +95,7 @@ export function TabsLayout({
                                 <TabsTrigger
                                     value={tab.ruta}  // Valor para resaltar activo.
                                     className={cn(
-                                        "relative px-3 sm:px-4 py-2 text-sm sm:text-base transition-all duration-200 whitespace-nowrap",
+                                        "relative px-3 sm:px-4 py-1.5 text-sm sm:text-base transition-all duration-200 whitespace-nowrap",
                                         "data-[state=active]:text-primary data-[state=active]:font-bold",
                                         "hover:bg-gray-400/5 hover:text-foreground",
                                     )}

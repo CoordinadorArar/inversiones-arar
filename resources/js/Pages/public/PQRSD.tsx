@@ -18,8 +18,6 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/Components/ui/select';
-import { useRef, useState } from 'react';
-import { useToast } from '@/hooks/use-toast';
 import InputError from '@/Components/InputError';
 import {
     handleTextKeyDown,
@@ -27,38 +25,16 @@ import {
     handleNumberKeyDown,
     handleMessagesKeyDown,
 } from '@/lib/keydownValidations';
-import { z } from 'zod';
-import {
-    Building2, User, MapPin, MessageSquare,
-    ChevronLeft, ChevronRight, Send,
-    LoaderCircle, X, FileText, CheckCircle,
-    AlertCircle,
-    HelpCircle,
-    Clock,
-    HatGlasses,
-    Upload
-} from 'lucide-react';
+import { Building2, User, MapPin, MessageSquare, ChevronLeft, ChevronRight, Send, LoaderCircle, X, FileText, CheckCircle, AlertCircle, Clock, HatGlasses, } from 'lucide-react';
 import { Progress } from '@/Components/ui/progress';
 import { Checkbox } from '@/Components/ui/checkbox';
 import HelpManualButton from '@/Components/HelpManualButton';
+import { usePQRSDForm } from './hooks/usePQRSDForm';
+import { PQRSD_LIMITS } from './types/pqrsdForm.types';
 
-// Interfaces: Tipos para props y datos del formulario.
-interface FormData {
-    empresa: string;
-    tipoPqrs: string;
-    esAnonimo: boolean;
-    nombre: string;
-    apellido: string;
-    tipoId: string;
-    numId: string;
-    correo: string;
-    telefono: string;
-    dpto: string;
-    ciudad: string;
-    direccion: string;
-    relacion: string;
-    mensaje: string;
-}
+// ============================================================================
+// INTERFACES DE PROPS
+// ============================================================================
 
 interface PQRSDProps {
     empresas: Array<{ id: number; name: string; siglas: string }>;
@@ -68,114 +44,33 @@ interface PQRSDProps {
     tiposId: Array<{ id: number; nombre: string; abreviatura: string }>;
 }
 
-// Constantes: Límites de caracteres para inputs.
-const LIMITS = {
-    nombre: 50,
-    apellido: 50,
-    correo: 50,
-    numId: 15,
-    telefono: 15,
-    direccion: 100,
-    mensaje: 2000,
-} as const;
-
-// Schemas de validación con Zod: Uno por paso para validación incremental.
-const step1Schema = z.object({
-    empresa: z.string().min(1, "Debe seleccionar una empresa"),
-    tipoPqrs: z.string().min(1, "Debe seleccionar el tipo de PQRSD"),
-});
-
-const step2Schema = z.object({
-    nombre: z.string().trim()
-        .regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/, "Solo se permiten letras")
-        .min(1, "El nombre es obligatorio")
-        .max(LIMITS.nombre, `Máximo ${LIMITS.nombre} caracteres`),
-    apellido: z.string().trim()
-        .regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/, "Solo se permiten letras")
-        .min(1, "El apellido es obligatorio")
-        .max(LIMITS.apellido, `Máximo ${LIMITS.apellido} caracteres`),
-    tipoId: z.string().min(1, "Debe seleccionar el tipo de identificación"),
-    numId: z.string().trim()
-        .regex(/^[0-9]+$/, "Solo se permiten números")
-        .min(1, "El número de documento es obligatorio")
-        .max(LIMITS.numId, `Máximo ${LIMITS.numId} caracteres`),
-});
-
-const step3Schema = z.object({
-    correo: z.string().trim()
-        .email("Ingrese un correo válido")
-        .max(LIMITS.correo, `Máximo ${LIMITS.correo} caracteres`),
-    telefono: z.string().trim()
-        .min(1, "El teléfono es obligatorio")
-        .max(LIMITS.telefono, `Máximo ${LIMITS.telefono} caracteres`)
-        .regex(/^\+?[0-9]+$/, "Ingrese un teléfono válido"),
-    dpto: z.string().min(1, "Debe seleccionar un departamento"),
-    ciudad: z.string().min(1, "Debe seleccionar una ciudad"),
-    direccion: z.string().max(LIMITS.direccion, `Máximo ${LIMITS.direccion} caracteres`).optional(),
-    relacion: z.string().min(1, "Debe especificar su relación con la empresa"),
-});
-
-const step4Schema = z.object({
-    mensaje: z.string().trim()
-        .min(20, "El mensaje debe tener al menos 20 caracteres")
-        .max(LIMITS.mensaje, `Máximo ${LIMITS.mensaje} caracteres`),
-});
-
 export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, tiposId }: PQRSDProps) {
-    // Estado para el paso actual del formulario (inicia en 1, va de 1 a 4).
-    const [currentStep, setCurrentStep] = useState(1);
 
-    // Estado para los datos del formulario: objeto con todos los campos del form.
-    // Cada propiedad corresponde a un input/select del formulario.
-    const [data, setData] = useState<FormData>({
-        empresa: "",      // ID de la empresa seleccionada.
-        tipoPqrs: "",     // ID del tipo de PQR seleccionado.
-        esAnonimo: false,  // Indica si es una PQR anónima.
-        nombre: "",       // Nombre del usuario.
-        apellido: "",     // Apellido del usuario.
-        tipoId: "",       // ID del tipo de identificación.
-        numId: "",        // Número de documento.
-        correo: "",       // Email de contacto.
-        telefono: "",     // Teléfono de contacto.
-        dpto: "",         // ID del departamento seleccionado.
-        ciudad: "",       // ID de la ciudad seleccionada.
-        direccion: "",    // Dirección opcional.
-        relacion: "",     // Relación con la empresa (cliente, empleado, etc.).
-        mensaje: "",      // Descripción de la PQR.
-    });
+    // Hook personalizado: maneja toda la lógica del formulario
+    const {
+        currentStep,
+        data,
+        files,
+        isDragging,
+        errors,
+        processing,
+        fileInputRef,
+        nextStep,
+        prevStep,
+        handleChange,
+        handleFileChange,
+        removeFile,
+        handleDrop,
+        handleDragOver,
+        handleDragLeave,
+        handleSubmit,
+    } = usePQRSDForm();
 
-    // Estado para archivos adjuntos: array de objetos File seleccionados.
-    // Se llena con handleFileChange o handleDrop, máximo 5 archivos.
-    const [files, setFiles] = useState<File[]>([]);
-
-    // Estado para indicar si el usuario está arrastrando archivos sobre la zona de drop.
-    // Se usa para cambiar estilos visuales (border, bg).
-    const [isDragging, setIsDragging] = useState(false);
-
-    // Estado para errores de validación: objeto con claves como nombres de campos y mensajes de error.
-    // Se llena en validateStep si Zod falla, se muestra en InputError.
-    const [errors, setErrors] = useState<Record<string, string>>({});
-
-    // Estado para indicar si el formulario está procesando (enviando).
-    // Deshabilita botones y muestra spinner durante fetch.
-    const [processing, setProcessing] = useState(false);
-
-    // Hook de toast para notificaciones: éxito, error, etc.
-    // Se usa en validaciones de archivos y envío.
-    const { toast } = useToast();
-
-    // Constante para el tipo de PQRSD "Denuncia", usada en lógica condicional.
-    // Si el tipo es denuncia se activa lógica especial para selección de empresa y anonimato.
+    // Constante para el tipo "Denuncia"
     const tipoDenuncia = tiposPqrs.find(t => t.abreviatura === 'D');
 
-
-    const fileInputRef = useRef<HTMLInputElement>(null);
-
-
-    // Array constante con configuración de los 4 pasos del formulario.
-    // Cada objeto tiene number (1-4), title, icon (de Lucide), description.
-    // Se usa para renderizar indicadores de progreso y títulos dinámicos.
-    const steps = data.esAnonimo
+    // Configuración de pasos según modo (anónimo o normal)
+    const stepsConfig = data.esAnonimo
         ? [
             { number: 1, title: "Información PQRSD", icon: Building2, description: "Seleccione tipo y empresa" },
             { number: 2, title: "Descripción", icon: MessageSquare, description: "Describa su denuncia" },
@@ -187,405 +82,12 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
             { number: 4, title: "Descripción", icon: MessageSquare, description: "Describa su PQRS" },
         ];
 
-    // Cálculo del progreso: porcentaje basado en currentStep / total steps.
-    // Se usa en la barra de progreso visual.
-    const progress = (currentStep / steps.length) * 100;
+    // Cálculo del progreso
+    const progress = (currentStep / stepsConfig.length) * 100;
 
-    /**
-     * Función validateStep: Valida los datos del paso actual usando schemas de Zod.
-     * 
-     * @param step Número del paso a validar (1-4).
-     * @returns boolean True si válido, false si hay errores.
-     * 
-     * Lógica:
-     * - Limpia errores previos con setErrors({}).
-     * - Selecciona schema y data según paso (switch).
-     * - Ejecuta safeParse de Zod.
-     * - Si falla, mapea errores a newErrors y los setea.
-     * - Hace scroll al primer campo con error.
-     * - Retorna false para bloquear navegación/envío.
-     */
-    const validateStep = (step: number): boolean => {
-        // Limpia errores previos para evitar acumulación.
-        setErrors({});
-
-        // Variables para schema y data a validar, se asignan en switch.
-        let schema;
-        let dataToValidate;
-
-        // Switch para seleccionar qué validar según paso.
-        if (data.esAnonimo) {
-            // Si es anónimo, solo validar paso 1 y paso 2
-            switch (step) {
-                case 1:
-                    schema = step1Schema;
-                    dataToValidate = { empresa: data.empresa, tipoPqrs: data.tipoPqrs };
-                    break;
-                case 2:
-                    // Paso 2 en anónimo = descripción
-                    schema = step4Schema;
-                    dataToValidate = { mensaje: data.mensaje };
-                    break;
-                default:
-                    return true;
-            }
-        } else {
-            // Si NO es anónimo, validación normal
-            switch (step) {
-                case 1:
-                    // Paso 1: Solo empresa y tipoPqrs.
-                    schema = step1Schema;
-                    dataToValidate = { empresa: data.empresa, tipoPqrs: data.tipoPqrs };
-                    break;
-                case 2:
-                    // Paso 2: Datos personales (nombre, apellido, tipoId, numId).
-                    schema = step2Schema;
-                    dataToValidate = {
-                        nombre: data.nombre,
-                        apellido: data.apellido,
-                        tipoId: data.tipoId,
-                        numId: data.numId
-                    };
-                    break;
-                case 3:
-                    // Paso 3: Contacto y ubicación (correo, telefono, dpto, ciudad, etc.).
-                    schema = step3Schema;
-                    dataToValidate = {
-                        correo: data.correo,
-                        telefono: data.telefono,
-                        dpto: data.dpto,
-                        ciudad: data.ciudad,
-                        direccion: data.direccion,
-                        relacion: data.relacion
-                    };
-                    break;
-                case 4:
-                    // Paso 4: Solo mensaje.
-                    schema = step4Schema;
-                    dataToValidate = { mensaje: data.mensaje };
-                    break;
-                default:
-                    // Si paso inválido, retorna true (no valida nada).
-                    return true;
-            }
-        }
-
-        // Ejecuta validación con Zod (safeParse no lanza excepciones).
-        const result = schema.safeParse(dataToValidate);
-
-        // Si validación falla (result.success es false).
-        if (!result.success) {
-            // Inicializa objeto para nuevos errores.
-            const newErrors: Record<string, string> = {};
-
-            // Itera sobre issues de Zod (cada error es un objeto con path y message).
-            result.error.issues.forEach((err) => {
-                // Verifica que path tenga elementos (err.path es array como ['nombre']).
-                if (err.path.length > 0) {
-                    // Usa el primer elemento de path como clave (ej. 'nombre').
-                    newErrors[err.path[0].toString()] = err.message;
-                }
-            });
-
-            // Setea errores en estado para mostrar en UI.
-            setErrors(newErrors);
-
-            // Scroll suave al primer campo con error después de un delay (para render).
-            setTimeout(() => {
-                // Obtiene la primera clave de errores.
-                const firstErrorField = Object.keys(newErrors)[0];
-                // Busca el elemento por ID y hace scroll.
-                document.getElementById(firstErrorField)?.scrollIntoView({
-                    behavior: 'smooth',  // Animación suave.
-                    block: 'center'      // Centra el elemento en viewport.
-                });
-            }, 100);  // Delay de 100ms para asegurar render.
-
-            // Retorna false para indicar fallo.
-            return false;
-        }
-
-        // Si todo válido, retorna true.
-        return true;
-    };
-
-    /**
-     * Función nextStep: Avanza al siguiente paso si el actual es válido.
-     * 
-     * Llama a validateStep, si pasa, incrementa currentStep (máximo steps.length).
-     * Hace scroll a top para mejor UX.
-     */
-    const nextStep = () => {
-        // Valida el paso actual antes de avanzar.
-        if (validateStep(currentStep)) {
-            // Si es anónimo, salta del paso 1 al 2 (descripción)
-            if (data.esAnonimo && currentStep === 1) {
-                setCurrentStep(2);
-            } else {
-                setCurrentStep(prev => Math.min(prev + 1, steps.length));
-            }
-        }
-    };
-
-    /**
-     * Función prevStep: Retrocede al paso anterior.
-     * 
-     * Decrementa currentStep (mínimo 1).
-     * Hace scroll a top.
-     */
-    const prevStep = () => {
-        // Decrementa paso, limita a mínimo.
-        setCurrentStep(prev => Math.max(prev - 1, 1));
-    };
-
-    /**
-     * Función handleFileChange: Maneja selección de archivos desde input file.
-     * 
-     * Filtra archivos válidos (tipo PDF/JPG, tamaño <=500KB), muestra toasts para inválidos.
-     * Agrega válidos a estado files.
-     * 
-     * @param e Evento de cambio del input.
-     */
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        // Verifica que haya archivos seleccionados.
-        if (e.target.files) {
-            // Convierte FileList a array y filtra válidos.
-            const newFiles = Array.from(e.target.files).filter((file) => {
-                // Verifica tipo MIME válido.
-                const isValidType = file.type === "application/pdf" ||
-                    file.type === "application/msword" ||
-                    file.type === "image/jpeg" ||
-                    file.type === "image/jpg";
-                // Verifica tamaño (500KB = 500000 bytes).
-                const isValidSize = file.size <= 500000;
-
-                // Si tipo inválido, muestra toast y excluye.
-                if (!isValidType) {
-                    toast({
-                        title: "Formato no válido",
-                        description: `${file.name} debe ser PDF, DOC o JPG`,
-                        variant: "destructive",
-                    });
-                    return false;
-                }
-
-                // Si tamaño inválido, muestra toast y excluye.
-                if (!isValidSize) {
-                    toast({
-                        title: "Archivo muy grande",
-                        description: `${file.name} debe ser menor a 500KB`,
-                        variant: "destructive",
-                    });
-                    return false;
-                }
-
-                // Si válido, incluye en array.
-                return true;
-            });
-
-            // Agrega archivos válidos al estado existente.
-            setFiles([...files, ...newFiles]);
-        }
-    };
-
-    /**
-     * Función removeFile: Elimina un archivo del array por índice.
-     * 
-     * @param index Índice del archivo a eliminar.
-     */
-    const removeFile = (index: number) => {
-        // Filtra el array excluyendo el índice.
-        setFiles(files.filter((_, i) => i !== index));
-    };
-
-    /**
-     * Función handleDrop: Maneja archivos soltados en zona de drag-and-drop.
-     * 
-     * Previene default, valida límite total (5 archivos), filtra válidos, agrega a estado.
-     * Muestra toasts para errores.
-     * 
-     * @param e Evento de drop.
-     */
-    const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-        // Previene comportamiento default del navegador.
-        e.preventDefault();
-        // Desactiva estado de dragging.
-        setIsDragging(false);
-
-        // Si hay archivos en el drop.
-        if (e.dataTransfer.files) {
-            // Convierte a array.
-            const droppedFiles = Array.from(e.dataTransfer.files);
-
-            // Chequea límite total antes de procesar (para evitar toasts innecesarios).
-            if (files.length + droppedFiles.length > 5) {
-                toast({
-                    title: "Límite excedido",
-                    description: "Máximo 5 archivos permitidos",
-                    variant: "destructive",
-                });
-                return;  // Sale sin procesar.
-            }
-
-            // Filtra archivos válidos (reutiliza lógica de handleFileChange).
-            const validFiles = droppedFiles.filter((file) => {
-                const isValidType = file.type === "application/pdf" ||
-                    file.type === "application/msword" ||
-                    file.type === "image/jpeg" ||
-                    file.type === "image/jpg";
-                const isValidSize = file.size <= 500000;
-
-                // Toasts para inválidos.
-                if (!isValidType) {
-                    toast({
-                        title: "Formato no válido",
-                        description: `${file.name} debe ser PDF, DOC o JPG`,
-                        variant: "destructive",
-                    });
-                    return false;
-                }
-                if (!isValidSize) {
-                    toast({
-                        title: "Archivo muy grande",
-                        description: `${file.name} debe ser menor a 500KB`,
-                        variant: "destructive",
-                    });
-                    return false;
-                }
-                return true;
-            });
-
-            // Agrega solo válidos al estado.
-            setFiles([...files, ...validFiles]);
-        }
-    }
-
-    /**
-     * Función handleDragOver: Maneja evento drag over en zona de drop.
-     * 
-     * Previene default y activa estado de dragging para estilos.
-     * 
-     * @param e Evento drag over.
-     */
-    const handleDragOver = (e) => {
-        e.preventDefault();  // Previene default.
-        setIsDragging(true);  // Activa dragging.
-    };
-
-    /**
-     * Función handleDragLeave: Maneja evento drag leave en zona de drop.
-     * 
-     * Previene default y desactiva estado de dragging.
-     * 
-     * @param e Evento drag leave.
-     */
-    const handleDragLeave = (e) => {
-        e.preventDefault();  // Previene default.
-        setIsDragging(false);  // Desactiva dragging.
-    };
-
-
-    /**
-     * Función handleSubmit: Envía el formulario completo vía fetch.
-     * 
-     * Valida paso final, setea processing, construye FormData, envía POST.
-     * Maneja respuesta: éxito (toast + reset), errores (422 setea errores, otros toast).
-     * Catch para errores de red. Finally limpia processing.
-     */
-    const handleSubmit = async () => {
-        // Valida paso actual (debería ser 4) antes de enviar.
-        if (!validateStep(currentStep)) return;
-
-        // Activa processing para UI.
-        setProcessing(true);
-
-        try {
-            // Crea FormData para enviar datos + archivos.
-            const formData = new FormData();
-
-            // Agrega todos los campos de data como strings.
-            Object.entries(data).forEach(([key, value]) => {
-                formData.append(key, value.toString());
-            });
-
-            // Agrega archivos con clave files[index].
-            files.forEach((file, index) => {
-                formData.append(`files[${index}]`, file);
-            });
-
-            formData.append('esAnonimo', data.esAnonimo ? '1' : '0');
-
-            // Fetch POST a ruta pqrsd.store.
-            const response = await fetch(route('pqrsd.store'), {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',  // Espera JSON.
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',  // Token CSRF.
-                    'X-Requested-With': 'XMLHttpRequest',
-                },
-                body: formData,  // Envía FormData.
-            });
-
-            // Parsea respuesta JSON.
-            const result = await response.json();
-
-            // Si respuesta OK (200).
-            if (response.ok) {
-                // Toast de éxito.
-                toast({
-                    title: "¡PQRSD enviada!",
-                    variant: "success",
-                    description: "Su solicitud ha sido recibida y será procesada en los próximos 15 días hábiles.",
-                });
-
-                // Reset completo: data, files, step.
-                setData({
-                    empresa: "",
-                    tipoPqrs: "",
-                    esAnonimo: false,
-                    nombre: "",
-                    apellido: "",
-                    tipoId: "",
-                    numId: "",
-                    correo: "",
-                    telefono: "",
-                    dpto: "",
-                    ciudad: "",
-                    direccion: "",
-                    relacion: "",
-                    mensaje: "",
-                });
-                setFiles([]);
-                setCurrentStep(1);
-            } else if (response.status === 422) {
-                // Errores de validación backend: setea en estado.
-                setErrors(result.errors || {});
-                toast({
-                    title: "Error al enviar",
-                    description: "Por favor revise los campos marcados.",
-                    variant: "destructive",
-                });
-            } else {
-                // Otros errores: toast genérico.
-                toast({
-                    title: "Error al enviar",
-                    description: result.error || "Intenta de nuevo más tarde.",
-                    variant: "destructive",
-                });
-            }
-
-        } catch (error) {
-            // Error de red/conexión.
-            toast({
-                title: "Error de conexión",
-                description: "Revisa tu conexión e intenta de nuevo.",
-                variant: "destructive",
-            });
-        } finally {
-            // Siempre desactiva processing.
-            setProcessing(false);
-        }
-    };
+    // ============================================================================
+    // RENDERIZADO
+    // ============================================================================
 
     return (
         <>
@@ -665,7 +167,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                     <div className="mb-4 md:mb-6">
                                         <div className="flex justify-between mb-2">
                                             <span className="text-xs md:text-sm font-medium text-primary">
-                                                Paso {currentStep} de {steps.length}
+                                                Paso {currentStep} de {stepsConfig.length}
                                             </span>
                                             <span className="text-xs md:text-sm text-muted-foreground">
                                                 {Math.round(progress)}% completado
@@ -676,7 +178,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
 
                                     {/* Steps indicators */}
                                     <div className={`grid gap-1.5 md:gap-2` + (data.esAnonimo ? ' grid-cols-2' : ' grid-cols-4')}>
-                                        {steps.map((step) => {
+                                        {stepsConfig.map((step) => {
                                             const Icon = step.icon;
                                             const isActive = currentStep === step.number;
                                             const isCompleted = currentStep > step.number;
@@ -725,10 +227,10 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                 <CardContent className="p-4 md:p-6 lg:p-8">
                                     <div className="mb-6 md:mb-8">
                                         <h2 className="text-xl md:text-2xl font-bold text-primary mb-2">
-                                            {steps[currentStep - 1].title}
+                                            {stepsConfig[currentStep - 1].title}
                                         </h2>
                                         <p className="text-sm md:text-base text-muted-foreground">
-                                            {steps[currentStep - 1].description}
+                                            {stepsConfig[currentStep - 1].description}
                                         </p>
                                     </div>
 
@@ -744,22 +246,16 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                         <Select
                                                             value={data.tipoPqrs}
                                                             onValueChange={(value) => {
-                                                                setData({ ...data, tipoPqrs: value })
+                                                                handleChange('tipoPqrs', value);
 
                                                                 if (tipoDenuncia && value !== tipoDenuncia.id.toString()) {
                                                                     const inversionesArar = empresas.find(e =>
                                                                         e.siglas == 'IA' // Siglas de Inversiones Arar S.A.
                                                                     );
-                                                                    if (inversionesArar) {
-                                                                        setData(prev => ({
-                                                                            ...prev,
-                                                                            tipoPqrs: value,
-                                                                            empresa: inversionesArar.id.toString(),
-                                                                            esAnonimo: false
-                                                                        }));
+                                                                    if (inversionesArar) {                                                                        
+                                                                        handleChange('empresa', inversionesArar.id.toString());
+                                                                        handleChange('esAnonimo', false);                                                  
                                                                     }
-                                                                } else {
-                                                                    setData(prev => ({ ...prev, tipoPqrs: value }));
                                                                 }
                                                             }}
                                                         >
@@ -786,7 +282,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                         </Label>
                                                         <Select
                                                             value={data.empresa}
-                                                            onValueChange={(value) => setData({ ...data, empresa: value })}
+                                                            onValueChange={(value) => handleChange('empresa', value)}
                                                             disabled={(() => {
                                                                 return !tipoDenuncia || data.tipoPqrs !== tipoDenuncia.id.toString();
                                                             })()}
@@ -827,7 +323,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                                 <Checkbox
                                                                     id="esAnonimo"
                                                                     checked={data.esAnonimo}
-                                                                    onCheckedChange={(checked) => setData({ ...data, esAnonimo: checked as boolean })}
+                                                                    onCheckedChange={(checked) => handleChange('esAnonimo', checked as boolean)}
                                                                     className="!mt-0 border-primary"
                                                                 />
                                                                 Marque esta casilla si desea realizar la denuncia de forma anónima
@@ -850,16 +346,16 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                             id="nombre"
                                                             placeholder="Ingrese sus nombres"
                                                             value={data.nombre}
-                                                            onChange={(e) => setData({ ...data, nombre: e.target.value })}
+                                                            onChange={(e) => handleChange('nombre', e.target.value)}
                                                             onKeyDown={handleTextKeyDown}
                                                             className={errors.nombre ? "border-destructive" : ""}
-                                                            maxLength={LIMITS.nombre}
+                                                            maxLength={PQRSD_LIMITS.nombre}
                                                             autoComplete="given-name"
                                                         />
                                                         <div className="relative">
                                                             <InputError message={errors.nombre} />
                                                             <span className="text-xs text-muted-foreground absolute top-0 right-0">
-                                                                {data.nombre.length}/{LIMITS.nombre}
+                                                                {data.nombre.length}/{PQRSD_LIMITS.nombre}
                                                             </span>
                                                         </div>
                                                     </div>
@@ -872,16 +368,16 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                             id="apellido"
                                                             placeholder="Ingrese sus apellidos"
                                                             value={data.apellido}
-                                                            onChange={(e) => setData({ ...data, apellido: e.target.value })}
+                                                            onChange={(e) => handleChange('apellido', e.target.value)}
                                                             onKeyDown={handleTextKeyDown}
                                                             className={errors.apellido ? "border-destructive" : ""}
-                                                            maxLength={LIMITS.apellido}
+                                                            maxLength={PQRSD_LIMITS.apellido}
                                                             autoComplete='family-name'
                                                         />
                                                         <div className="relative">
                                                             <InputError message={errors.apellido} />
                                                             <span className="text-xs text-muted-foreground absolute top-0 right-0">
-                                                                {data.apellido.length}/{LIMITS.apellido}
+                                                                {data.apellido.length}/{PQRSD_LIMITS.apellido}
                                                             </span>
                                                         </div>
                                                     </div>
@@ -892,7 +388,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                         </Label>
                                                         <Select
                                                             value={data.tipoId}
-                                                            onValueChange={(value) => setData({ ...data, tipoId: value })}
+                                                            onValueChange={(value) => handleChange('tipoId', value)}
                                                         >
                                                             <SelectTrigger
                                                                 id="tipoId"
@@ -922,16 +418,16 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                             type="tel"
                                                             placeholder="Ingrese su número"
                                                             value={data.numId}
-                                                            onChange={(e) => setData({ ...data, numId: e.target.value })}
+                                                            onChange={(e) => handleChange('numId', e.target.value)}
                                                             onKeyDown={handleNumberKeyDown}
                                                             className={errors.numId ? "border-destructive" : ""}
-                                                            maxLength={LIMITS.numId}
+                                                            maxLength={PQRSD_LIMITS.numId}
                                                             autoComplete='document-number'
                                                         />
                                                         <div className="relative">
                                                             <InputError message={errors.numId} />
                                                             <span className="text-xs text-muted-foreground absolute top-0 right-0">
-                                                                {data.numId.length}/{LIMITS.numId}
+                                                                {data.numId.length}/{PQRSD_LIMITS.numId}
                                                             </span>
                                                         </div>
                                                     </div>
@@ -952,16 +448,16 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                             type="email"
                                                             placeholder="ejemplo@correo.com"
                                                             value={data.correo}
-                                                            onChange={(e) => setData({ ...data, correo: e.target.value })}
+                                                            onChange={(e) => handleChange('correo', e.target.value)}
                                                             onKeyDown={handleEmailKeyDown}
                                                             className={errors.correo ? "border-destructive" : ""}
-                                                            maxLength={LIMITS.correo}
+                                                            maxLength={PQRSD_LIMITS.correo}
                                                             autoComplete="email"
                                                         />
                                                         <div className="relative">
                                                             <InputError message={errors.correo} />
                                                             <span className="text-xs text-muted-foreground absolute top-0 right-0">
-                                                                {data.correo.length}/{LIMITS.correo}
+                                                                {data.correo.length}/{PQRSD_LIMITS.correo}
                                                             </span>
                                                         </div>
                                                     </div>
@@ -975,16 +471,16 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                             type="tel"
                                                             placeholder="Ingrese su teléfono"
                                                             value={data.telefono}
-                                                            onChange={(e) => setData({ ...data, telefono: e.target.value })}
+                                                            onChange={(e) => handleChange('telefono', e.target.value)}
                                                             onKeyDown={handleNumberKeyDown}
                                                             className={errors.telefono ? "border-destructive" : ""}
-                                                            maxLength={LIMITS.telefono}
+                                                            maxLength={PQRSD_LIMITS.telefono}
                                                             autoComplete="tel"
                                                         />
                                                         <div className="relative">
                                                             <InputError message={errors.telefono} />
                                                             <span className="text-xs text-muted-foreground absolute top-0 right-0">
-                                                                {data.telefono.length}/{LIMITS.telefono}
+                                                                {data.telefono.length}/{PQRSD_LIMITS.telefono}
                                                             </span>
                                                         </div>
                                                     </div>
@@ -996,7 +492,8 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                         <Select
                                                             value={data.dpto}
                                                             onValueChange={(value) => {
-                                                                setData({ ...data, dpto: value, ciudad: "" });
+                                                                handleChange('dpto', value);
+                                                                handleChange('ciudad', "");
                                                             }}
                                                         >
                                                             <SelectTrigger
@@ -1022,7 +519,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                         </Label>
                                                         <Select
                                                             value={data.ciudad}
-                                                            onValueChange={(value) => setData({ ...data, ciudad: value })}
+                                                            onValueChange={(value) => handleChange('ciudad', value)}
                                                             disabled={!data.dpto}
                                                         >
                                                             <SelectTrigger
@@ -1052,15 +549,15 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                             id="direccion"
                                                             placeholder="Ingrese su dirección"
                                                             value={data.direccion}
-                                                            onChange={(e) => setData({ ...data, direccion: e.target.value })}
+                                                            onChange={(e) => handleChange('direccion', e.target.value)}
                                                             className={errors.direccion ? "border-destructive" : ""}
-                                                            maxLength={LIMITS.direccion}
+                                                            maxLength={PQRSD_LIMITS.direccion}
                                                             autoComplete="street-address"
                                                         />
                                                         <div className="relative">
                                                             <InputError message={errors.direccion} />
                                                             <span className="text-xs text-muted-foreground absolute top-0 right-0">
-                                                                {data.direccion.length}/{LIMITS.direccion}
+                                                                {data.direccion.length}/{PQRSD_LIMITS.direccion}
                                                             </span>
                                                         </div>
                                                     </div>
@@ -1071,7 +568,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                         </Label>
                                                         <Select
                                                             value={data.relacion}
-                                                            onValueChange={(value) => setData({ ...data, relacion: value })}
+                                                            onValueChange={(value) => handleChange('relacion', value)}
                                                         >
                                                             <SelectTrigger
                                                                 id="relacion"
@@ -1104,14 +601,14 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                         placeholder="Describa detalladamente su petición, queja, reclamo, sugerencia o denuncia..."
                                                         className={`min-h-[150px] ${errors.mensaje ? "border-destructive" : ""}`}
                                                         value={data.mensaje}
-                                                        onChange={(e) => setData({ ...data, mensaje: e.target.value })}
+                                                        onChange={(e) => handleChange('mensaje', e.target.value)}
                                                         onKeyDown={handleMessagesKeyDown}
-                                                        maxLength={LIMITS.mensaje}
+                                                        maxLength={PQRSD_LIMITS.mensaje}
                                                     />
                                                     <div className="relative">
                                                         <InputError message={errors.mensaje} />
                                                         <span className="text-xs text-muted-foreground absolute top-0 right-0">
-                                                            {data.mensaje.length}/{LIMITS.mensaje}
+                                                            {data.mensaje.length}/{PQRSD_LIMITS.mensaje}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -1148,7 +645,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                                                 disabled={files.length >= 5}
                                                             />
                                                             <p className="text-xs text-muted-foreground">
-                                                                
+
                                                                 {isDragging ? "Suelta para cargar" : "PDF, DOC o JPG (máx 500KB). Hasta 5 archivos."}
                                                             </p>
                                                             <Label
@@ -1225,7 +722,7 @@ export default function PQRSD({ empresas, departamentos, ciudades, tiposPqrs, ti
                                             Anterior
                                         </Button>
 
-                                        {currentStep < steps.length ? (
+                                        {currentStep < stepsConfig.length ? (
                                             <Button
                                                 type="button"
                                                 onClick={nextStep}
