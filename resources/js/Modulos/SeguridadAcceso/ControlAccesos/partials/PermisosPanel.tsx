@@ -224,6 +224,8 @@ export function PermisosPanel({
     }
   };
 
+  console.log(item?.permisos_extra);
+
   // Aquí se determina si se puede interactuar con el switch basado en permisos.
   const puedeInteractuarSwitch = !processing && (item?.asignado ? puedeEliminar : puedeCrear);
 

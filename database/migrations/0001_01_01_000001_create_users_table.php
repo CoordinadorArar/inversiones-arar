@@ -40,7 +40,7 @@ return new class extends Migration
                 ->default(2) //Rol estandar por defecto
                 ->constrained('roles');
 
-            $table->string('password');  // Contraseña hasheada.
+            $table->string('password')->nullable();  // Contraseña hasheada.
             $table->rememberToken();  // Token para "recordarme" (agrega columna remember_token).
             $table->unsignedTinyInteger('intentos_fallidos')->default(0);  // Contador de login fallidos (para bloqueo).
             $table->timestamps();  // created_at y updated_at.

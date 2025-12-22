@@ -31,7 +31,7 @@ export interface ModuloFormData {
   ruta: string; // Ruta del módulo.
   es_padre: boolean; // Indica si es módulo padre.
   modulo_padre_id: number | null; // ID del módulo padre (opcional).
-  permisos_extra: string; // Permisos extra separados por comas.
+  permisos_extra: string | string[]; // Permisos extra separados por comas.
 }
 
 /**

@@ -464,7 +464,7 @@ class PestanaController extends Controller
                         'modulo_ruta_completa' => $padreEliminado ? $modulo->ruta : ($moduloPadre ? $moduloPadre->ruta . $modulo->ruta : $modulo->ruta),
                         'modulo_eliminado' => false,
                         'padre_eliminado' => $padreEliminado,
-                        'permisos_extra' => $pestana->permisos_extra ?? [],
+                        'permisos_extra' => $pestana->permisos_extra ? json_decode($pestana->permisos_extra, true) : [],
                     ];
                 });
         });

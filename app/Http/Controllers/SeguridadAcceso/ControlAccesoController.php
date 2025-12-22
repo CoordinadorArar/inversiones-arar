@@ -230,7 +230,7 @@ class ControlAccesoController extends Controller
 
     /**
      * Asigna o actualiza una pestaña a un rol con permisos específicos.
-     * Usa attach para evitar duplicados: Si NO existe la relación → la crea, Si YA existe → la actualiza (permisos), Nunca duplica registros.
+     * Verifica existencia para evitar duplicados: Si existe → actualiza permisos, Si no → crea.
      *
      * @param AsignarPestanaRequest $request Solicitud con datos validados.
      * @return \Illuminate\Http\JsonResponse Respuesta JSON con mensaje de éxito o error.
@@ -264,9 +264,12 @@ class ControlAccesoController extends Controller
 
             $rol = Rol::find($validated['rol_id']);
 
-            // attach: Crea si no existe, actualiza permisos si existe
-            $rol->pestanas()->attach([$validated['pestana_id'] => ['permisos' => $permisosParaGuardar]]);
-
+            // Asignar o actualizar la pestaña con permisos.
+            if ($rol->pestanas()->where('pestana_id', $validated['pestana_id'])->exists()) {
+                $rol->pestanas()->updateExistingPivot($validated['pestana_id'], ['permisos' => $permisosParaGuardar]);
+            } else {
+                $rol->pestanas()->attach($validated['pestana_id'], ['permisos' => $permisosParaGuardar]);
+            }
             DB::commit();
 
             // Registrar auditoría.
@@ -578,7 +581,7 @@ class ControlAccesoController extends Controller
                                 return [
                                     'id' => $pestana->id,
                                     'nombre' => $pestana->nombre,
-                                    'permisos_extra' => $pestana->permisos_extra ?? [],
+                                    'permisos_extra' => $pestana->permisos_extra ? json_decode($pestana->permisos_extra, true) : [],
                                     'asignado' => $asignacion !== null,
                                     'permisos_asignados' => $asignacion ? json_decode($asignacion->permisos, true) : [],
                                 ];
@@ -620,7 +623,7 @@ class ControlAccesoController extends Controller
                             'id' => $pestana->id,
                             'nombre' => $pestana->nombre,
                             'icono' => $pestana->icono,
-                            'permisos_extra' => $pestana->permisos_extra ?? [],
+                            'permisos_extra' => $pestana->permisos_extra ? json_decode($pestana->permisos_extra, true) : [],
                             'asignado' => $asignacion !== null,
                             'permisos_asignados' => $asignacion ? json_decode($asignacion->permisos, true) : [],
                         ];

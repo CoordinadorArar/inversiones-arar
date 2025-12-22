@@ -88,7 +88,7 @@ export default function PestanasGestion({
                 nombre: selectedPestana.nombre,
                 ruta: selectedPestana.ruta,
                 modulo_id: selectedPestana.modulo_eliminado ? null : Number(selectedPestana.modulo_id),
-                permisos_extra: selectedPestana.permisos_extra.join(","),
+                permisos_extra: selectedPestana.permisos_extra,
             };
         }
         return PESTANA_INITIAL_DATA;

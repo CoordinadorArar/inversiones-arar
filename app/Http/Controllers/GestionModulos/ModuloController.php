@@ -329,7 +329,7 @@ class ModuloController extends Controller
             $modulo->load(['moduloPadre', 'modulosHijos']);
 
             // Concatenar ruta completa si tiene módulo padre.
-            $rutaCompleta = $modulo->modulo_padre_id
+            $rutaCompleta = $modulo->modulo_padre_id && $modulo->moduloPadre
                 ? ($modulo->moduloPadre->ruta . $modulo->ruta)
                 : $modulo->ruta;
 

@@ -55,8 +55,10 @@ class PQRSD extends Model
         'fecha_finalizacion',
     ];
 
-    // Deshabilitar timestamps automáticos (usa fecha_creacion/modificacion manuales).
     public $timestamps = true;
+
+    const CREATED_AT = 'fecha_creacion';
+    const UPDATED_AT = 'fecha_modificacion';
 
     // Campos tratados como fechas.
     protected $dates = [

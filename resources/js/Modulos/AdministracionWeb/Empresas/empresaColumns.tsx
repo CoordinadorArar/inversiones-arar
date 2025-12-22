@@ -187,7 +187,7 @@ export const EmpresaColumns: ColumnDef<EmpresaInterface>[] = [
     accessorKey: 'mostrar_en_portafolio',
     header: 'En página Portafolio',
     cell: ({ row }) => {
-      const value = row.original.mostrar_en_header;
+      const value = row.original.mostrar_en_portafolio;
       return (
         <Badge
           className={`

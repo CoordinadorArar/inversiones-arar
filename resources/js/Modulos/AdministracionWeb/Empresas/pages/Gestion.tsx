@@ -234,7 +234,7 @@ export default function EmpresaGestion({
 
             {/* Mensaje cuando está bloqueado: Muestra instrucciones o mensaje de permisos. */}
             {isFormDisabled && (
-              <div className="absolute inset-0 flex items-start sm:items-center justify-center pointer-events-none p-4">
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 flex items-center justify-center pointer-events-none">
                 <div className="bg-background/90 p-4 sm:p-6 rounded-lg border-2 border-dashed border-muted-foreground/20 text-center max-w-xs sm:max-w-sm">
                   {!puedeCrear && !puedeEditar ? (
                     <div className="space-y-2">
