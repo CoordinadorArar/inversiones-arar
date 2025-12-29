@@ -57,13 +57,21 @@ export const MobileMenu = ({ pages, currentRoute, empresas, onEmpresaClick }: Mo
             </DropdownMenuLabel>
 
             <DropdownMenuItem asChild>
-              <Link
+              {/* COMENTADO PORQUE SE IMPLEMENTA EL INICIO DE SESIÓN DE LA PÁGINA ORIGINAL */}
+              {/* <Link
                 href={route('login')}
                 className='cursor-pointer flex items-center gap-3 py-2.5'
               >
                 <CircleUserRound className="h-4 w-4" />
                 <span className="flex-1">Intranet</span>
-              </Link>
+              </Link> */}
+              <a
+                href="https://www.inversionesarar.com/ModulosArar"
+                className='cursor-pointer flex items-center gap-3 py-2.5'
+              >
+                <CircleUserRound className="h-4 w-4" />
+                <span className="flex-1">Intranet</span>
+              </a>
             </DropdownMenuItem>
 
             <DropdownMenuItem asChild>

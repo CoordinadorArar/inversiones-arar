@@ -79,12 +79,20 @@ export const ExternalLinks = () => {
     <>
       <div className="hidden lg:block h-6 w-px bg-border"></div>
       
-      <Link href={route('login')} className="hidden lg:block">
+      {/* COMENTADO PORQUE SE IMPLEMENTA EL INICIO DE SESIÓN DE LA PÁGINA ORIGINAL */}
+      {/* <Link href={route('login')} className="hidden lg:block">
         <Button className='gap-2 shadow-sm hover:shadow-md transition-all h-7 px-3'>
           <CircleUserRound className="h-4 w-4" />
           <span className="hidden sm:inline">Intranet</span>
         </Button>
-      </Link>
+      </Link> */}
+
+      <a href="https://www.inversionesarar.com/ModulosArar" className="hidden lg:block">
+        <Button className='gap-2 shadow-sm hover:shadow-md transition-all h-7 px-3'>
+          <CircleUserRound className="h-4 w-4" />
+          <span className="hidden sm:inline">Intranet</span>
+        </Button>
+      </a>
 
       <a
         href='https://glpi.inversionesarar.com'
